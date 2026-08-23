@@ -5,127 +5,67 @@ import interview from "./../resources/interview.jpg";
 
 const Careers = () => {
   return (
-    <>
-      <div className="flex flex-col justify-center items-center p-0 mx-auto">
-        <img src={careersBanner} alt="career" loading="lazy" />
-        <img
-          src={careersImg}
-          className="w-1/2 h-1/2"
-          alt="career"
-          loading="lazy"
-        />
-        <h1 className="m-8 text-center text-3xl font-bold">
-          Unlock your potential with our personalized hiring platform! Find the
-          ideal job that matches your expertise and take the next step in your
-          career today.
-        </h1>
-        <div className="flex flex-col md:bg-transparent bg-[#dbeafe] lg:flex-row mx-2 my-24 lg:p-2 md:relative justify-center lg:justify-end items-center lg:items-center md:items-end">
-          <img
-            src={interview}
-            className="lg:h-4/6 md:h-3/5 md:w-2/5 h-2/3  md:top-auto md:left-10 md:absolute lg:w-5/12"
-            alt=""
-            loading="lazy"
-          />
+    <div className="bg-[#090909]">
+      <div className="relative w-full overflow-hidden">
+        <img src={careersBanner} alt="career" className="w-full opacity-50" loading="lazy" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-white text-center px-6">
+            Join <span className="gold-gradient-text">Our Team</span>
+          </h1>
+        </div>
+      </div>
 
-          <div className="md:bg-[#dbeafe] md:ps-24 flex flex-col text-left items-start justify-center lg:h-[32rem] lg:w-3/5 md:h-[22rem] md:w-3/5 md:mx-0 md:my-0 my-4 mx-3 space-y-4 lg:space-y-12 r-8">
-            <h1 className="px-2 font-bold md:text-3xl text-3xl lg:text-4xl">
-              Fresh Graduate Hiring
-            </h1>
-            <p className="md:text-l lg:text-xl p-2">
-              Recently graduated? Thrive yourself with Edges Enterprise
-              by registering to our Fresh Graduate Hiring Program 2023 before
-              3rd January {new Date().getFullYear() + 1}!
+      <div className="max-w-4xl mx-auto px-6 py-16 text-center">
+        <img src={careersImg} className="w-48 h-48 mx-auto mb-8 opacity-80" alt="career" loading="lazy" />
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
+          Unlock your potential with our personalized hiring platform!
+        </h2>
+        <p className="text-[#a0a0a0] text-base max-w-2xl mx-auto">
+          Find the ideal job that matches your expertise and take the next step in your career today.
+        </p>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="flex flex-col lg:flex-row items-center gap-12">
+          <div className="lg:w-1/2">
+            <img src={interview} className="w-full rounded-lg border border-[#222222]" alt="" loading="lazy" />
+          </div>
+          <div className="lg:w-1/2 bg-[#111111] border border-[#222222] rounded-lg p-8 md:p-12 space-y-6">
+            <h3 className="text-2xl md:text-3xl font-bold text-white">Fresh Graduate Hiring</h3>
+            <p className="text-[#a0a0a0] text-base leading-relaxed">
+              Recently graduated? Thrive yourself with Edges Enterprise by registering to our Fresh Graduate Hiring Program before 3rd January {new Date().getFullYear() + 1}!
             </p>
-            <button
-              disabled
-              className="mx-2 font-semibold text-white rounded-full bg-theme p-2 px-3"
-            >
+            <button disabled className="rounded-full bg-[#FED500] text-[#090909] px-6 py-3 text-sm font-semibold opacity-50 cursor-not-allowed">
               Apply Now
             </button>
           </div>
         </div>
       </div>
 
-      <h1 className=" text-center text-5xl font-bold mb-8">Benefits</h1>
-
-      <div className="flex flex-col items-center mb-16">
-        <div className="flex flex-col md:flex-row justify-center items-center ">
-          <div className="flex flex-col items-start p-10 m-4 border-slate border-1 bg-white md:w-1/3 ">
-            <div className="flex flex-row items-center space-x-6">
-              <i
-                class="fa-solid fa-kit-medical fa-2xl"
-                style={{ color: "#2e318f" }}
-              ></i>
-              <div className="flex flex-col items-start p-1 justify-center">
-                <h1 className="text-3xl font-bold">Medical Allowance</h1>
+      <div className="py-16 md:py-24 px-6 bg-[#111111] border-y border-[#222222]">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-bold text-center text-white mb-16">Benefits</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: "fa-kit-medical", title: "Medical Allowance" },
+              { icon: "fa-utensils", title: "Free Lunch Facility" },
+              { icon: "fa-van-shuttle", title: "Conveyance Service" },
+              { icon: "fa-plus", title: "Yearly Increments" },
+              { icon: "fa-award", title: "Awards and Prizes" },
+              { icon: "fa-dumbbell", title: "Gym and Fitness" },
+            ].map((b, i) => (
+              <div key={i} className="flex flex-col items-start p-8 border border-[#222222] bg-[#090909] rounded-lg card-hover">
+                <div className="flex items-center space-x-4">
+                  <i className={`fa-solid ${b.icon} fa-xl text-[#FED500]`}></i>
+                  <h3 className="text-xl font-bold text-white">{b.title}</h3>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-start justify-center p-10 m-4  bg-white border-slate border-1 md:w-1/3">
-            <div className="flex flex-row items-center justify-start space-x-6">
-              <i
-                class="fa-solid fa-utensils fa-2xl"
-                style={{ color: "#2e318f" }}
-              ></i>
-              <div className="flex flex-col items-start p-1 justify-center ">
-                <h1 className="text-3xl font-bold">Free Lunch Facility</h1>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-start justify-center p-10 m-4 bg-white border-slate border-1 md:w-1/3">
-            <div className="flex flex-row items-center justify-start space-x-6">
-              <i
-                class="fa-solid fa-van-shuttle fa-2xl"
-                style={{ color: "#2e318f" }}
-              ></i>
-              <div className="flex flex-col items-start p-1 justify-center">
-                <h1 className="text-3xl font-bold">Conveyance Service</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row  justify-center items-center ">
-          <div className="flex flex-col items-start justify-center p-10 m-4 border-slate border-1 bg-white md:w-1/3 ">
-            <div className="flex flex-row items-center justify-start space-x-6">
-              <i
-                class="fa-solid fa-plus fa-2xl"
-                style={{ color: "#2e318f" }}
-              ></i>
-              <div className="flex flex-col items-start p-1 justify-center">
-                <h1 className="text-3xl font-bold">Yearly Increments</h1>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-start justify-center p-10 m-4 bg-white border-slate border-1 md:w-1/3 ">
-            <div className="flex flex-row items-center justify-start space-x-6">
-              <i
-                class="fa-solid fa-award fa-2xl"
-                style={{ color: "#2e318f" }}
-              ></i>
-              <div className="flex flex-col items-start p-1 justify-center">
-                <h1 className="text-3xl font-bold">Awards and Prizes</h1>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-start justify-center p-10 m-4 bg-white border-slate border-1 md:w-1/3">
-            <div className="flex flex-row items-center justify-start space-x-6">
-              <i
-                class="fa-solid fa-dumbbell fa-2xl"
-                style={{ color: "#2e318f" }}
-              ></i>
-              <div className="flex flex-col items-start p-1 justify-center">
-                <h1 className="text-3xl font-bold">Gym and Fitness</h1>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

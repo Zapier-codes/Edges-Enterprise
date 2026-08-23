@@ -4,67 +4,38 @@ import useStore from "../store/store";
 
 const AddServices = () => {
   const postServiceData = useStore((state) => state.postServiceData);
-
   const [serviceImage, setServiceImage] = useState(null);
   const [feature, setFeature] = useState({ name: "", description: "" });
   const [service, setService] = useState({
-    name: "",
-    description: "",
-    features: [feature],
-    technologies: [""],
+    name: "", description: "", features: [feature], technologies: [""],
   });
 
   const handlefeatureChange = (e, index) => {
     const { name, value } = e.target;
-    setFeature((prevFeature) => ({
-      ...prevFeature,
-      [name]: value,
-    }));
-
-    setService((prevService) => {
-      const newArray = [...prevService.features];
-      newArray[index] = { ...prevService.features[index], [name]: value };
-      return {
-        ...prevService,
-        features: newArray,
-      };
+    setFeature((prev) => ({ ...prev, [name]: value }));
+    setService((prev) => {
+      const newArray = [...prev.features];
+      newArray[index] = { ...prev.features[index], [name]: value };
+      return { ...prev, features: newArray };
     });
   };
 
   const handleTechnologyChange = (index, value) => {
     const newArray = [...service.technologies];
     newArray[index] = value;
-    setService((prev) => {
-      return {
-        ...prev,
-        technologies: newArray,
-      };
-    });
+    setService((prev) => ({ ...prev, technologies: newArray }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setService((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setService((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddfeature = () => {
-    setService((prev) => {
-      return {
-        ...prev,
-        features: [...prev.features, { name: "", description: "" }],
-      };
-    });
+    setService((prev) => ({ ...prev, features: [...prev.features, { name: "", description: "" }] }));
   };
   const handleAddTechnology = () => {
-    setService((prev) => {
-      return {
-        ...prev,
-        technologies: [...prev.technologies, ""],
-      };
-    });
+    setService((prev) => ({ ...prev, technologies: [...prev.technologies, ""] }));
   };
 
   const handleSubmit = async (e) => {
@@ -82,108 +53,78 @@ const AddServices = () => {
       });
       formData.append("image", serviceImage);
       await postServiceData(formData);
+      notify("Added");
     } catch (error) {
-      notify("Wrong Content");
+      notify("Enter Correct Data");
       return;
     }
-    notify("Added");
   };
+
   return (
-    <div>
-      <div className="mb-3">
-        <label for="exampleFormControlInput1" className="form-label">
-          Name
-        </label>
+    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5">
+      <h3 className="text-white font-semibold text-lg mb-2">Add Service</h3>
+      <div>
+        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Name</label>
         <input
-          type="text"
-          className="form-control"
-          name="name"
-          value={service.name}
-          onChange={(e) => handleChange(e)}
-          id="exampleFormControlInput1"
-          placeholder="name"
-          required
+          type="text" name="name" value={service.name} onChange={handleChange}
+          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          placeholder="Service name" required
         />
-        <label for="exampleFormControlInput1" className="form-label">
-          Description
-        </label>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Description</label>
+        <textarea
+          name="description" value={service.description} onChange={handleChange}
+          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          placeholder="Service description" rows={4} required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Service Image</label>
         <input
-          type="text"
-          className="form-control"
-          name="description"
-          value={service.description}
-          onChange={(e) => handleChange(e)}
-          id="exampleFormControlInput1"
-          placeholder="description"
-          required
+          type="file" onChange={(e) => setServiceImage(e.target.files[0])}
+          className="block w-full text-sm text-[#a0a0a0] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FED500] file:text-[#090909] hover:file:bg-[#e5c000] bg-[#111111] border border-[#222222] rounded-lg p-2"
         />
+      </div>
 
-        <label for="formFile" className="form-label">
-          Service Image
-        </label>
-        <input
-          className="form-control"
-          type="file"
-          id="formFile"
-          required
-          onChange={(e) => setServiceImage(e.target.files[0])}
-        ></input>
-        <button
-          className="bg-theme p-1 my-4 rounded-full text-white"
-          onClick={handleAddfeature}
-        >
-          Add Feature
-        </button>
-        {service.features.map((singlef, index) => (
-          <div key={index}>
-            <label>Enter element {index + 1} Name: </label>
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-[#a0a0a0]">Features</label>
+        {service.features.map((fea, index) => (
+          <div key={index} className="grid grid-cols-2 gap-3">
             <input
-              className="form-control"
-              placeholder={`Feature ${index + 1}`}
-              type="text"
-              name="name"
-              value={singlef.name}
-              onChange={(e) => handlefeatureChange(e, index)}
-              required
+              type="text" name="name" value={fea.name} onChange={(e) => handlefeatureChange(e, index)}
+              className="p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
+              placeholder="Feature name"
             />
-            <label>Enter element {index + 1} Description: </label>
             <input
-              className="form-control"
-              placeholder={`Feature ${index + 1}`}
-              name="description"
-              type="description"
-              value={singlef.description}
-              onChange={(e) => handlefeatureChange(e, index)}
-              required
+              type="text" name="description" value={fea.description} onChange={(e) => handlefeatureChange(e, index)}
+              className="p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
+              placeholder="Feature description"
             />
           </div>
         ))}
-
-        <button
-          className="bg-theme p-1 my-4 rounded-full text-white"
-          onClick={handleAddTechnology}
-        >
-          Add Technology
+        <button type="button" onClick={handleAddfeature} className="text-sm text-[#FED500] hover:underline">
+          + Add another feature
         </button>
-        {service.technologies.map((value, index) => (
-          <div key={index}>
-            <label>Enter element {index + 1}: </label>
-            <input
-              className="form-control"
-              placeholder={`Technology ${index + 1}`}
-              type="text"
-              value={value}
-              onChange={(e) => handleTechnologyChange(index, e.target.value)}
-              required
-            />
-          </div>
+      </div>
+
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-[#a0a0a0]">Technologies</label>
+        {service.technologies.map((tech, index) => (
+          <input
+            key={index} type="text" value={tech} onChange={(e) => handleTechnologyChange(index, e.target.value)}
+            className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
+            placeholder="Technology"
+          />
         ))}
+        <button type="button" onClick={handleAddTechnology} className="text-sm text-[#FED500] hover:underline">
+          + Add another technology
+        </button>
       </div>
 
       <button
-        type="submit"
-        onClick={handleSubmit}
-        className="p-2 my-4 bg-theme text-white rounded-full"
+        type="submit" onClick={handleSubmit}
+        className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
       >
         Submit
       </button>

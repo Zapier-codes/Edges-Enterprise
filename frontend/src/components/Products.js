@@ -4,36 +4,20 @@ import useStore from "../store/store";
 const Products = () => {
   const AllProducts = useStore((state) => state.products);
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
-        <div className="flex flex-col border-slate border-1 p-12 space-y-10 justify-center md:w-1/2">
-          <h1 className="font-bold text-4xl  lg:text-5xl">
-            {AllProducts[0].name}
-          </h1>
-          <p className="">{AllProducts[0].description}</p>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#222222] border border-[#222222]">
+      {AllProducts.slice(0, 4).map((item, index) => (
+        <div
+          key={item._id || index}
+          className="flex flex-col p-10 md:p-12 space-y-6 justify-center bg-[#111111] min-h-[280px] card-hover"
+        >
+          <h3 className="font-bold text-2xl md:text-3xl text-white">
+            {item.name}
+          </h3>
+          <p className="text-[#a0a0a0] text-sm leading-relaxed">
+            {item.description}
+          </p>
         </div>
-        <div className="flex flex-col border-slate border-l md:border-l-0 border-r md:border-t border-b p-12 space-y-10 justify-center md:w-1/2 ">
-          <h1 className="font-bold  text-4xl lg:text-5xl">
-            {AllProducts[1].name}
-          </h1>
-          <p className="">{AllProducts[1].description}</p>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
-        <div className="flex flex-col border-slate border-x border-b p-12 space-y-10 justify-center items center md:w-1/2">
-          <h1 className="font-bold  text-4xl lg:text-5xl">
-            {AllProducts[2].name}
-          </h1>
-          <p className="">{AllProducts[2].description}</p>
-        </div>
-        <div className="flex flex-col border-slate md:border-x-0 border-x md:border-r border-b p-12 space-y-10 justify-center items center md:w-1/2">
-          <h1 className="font-bold  text-4xl lg:text-5xl">
-            {AllProducts[3].name}
-          </h1>
-          <p className="">{AllProducts[3].description}</p>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };

@@ -1,0 +1,3775 @@
+From e7c642e0d5206a43f23628641c261086fef5fb54 Mon Sep 17 00:00:00 2001
+From: Edges Dev <dev@edgesenterprise.com>
+Date: Mon, 24 Aug 2026 07:28:02 +0800
+Subject: [PATCH] feat(ui): port entire frontend to u1core.com dark premium
+ theme
+
+- Adopt dark theme (#090909 bg, #FED500 gold accent, #111111 cards)
+- Rewrite all page components: Home, About, Services, Products, Contact, Careers
+- Update Navbar with refined links and gold CTA button
+- Update Footer with 4-column dark layout
+- Redesign auth pages: Login, Signup, ForgotPassword, ResetPassword
+- Dark theme Dashboard with gold active states
+- Update Testimonial carousel with dark cards
+- Update Dropdown, AddServices, AddProducts, UpdateMe, AddPicture
+- Update tailwind config, global CSS, and index.html meta
+- Preserve all routes, API logic, Zustand store, and auth flows
+---
+ frontend/public/index.html                 |  10 +-
+ frontend/src/App.css                       | 103 ++++++----
+ frontend/src/components/About.js           | 123 +++++------
+ frontend/src/components/AddPicture.js      |  20 +-
+ frontend/src/components/AddProducts.js     |  86 +++-----
+ frontend/src/components/AddServices.js     | 181 ++++++-----------
+ frontend/src/components/Careers.js         | 158 +++++---------
+ frontend/src/components/Contact.js         | 128 ++++++------
+ frontend/src/components/Dashboard.js       |  55 ++---
+ frontend/src/components/Dropdown.js        |  31 ++-
+ frontend/src/components/ErrorPage.js       |  17 +-
+ frontend/src/components/Footer.js          | 125 ++++++------
+ frontend/src/components/ForgotPassword.js  |  86 +++-----
+ frontend/src/components/Home.js            | 226 +++++++++++++++------
+ frontend/src/components/HomeSecond.js      |  89 ++++----
+ frontend/src/components/Industries.js      |  75 ++-----
+ frontend/src/components/Login.js           | 163 ++++++---------
+ frontend/src/components/Navbar.js          | 124 +++++------
+ frontend/src/components/OngoingProjects.js |  22 +-
+ frontend/src/components/Products.js        |  42 ++--
+ frontend/src/components/ProductsMain.js    |  51 +++--
+ frontend/src/components/ResetPassword.js   | 100 ++++-----
+ frontend/src/components/Service.js         |  82 +++-----
+ frontend/src/components/Services.js        |  42 ++--
+ frontend/src/components/ServicesMain.js    |  41 ++--
+ frontend/src/components/Signup.js          | 214 ++++++++-----------
+ frontend/src/components/SingleProduct.js   |  37 ++--
+ frontend/src/components/SingleService.js   |  10 +-
+ frontend/src/components/Testimonial.js     |  78 +++----
+ frontend/src/components/UpdateMe.js        | 143 ++++---------
+ frontend/src/index.css                     |  48 ++++-
+ frontend/tailwind.config.js                |  34 ++--
+ 32 files changed, 1219 insertions(+), 1525 deletions(-)
+
+diff --git a/frontend/public/index.html b/frontend/public/index.html
+index 7e6c83a..c11e8a7 100644
+--- a/frontend/public/index.html
++++ b/frontend/public/index.html
+@@ -4,26 +4,20 @@
+     <meta charset="utf-8" />
+     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+-    <meta name="theme-color" content="#060B17" />
++    <meta name="theme-color" content="#090909" />
+     <meta
+       name="description"
+       content="Edges Enterprise Ltd — software engineering, fintech, telecommunications and enterprise technology solutions."
+     />
+-
+     <title>Edges Enterprise</title>
+-    <!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700,900&display=swap" rel="stylesheet"> -->
+-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+-    
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <script src="https://kit.fontawesome.com/159a6538d8.js" crossorigin="anonymous"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+     <link rel="icon" type="image/png" href="%PUBLIC_URL%/favicon-32x32.png" />
+-
+   </head>
+   <body>
+     <noscript>You need to enable JavaScript to run this app.</noscript>
+     <div id="root"></div>
+-    
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+-
+   </body>
+ </html>
+diff --git a/frontend/src/App.css b/frontend/src/App.css
+index 3bec727..d587584 100644
+--- a/frontend/src/App.css
++++ b/frontend/src/App.css
+@@ -1,55 +1,78 @@
+-body{
+-    margin: 0;
+-    padding: 0;
++body {
++  margin: 0;
++  padding: 0;
++  background-color: #090909;
++  color: #ffffff;
+ }
+-.hamburger{
+-    cursor: pointer;
+-    height: 24px;
+-    width: 24px;
+-    transition: all 0.25s;
+-    position: relative;
++
++.hamburger {
++  cursor: pointer;
++  height: 24px;
++  width: 24px;
++  transition: all 0.25s;
++  position: relative;
+ }
++
+ .hamburger-top,
+ .hamburger-middle,
+-.hamburger-bottom{
+-position: absolute;
+-top: 0;
+-left: 0;
+-width: 24px;
+-height: 2px;
+-background: #000;
+-transform: rotate(0);
+-transition: all 0.5;
++.hamburger-bottom {
++  position: absolute;
++  top: 0;
++  left: 0;
++  width: 24px;
++  height: 2px;
++  background: #ffffff;
++  transform: rotate(0);
++  transition: all 0.5s;
+ }
+-.hamburger-middle
+-{
+-    transform: translateY(7px);
++
++.hamburger-middle {
++  transform: translateY(7px);
+ }
+-.hamburger-bottom
+-{
+-    transform: translateY(14px);
++
++.hamburger-bottom {
++  transform: translateY(14px);
+ }
+-.open
+-{
+-    transform: rotate(90deg);
+-    transform: translateY(0px);
++
++.open {
++  transform: rotate(90deg);
++  transform: translateY(0px);
+ }
+-.open .hamburger-top{
+-    transform: rotate(45deg) translateY(6px) translate(6px);
++
++.open .hamburger-top {
++  transform: rotate(45deg) translateY(6px) translate(6px);
+ }
+-.open .hamburger-middle
+-{display: none;}
+-.open .hamburger-bottom{
+-    transform: rotate(-45deg) translateY(6px) translate(-6px);
++
++.open .hamburger-middle {
++  display: none;
+ }
+ 
++.open .hamburger-bottom {
++  transform: rotate(-45deg) translateY(6px) translate(-6px);
++}
+ 
+ select option:first-child {
+-    color: gray;
+-  }
++  color: gray;
++}
+ 
+-  @media screen and (max-width: 600px) {
+-    .serviceText {
+-      text-align: center;
+-    }
++@media screen and (max-width: 600px) {
++  .serviceText {
++    text-align: center;
+   }
++}
++
++/* U1CORE utility classes */
++.gold-gradient-text {
++  background: linear-gradient(135deg, #FED500 0%, #ffaa00 100%);
++  -webkit-background-clip: text;
++  -webkit-text-fill-color: transparent;
++  background-clip: text;
++}
++
++.card-hover {
++  transition: all 0.3s ease;
++}
++.card-hover:hover {
++  border-color: #FED500;
++  transform: translateY(-4px);
++}
+diff --git a/frontend/src/components/About.js b/frontend/src/components/About.js
+index 66e43ac..d1da859 100644
+--- a/frontend/src/components/About.js
++++ b/frontend/src/components/About.js
+@@ -4,87 +4,76 @@ import features from "./../resources/companyFeatures.svg";
+ 
+ const About = () => {
+   return (
+-    <>
+-      <div className="flex flex-col justify-end mx-auto l-0 my-0 p-0 w-full">
+-        <img src={banner} alt="banner" className="w-screen" loading="lazy" />
++    <div className="bg-[#090909]">
++      {/* Banner */}
++      <div className="relative w-full overflow-hidden">
++        <img src={banner} alt="banner" className="w-full opacity-50" loading="lazy" />
++        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
++        <div className="absolute inset-0 flex items-center justify-center">
++          <h1 className="text-4xl md:text-6xl font-bold text-white text-center">
++            About <span className="gold-gradient-text">Us</span>
++          </h1>
++        </div>
+       </div>
+-      <div className="flex flex-col items-center justify-center m-4 space-y-4 p-2">
+-        <h1 className="md:text-5xl text-4xl font-bold text-center mt-12">
++
++      {/* Value Cards */}
++      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
++        <h2 className="text-3xl md:text-5xl font-bold text-center text-white mb-16">
+           Your Preferred Trusted Partner <br /> for Exceptional Solutions
+-        </h1>
++        </h2>
+ 
+-        <div className="flex flex-col lg:flex-row py-8 justify-center items-center">
+-          <div className="flex flex-col items-start justify-center p-10 m-4 space-y-10 border-slate border-1 bg-white lg:w-1/3 h-80">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-solid fa-handshake fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center space-y-1/2">
+-                <h1 className="text-3xl font-bold">
+-                  Creating Enduring <br /> Partnerships
+-                </h1>
+-              </div>
+-            </div>
+-            <div className="flex flex-row justify-center items-center space-x-4">
+-              <div className="bg-[#2e318f] h-16 w-1"></div>
+-              <p>
+-                Fostering enduring partnerships through value creation across
+-                diverse industries.
+-              </p>
++        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
++          <div className="flex flex-col items-start p-8 space-y-6 border border-[#222222] bg-[#111111] rounded-lg card-hover">
++            <div className="flex items-center space-x-4">
++              <i className="fa-solid fa-handshake fa-xl text-[#FED500]"></i>
++              <h3 className="text-xl font-bold text-white">
++                Creating Enduring <br /> Partnerships
++              </h3>
+             </div>
++            <div className="w-full h-px bg-[#222222]" />
++            <p className="text-[#a0a0a0] text-sm leading-relaxed">
++              Fostering enduring partnerships through value creation across diverse industries.
++            </p>
+           </div>
+ 
+-          <div className="flex flex-col items-start justify-center p-10 m-4 space-y-10 bg-white border-slate border-1 lg:w-1/3 h-80">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-regular fa-gem fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center space-y-1/2">
+-                <h1 className="text-3xl font-bold">
+-                  Delivering Lasting <br /> Value
+-                </h1>
+-              </div>
+-            </div>
+-            <div className="flex flex-row justify-center items-center space-x-4">
+-              <div className="bg-[#2e318f] h-16 w-[0.33rem]"></div>
+-              <p>
+-                Our skilled engineers are dedicating their expertise to craft
+-                tangible value for our clients.
+-              </p>
++          <div className="flex flex-col items-start p-8 space-y-6 border border-[#222222] bg-[#111111] rounded-lg card-hover">
++            <div className="flex items-center space-x-4">
++              <i className="fa-regular fa-gem fa-xl text-[#FED500]"></i>
++              <h3 className="text-xl font-bold text-white">
++                Delivering Lasting <br /> Value
++              </h3>
+             </div>
++            <div className="w-full h-px bg-[#222222]" />
++            <p className="text-[#a0a0a0] text-sm leading-relaxed">
++              Our skilled engineers are dedicating their expertise to craft tangible value for our clients.
++            </p>
+           </div>
+ 
+-          <div className="flex flex-col items-start justify-center p-10 m-4 space-y-10 bg-white border-slate border-1 lg:w-1/3 h-80">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-solid fa-certificate fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center space-y-1/2">
+-                <h1 className="text-3xl font-bold">
+-                  Verified & Certified Proficiency
+-                </h1>
+-              </div>
+-            </div>
+-            <div className="flex flex-row justify-center items-center space-x-4">
+-              <div className="bg-[#2e318f] h-16 w-1"></div>
+-              <p>
+-                From enterprise to analytical software, we serve every industry
+-                with excellence.
+-              </p>
++          <div className="flex flex-col items-start p-8 space-y-6 border border-[#222222] bg-[#111111] rounded-lg card-hover">
++            <div className="flex items-center space-x-4">
++              <i className="fa-solid fa-certificate fa-xl text-[#FED500]"></i>
++              <h3 className="text-xl font-bold text-white">
++                Verified & Certified Proficiency
++              </h3>
+             </div>
++            <div className="w-full h-px bg-[#222222]" />
++            <p className="text-[#a0a0a0] text-sm leading-relaxed">
++              From enterprise to analytical software, we serve every industry with excellence.
++            </p>
+           </div>
+         </div>
+       </div>
+-      <div className="flex flex-col mx-auto mt-12 md:p-24 p-12 space-y-12 md:space-y-24 w-full bg-[#2e318f]">
+-        <h1 className="text-center text-white text-2xl md:text-5xl font-bold">
+-          Guided by Our Founding Principles
+-        </h1>
+-        <img src={features} alt="" loading="lazy" />
++
++      {/* Principles */}
++      <div className="py-16 md:py-24 px-6 bg-[#111111] border-y border-[#222222]">
++        <div className="max-w-6xl mx-auto text-center space-y-12">
++          <h2 className="text-3xl md:text-5xl font-bold text-white">
++            Guided by Our Founding Principles
++          </h2>
++          <img src={features} alt="Company features" className="mx-auto max-w-4xl w-full opacity-90" loading="lazy" />
++        </div>
+       </div>
+-    </>
++    </div>
+   );
+ };
+ 
+diff --git a/frontend/src/components/AddPicture.js b/frontend/src/components/AddPicture.js
+index b144d06..3437666 100644
+--- a/frontend/src/components/AddPicture.js
++++ b/frontend/src/components/AddPicture.js
+@@ -1,11 +1,11 @@
+-import React from "react";
++import React, { useState } from "react";
+ import useStore from "../store/store";
+ import notify from "./toast.js";
+-import { useState } from "react";
+ 
+ const AddPicture = () => {
+   const updatePicture = useStore((state) => state.patchUpdatePicture);
+   const [userImage, setUserImage] = useState(null);
++
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+     const formData = new FormData();
+@@ -19,21 +19,19 @@ const AddPicture = () => {
+       return;
+     }
+   };
++
+   return (
+-    <div>
+-      <form action="">
+-        <label for="formFile" className="form-label">
+-          Add Image
+-        </label>
++    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg">
++      <h3 className="text-white font-semibold text-lg mb-4">Update Profile Picture</h3>
++      <form onSubmit={handleSubmit} className="space-y-4">
++        <label className="block text-sm font-medium text-[#a0a0a0]">Add Image</label>
+         <input
+-          className="form-control"
++          className="block w-full text-sm text-[#a0a0a0] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FED500] file:text-[#090909] hover:file:bg-[#e5c000] bg-[#111111] border border-[#222222] rounded-lg p-2"
+           type="file"
+-          id="formFile"
+           onChange={(e) => setUserImage(e.target.files[0])}
+         />
+         <button
+-          className="text-white rounded-full bg-theme p-2 my-4"
+-          onClick={handleSubmit}
++          className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
+           type="submit"
+         >
+           Add Picture
+diff --git a/frontend/src/components/AddProducts.js b/frontend/src/components/AddProducts.js
+index b1c7d2c..f8ed8a2 100644
+--- a/frontend/src/components/AddProducts.js
++++ b/frontend/src/components/AddProducts.js
+@@ -4,85 +4,59 @@ import useStore from "../store/store";
+ 
+ const AddProducts = () => {
+   const postProductData = useStore((state) => state.postProductData);
+-
+-  const [product, setProduct] = useState({
+-    name: "",
+-    url: "",
+-    description: "",
+-  });
++  const [product, setProduct] = useState({ name: "", url: "", description: "" });
+ 
+   const handleChange = (e) => {
+     const { name, value } = e.target;
+-    setProduct((prev) => ({
+-      ...prev,
+-      [name]: value,
+-    }));
++    setProduct((prev) => ({ ...prev, [name]: value }));
+   };
+ 
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+     try {
+       await postProductData(product);
++      notify("Added");
+     } catch (error) {
+       notify("Enter Correct Data");
+       return;
+     }
+-    notify("Added");
+   };
+ 
+   return (
+-    <>
+-      <div className="mb-3">
+-        <label for="exampleFormControlInput1" className="form-label">
+-          Name
+-        </label>
++    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5">
++      <h3 className="text-white font-semibold text-lg mb-2">Add Product</h3>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Name</label>
+         <input
+-          type="text"
+-          className="form-control"
+-          name="name"
+-          value={product.name}
+-          onChange={(e) => handleChange(e)}
+-          id="exampleFormControlInput1"
+-          placeholder="name"
+-          required
++          type="text" name="name" value={product.name} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="Product name" required
+         />
+-        <label for="exampleFormControlInput1" className="form-label">
+-          Url
+-        </label>
++      </div>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">URL</label>
+         <input
+-          type="text"
+-          className="form-control"
+-          name="url"
+-          value={product.url}
+-          onChange={(e) => handleChange(e)}
+-          id="exampleFormControlInput1"
+-          placeholder="url"
+-          required
++          type="text" name="url" value={product.url} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="https://..." required
+         />
+-        <label for="exampleFormControlInput1" className="form-label">
+-          Description
+-        </label>
+-
++      </div>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Description</label>
+         <input
+-          type="text"
+-          className="form-control"
+-          name="description"
+-          value={product.description}
+-          onChange={(e) => handleChange(e)}
+-          id="exampleFormControlInput1"
+-          placeholder="description"
+-          required
++          type="text" name="description" value={product.description} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="Short description" required
+         />
+-
+-        <button
+-          type="submit"
+-          onClick={handleSubmit}
+-          className="my-4 p-2 bg-theme text-white rounded-full"
+-        >
+-          Submit
+-        </button>
+       </div>
+-    </>
++      <button
++        type="submit" onClick={handleSubmit}
++        className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
++      >
++        Submit
++      </button>
++    </div>
+   );
+ };
++
+ export default AddProducts;
+diff --git a/frontend/src/components/AddServices.js b/frontend/src/components/AddServices.js
+index 266fd0c..5f8d92a 100644
+--- a/frontend/src/components/AddServices.js
++++ b/frontend/src/components/AddServices.js
+@@ -4,67 +4,38 @@ import useStore from "../store/store";
+ 
+ const AddServices = () => {
+   const postServiceData = useStore((state) => state.postServiceData);
+-
+   const [serviceImage, setServiceImage] = useState(null);
+   const [feature, setFeature] = useState({ name: "", description: "" });
+   const [service, setService] = useState({
+-    name: "",
+-    description: "",
+-    features: [feature],
+-    technologies: [""],
++    name: "", description: "", features: [feature], technologies: [""],
+   });
+ 
+   const handlefeatureChange = (e, index) => {
+     const { name, value } = e.target;
+-    setFeature((prevFeature) => ({
+-      ...prevFeature,
+-      [name]: value,
+-    }));
+-
+-    setService((prevService) => {
+-      const newArray = [...prevService.features];
+-      newArray[index] = { ...prevService.features[index], [name]: value };
+-      return {
+-        ...prevService,
+-        features: newArray,
+-      };
++    setFeature((prev) => ({ ...prev, [name]: value }));
++    setService((prev) => {
++      const newArray = [...prev.features];
++      newArray[index] = { ...prev.features[index], [name]: value };
++      return { ...prev, features: newArray };
+     });
+   };
+ 
+   const handleTechnologyChange = (index, value) => {
+     const newArray = [...service.technologies];
+     newArray[index] = value;
+-    setService((prev) => {
+-      return {
+-        ...prev,
+-        technologies: newArray,
+-      };
+-    });
++    setService((prev) => ({ ...prev, technologies: newArray }));
+   };
+ 
+   const handleChange = (e) => {
+     const { name, value } = e.target;
+-    setService((prev) => ({
+-      ...prev,
+-      [name]: value,
+-    }));
++    setService((prev) => ({ ...prev, [name]: value }));
+   };
+ 
+   const handleAddfeature = () => {
+-    setService((prev) => {
+-      return {
+-        ...prev,
+-        features: [...prev.features, { name: "", description: "" }],
+-      };
+-    });
++    setService((prev) => ({ ...prev, features: [...prev.features, { name: "", description: "" }] }));
+   };
+   const handleAddTechnology = () => {
+-    setService((prev) => {
+-      return {
+-        ...prev,
+-        technologies: [...prev.technologies, ""],
+-      };
+-    });
++    setService((prev) => ({ ...prev, technologies: [...prev.technologies, ""] }));
+   };
+ 
+   const handleSubmit = async (e) => {
+@@ -82,108 +53,78 @@ const AddServices = () => {
+       });
+       formData.append("image", serviceImage);
+       await postServiceData(formData);
++      notify("Added");
+     } catch (error) {
+-      notify("Wrong Content");
++      notify("Enter Correct Data");
+       return;
+     }
+-    notify("Added");
+   };
++
+   return (
+-    <div>
+-      <div className="mb-3">
+-        <label for="exampleFormControlInput1" className="form-label">
+-          Name
+-        </label>
++    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5">
++      <h3 className="text-white font-semibold text-lg mb-2">Add Service</h3>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Name</label>
+         <input
+-          type="text"
+-          className="form-control"
+-          name="name"
+-          value={service.name}
+-          onChange={(e) => handleChange(e)}
+-          id="exampleFormControlInput1"
+-          placeholder="name"
+-          required
++          type="text" name="name" value={service.name} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="Service name" required
++        />
++      </div>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Description</label>
++        <textarea
++          name="description" value={service.description} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="Service description" rows={4} required
+         />
+-        <label for="exampleFormControlInput1" className="form-label">
+-          Description
+-        </label>
++      </div>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Service Image</label>
+         <input
+-          type="text"
+-          className="form-control"
+-          name="description"
+-          value={service.description}
+-          onChange={(e) => handleChange(e)}
+-          id="exampleFormControlInput1"
+-          placeholder="description"
+-          required
++          type="file" onChange={(e) => setServiceImage(e.target.files[0])}
++          className="block w-full text-sm text-[#a0a0a0] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FED500] file:text-[#090909] hover:file:bg-[#e5c000] bg-[#111111] border border-[#222222] rounded-lg p-2"
+         />
++      </div>
+ 
+-        <label for="formFile" className="form-label">
+-          Service Image
+-        </label>
+-        <input
+-          className="form-control"
+-          type="file"
+-          id="formFile"
+-          required
+-          onChange={(e) => setServiceImage(e.target.files[0])}
+-        ></input>
+-        <button
+-          className="bg-theme p-1 my-4 rounded-full text-white"
+-          onClick={handleAddfeature}
+-        >
+-          Add Feature
+-        </button>
+-        {service.features.map((singlef, index) => (
+-          <div key={index}>
+-            <label>Enter element {index + 1} Name: </label>
++      <div className="space-y-3">
++        <label className="block text-sm font-medium text-[#a0a0a0]">Features</label>
++        {service.features.map((fea, index) => (
++          <div key={index} className="grid grid-cols-2 gap-3">
+             <input
+-              className="form-control"
+-              placeholder={`Feature ${index + 1}`}
+-              type="text"
+-              name="name"
+-              value={singlef.name}
+-              onChange={(e) => handlefeatureChange(e, index)}
+-              required
++              type="text" name="name" value={fea.name} onChange={(e) => handlefeatureChange(e, index)}
++              className="p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
++              placeholder="Feature name"
+             />
+-            <label>Enter element {index + 1} Description: </label>
+             <input
+-              className="form-control"
+-              placeholder={`Feature ${index + 1}`}
+-              name="description"
+-              type="description"
+-              value={singlef.description}
+-              onChange={(e) => handlefeatureChange(e, index)}
+-              required
++              type="text" name="description" value={fea.description} onChange={(e) => handlefeatureChange(e, index)}
++              className="p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
++              placeholder="Feature description"
+             />
+           </div>
+         ))}
+-
+-        <button
+-          className="bg-theme p-1 my-4 rounded-full text-white"
+-          onClick={handleAddTechnology}
+-        >
+-          Add Technology
++        <button type="button" onClick={handleAddfeature} className="text-sm text-[#FED500] hover:underline">
++          + Add another feature
+         </button>
+-        {service.technologies.map((value, index) => (
+-          <div key={index}>
+-            <label>Enter element {index + 1}: </label>
+-            <input
+-              className="form-control"
+-              placeholder={`Technology ${index + 1}`}
+-              type="text"
+-              value={value}
+-              onChange={(e) => handleTechnologyChange(index, e.target.value)}
+-              required
+-            />
+-          </div>
++      </div>
++
++      <div className="space-y-3">
++        <label className="block text-sm font-medium text-[#a0a0a0]">Technologies</label>
++        {service.technologies.map((tech, index) => (
++          <input
++            key={index} type="text" value={tech} onChange={(e) => handleTechnologyChange(index, e.target.value)}
++            className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
++            placeholder="Technology"
++          />
+         ))}
++        <button type="button" onClick={handleAddTechnology} className="text-sm text-[#FED500] hover:underline">
++          + Add another technology
++        </button>
+       </div>
+ 
+       <button
+-        type="submit"
+-        onClick={handleSubmit}
+-        className="p-2 my-4 bg-theme text-white rounded-full"
++        type="submit" onClick={handleSubmit}
++        className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
+       >
+         Submit
+       </button>
+diff --git a/frontend/src/components/Careers.js b/frontend/src/components/Careers.js
+index 5d42822..036bb90 100644
+--- a/frontend/src/components/Careers.js
++++ b/frontend/src/components/Careers.js
+@@ -5,127 +5,67 @@ import interview from "./../resources/interview.jpg";
+ 
+ const Careers = () => {
+   return (
+-    <>
+-      <div className="flex flex-col justify-center items-center p-0 mx-auto">
+-        <img src={careersBanner} alt="career" loading="lazy" />
+-        <img
+-          src={careersImg}
+-          className="w-1/2 h-1/2"
+-          alt="career"
+-          loading="lazy"
+-        />
+-        <h1 className="m-8 text-center text-3xl font-bold">
+-          Unlock your potential with our personalized hiring platform! Find the
+-          ideal job that matches your expertise and take the next step in your
+-          career today.
+-        </h1>
+-        <div className="flex flex-col md:bg-transparent bg-[#dbeafe] lg:flex-row mx-2 my-24 lg:p-2 md:relative justify-center lg:justify-end items-center lg:items-center md:items-end">
+-          <img
+-            src={interview}
+-            className="lg:h-4/6 md:h-3/5 md:w-2/5 h-2/3  md:top-auto md:left-10 md:absolute lg:w-5/12"
+-            alt=""
+-            loading="lazy"
+-          />
+-
+-          <div className="md:bg-[#dbeafe] md:ps-24 flex flex-col text-left items-start justify-center lg:h-[32rem] lg:w-3/5 md:h-[22rem] md:w-3/5 md:mx-0 md:my-0 my-4 mx-3 space-y-4 lg:space-y-12 r-8">
+-            <h1 className="px-2 font-bold md:text-3xl text-3xl lg:text-4xl">
+-              Fresh Graduate Hiring
+-            </h1>
+-            <p className="md:text-l lg:text-xl p-2">
+-              Recently graduated? Thrive yourself with Edges Enterprise
+-              by registering to our Fresh Graduate Hiring Program 2023 before
+-              3rd January {new Date().getFullYear() + 1}!
+-            </p>
+-            <button
+-              disabled
+-              className="mx-2 font-semibold text-white rounded-full bg-theme p-2 px-3"
+-            >
+-              Apply Now
+-            </button>
+-          </div>
++    <div className="bg-[#090909]">
++      <div className="relative w-full overflow-hidden">
++        <img src={careersBanner} alt="career" className="w-full opacity-50" loading="lazy" />
++        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
++        <div className="absolute inset-0 flex items-center justify-center">
++          <h1 className="text-4xl md:text-6xl font-bold text-white text-center px-6">
++            Join <span className="gold-gradient-text">Our Team</span>
++          </h1>
+         </div>
+       </div>
+ 
+-      <h1 className=" text-center text-5xl font-bold mb-8">Benefits</h1>
+-
+-      <div className="flex flex-col items-center mb-16">
+-        <div className="flex flex-col md:flex-row justify-center items-center ">
+-          <div className="flex flex-col items-start p-10 m-4 border-slate border-1 bg-white md:w-1/3 ">
+-            <div className="flex flex-row items-center space-x-6">
+-              <i
+-                class="fa-solid fa-kit-medical fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center">
+-                <h1 className="text-3xl font-bold">Medical Allowance</h1>
+-              </div>
+-            </div>
+-          </div>
++      <div className="max-w-4xl mx-auto px-6 py-16 text-center">
++        <img src={careersImg} className="w-48 h-48 mx-auto mb-8 opacity-80" alt="career" loading="lazy" />
++        <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
++          Unlock your potential with our personalized hiring platform!
++        </h2>
++        <p className="text-[#a0a0a0] text-base max-w-2xl mx-auto">
++          Find the ideal job that matches your expertise and take the next step in your career today.
++        </p>
++      </div>
+ 
+-          <div className="flex flex-col items-start justify-center p-10 m-4  bg-white border-slate border-1 md:w-1/3">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-solid fa-utensils fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center ">
+-                <h1 className="text-3xl font-bold">Free Lunch Facility</h1>
+-              </div>
+-            </div>
++      <div className="max-w-7xl mx-auto px-6 pb-16">
++        <div className="flex flex-col lg:flex-row items-center gap-12">
++          <div className="lg:w-1/2">
++            <img src={interview} className="w-full rounded-lg border border-[#222222]" alt="" loading="lazy" />
+           </div>
+-
+-          <div className="flex flex-col items-start justify-center p-10 m-4 bg-white border-slate border-1 md:w-1/3">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-solid fa-van-shuttle fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center">
+-                <h1 className="text-3xl font-bold">Conveyance Service</h1>
+-              </div>
+-            </div>
++          <div className="lg:w-1/2 bg-[#111111] border border-[#222222] rounded-lg p-8 md:p-12 space-y-6">
++            <h3 className="text-2xl md:text-3xl font-bold text-white">Fresh Graduate Hiring</h3>
++            <p className="text-[#a0a0a0] text-base leading-relaxed">
++              Recently graduated? Thrive yourself with Edges Enterprise by registering to our Fresh Graduate Hiring Program before 3rd January {new Date().getFullYear() + 1}!
++            </p>
++            <button disabled className="rounded-full bg-[#FED500] text-[#090909] px-6 py-3 text-sm font-semibold opacity-50 cursor-not-allowed">
++              Apply Now
++            </button>
+           </div>
+         </div>
++      </div>
+ 
+-        <div className="flex flex-col md:flex-row  justify-center items-center ">
+-          <div className="flex flex-col items-start justify-center p-10 m-4 border-slate border-1 bg-white md:w-1/3 ">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-solid fa-plus fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center">
+-                <h1 className="text-3xl font-bold">Yearly Increments</h1>
+-              </div>
+-            </div>
+-          </div>
+-
+-          <div className="flex flex-col items-start justify-center p-10 m-4 bg-white border-slate border-1 md:w-1/3 ">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-solid fa-award fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center">
+-                <h1 className="text-3xl font-bold">Awards and Prizes</h1>
+-              </div>
+-            </div>
+-          </div>
+-
+-          <div className="flex flex-col items-start justify-center p-10 m-4 bg-white border-slate border-1 md:w-1/3">
+-            <div className="flex flex-row items-center justify-start space-x-6">
+-              <i
+-                class="fa-solid fa-dumbbell fa-2xl"
+-                style={{ color: "#2e318f" }}
+-              ></i>
+-              <div className="flex flex-col items-start p-1 justify-center">
+-                <h1 className="text-3xl font-bold">Gym and Fitness</h1>
++      <div className="py-16 md:py-24 px-6 bg-[#111111] border-y border-[#222222]">
++        <div className="max-w-6xl mx-auto">
++          <h2 className="text-3xl md:text-5xl font-bold text-center text-white mb-16">Benefits</h2>
++          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
++            {[
++              { icon: "fa-kit-medical", title: "Medical Allowance" },
++              { icon: "fa-utensils", title: "Free Lunch Facility" },
++              { icon: "fa-van-shuttle", title: "Conveyance Service" },
++              { icon: "fa-plus", title: "Yearly Increments" },
++              { icon: "fa-award", title: "Awards and Prizes" },
++              { icon: "fa-dumbbell", title: "Gym and Fitness" },
++            ].map((b, i) => (
++              <div key={i} className="flex flex-col items-start p-8 border border-[#222222] bg-[#090909] rounded-lg card-hover">
++                <div className="flex items-center space-x-4">
++                  <i className={`fa-solid ${b.icon} fa-xl text-[#FED500]`}></i>
++                  <h3 className="text-xl font-bold text-white">{b.title}</h3>
++                </div>
+               </div>
+-            </div>
++            ))}
+           </div>
+         </div>
+       </div>
+-    </>
++    </div>
+   );
+ };
+ 
+diff --git a/frontend/src/components/Contact.js b/frontend/src/components/Contact.js
+index d14e3fb..de4ee0c 100644
+--- a/frontend/src/components/Contact.js
++++ b/frontend/src/components/Contact.js
+@@ -3,135 +3,121 @@ import { Link } from "react-router-dom";
+ 
+ const Contact = () => {
+   return (
+-    <>
+-      <section class="bg-white dark:bg-gray-900">
+-        <div class="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
+-          <h2 class="mb-4 text-5xl tracking-tight font-bold text-center text-gray-900 dark:text-white">
+-            Contact Us
+-          </h2>
+-          <p class="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">
+-            From groundbreaking projects to ongoing ventures, we're here to
+-            assist and innovate with you. We'll reach back to you within 3
+-            working days.
+-          </p>
+-          <form action="#" class="space-y-8">
++    <div className="bg-[#090909] min-h-screen">
++      <section className="py-16 md:py-24 px-6">
++        <div className="max-w-2xl mx-auto">
++          <div className="text-center mb-12">
++            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
++              Contact Us
++            </h2>
++            <p className="text-[#a0a0a0] text-base">
++              From groundbreaking projects to ongoing ventures, we're here to
++              assist and innovate with you. We'll reach back to you within 3
++              working days.
++            </p>
++          </div>
++
++          <form action="#" className="space-y-6">
+             <div>
+-              <label
+-                for="subject"
+-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+-              >
++              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+                 Name
+               </label>
+               <input
+                 type="text"
+-                id="subject"
+-                class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
++                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                 placeholder="Your Name"
+                 required
+               />
+             </div>
+             <div>
+-              <label
+-                for="email"
+-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+-              >
++              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+                 Email
+               </label>
+               <input
+                 type="email"
+-                id="email"
+-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
++                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                 placeholder="name@edgesenterprise.com"
+                 required
+               />
+             </div>
+-
+             <div>
+-              <label
+-                for="subject"
+-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+-              >
++              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+                 Select Service
+               </label>
+               <select
+-                type="text"
+-                id="subject"
+-                class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
++                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors"
+                 required
+               >
+-                <option value="volvo" disabled selected>
+-                  <span className="text-gray">
+-                    Select the services you need
+-                  </span>
++                <option value="" disabled selected className="text-[#444]">
++                  Select the services you need
+                 </option>
+-                <option value="volvo">Volvo</option>
+-                <option value="saab">Saab</option>
+-                <option value="mercedes">Mercedes</option>
+-                <option value="audi">Audi</option>
++                <option value="software">Custom Software Development</option>
++                <option value="web">Web Development</option>
++                <option value="mobile">Mobile App Development</option>
++                <option value="cloud">Cloud Solutions</option>
++                <option value="uiux">UI/UX Design</option>
++                <option value="ecommerce">E-commerce Solutions</option>
+               </select>
+             </div>
+             <div>
+-              <label
+-                for="subject"
+-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+-              >
++              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+                 Your Organization
+               </label>
+               <input
+                 type="text"
+-                id="subject"
+-                class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
++                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                 placeholder="Your organization"
+               />
+             </div>
+-            <div class="sm:col-span-2">
+-              <label
+-                for="message"
+-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
+-              >
++            <div>
++              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+                 Your message
+               </label>
+               <textarea
+-                id="message"
+                 rows="6"
+-                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+-                placeholder="Leave a comment..."
++                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++                placeholder="Tell us about your project..."
+               ></textarea>
+             </div>
+             <div>
+-              <label
+-                for="subject"
+-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+-              >
++              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+                 Your Budget
+               </label>
+               <input
+                 type="text"
+-                id="subject"
+-                class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
++                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                 placeholder="in USD$"
+                 required
+               />
+             </div>
+             <button
+               type="submit"
+-              class="py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-theme sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
++              className="w-full py-3 px-5 text-sm font-semibold text-[#090909] bg-[#FED500] rounded-lg hover:bg-[#e5c000] transition-colors"
+             >
+               Submit
+             </button>
+           </form>
+         </div>
+       </section>
+-      <div className="flex flex-col p-12 space-y-6 items-center mx-auto bg-[#dbeafe]">
+-        <h1 className="text-3xl font-bold">For Job Apply here</h1>
+-        <Link
+-          to="/careers"
+-          className="p-3 text-white px-4 hover:bg-[#1a1269] bg-theme rounded-full"
+-        >
+-          Apply Now
+-        </Link>
+-      </div>
+-    </>
++
++      {/* Job CTA */}
++      <section className="py-16 px-6 bg-[#111111] border-t border-[#222222]">
++        <div className="max-w-4xl mx-auto text-center space-y-6">
++          <h3 className="text-2xl md:text-3xl font-bold text-white">
++            Looking to join our team?
++          </h3>
++          <p className="text-[#a0a0a0] text-base">
++            We're always looking for exceptional talent to help us build the future.
++          </p>
++          <Link
++            to="/careers"
++            className="inline-block rounded-full bg-[#FED500] text-[#090909] px-8 py-3 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
++          >
++            Apply Now
++          </Link>
++        </div>
++      </section>
++    </div>
+   );
+ };
+ 
+diff --git a/frontend/src/components/Dashboard.js b/frontend/src/components/Dashboard.js
+index c9cc2df..95ae24f 100644
+--- a/frontend/src/components/Dashboard.js
++++ b/frontend/src/components/Dashboard.js
+@@ -27,6 +27,7 @@ const Dashboard = () => {
+     };
+     getImage();
+   }, [getUserImage, userImg]);
++
+   const navigate = useNavigate();
+   useEffect(() => {
+     const handleLocalStorageChange = (e) => {
+@@ -36,9 +37,7 @@ const Dashboard = () => {
+         navigate("/login");
+       }
+     };
+-
+     window.addEventListener("storage", handleLocalStorageChange);
+-
+     return () => {
+       window.removeEventListener("storage", handleLocalStorageChange);
+     };
+@@ -57,17 +56,11 @@ const Dashboard = () => {
+   };
+ 
+   const renderPage = () => {
+-    if (page === "AddServices") {
+-      return <AddServices />;
+-    } else if (page === "AddProducts") {
+-      return <AddProducts />;
+-    } else if (page === "UpdateMe") {
+-      return <UpdateMe />;
+-    } else if (page === "AddPicture") {
+-      return <AddPicture />;
+-    } else {
+-      return <OngoingProjects />;
+-    }
++    if (page === "AddServices") return <AddServices />;
++    else if (page === "AddProducts") return <AddProducts />;
++    else if (page === "UpdateMe") return <UpdateMe />;
++    else if (page === "AddPicture") return <AddPicture />;
++    else return <OngoingProjects />;
+   };
+ 
+   const handleLogout = () => {
+@@ -78,34 +71,26 @@ const Dashboard = () => {
+   };
+ 
+   return (
+-    <div className="flex flex-col p-2 sm:m-2 md:m-12">
+-      <div className="flex md:flex-row justify-between items-center">
+-        <h1 className="text-3xl md:text-5xl font-bold">
+-          {role === "admin"
+-            ? "Admin "
+-            : role === "employee"
+-            ? "Employee "
+-            : "Client "}
++    <div className="flex flex-col p-2 sm:m-2 md:m-12 bg-[#090909] min-h-screen">
++      <div className="flex md:flex-row justify-between items-center mb-8">
++        <h1 className="text-3xl md:text-5xl font-bold text-white">
++          {role === "admin" ? "Admin " : role === "employee" ? "Employee " : "Client "}
+           Dashboard
+         </h1>
+-        <img
+-          src={userImg || defaultImg}
+-          alt=""
+-          className="rounded-full w-1/12 h-1/12"
+-        />
++        <img src={userImg || defaultImg} alt="" className="rounded-full w-16 h-16 object-cover border border-[#222222]" />
+       </div>
+-      <h1 className="text-2xl font-bold">{}</h1>
+-      <div className="grid md:grid-cols-6 grid-cols-3  justify-start items-start my-3">
++
++      <div className="grid md:grid-cols-6 grid-cols-3 justify-start items-start my-3 gap-px">
+         <button
+           onClick={() => handleChangePage("OngoingProjects")}
+-          className="p-[2px] md:p-3  border-y border-l border-slate hover:bg-[#2e318f] hover:text-white font-semibold text-base md:text-xl leading-5"
++          className={`p-[2px] md:p-3 border border-[#222222] font-semibold text-base md:text-xl leading-5 transition-colors ${page === "OngoingProjects" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+         >
+           Ongoing Projects
+         </button>
+         {role === "admin" && (
+           <button
+             onClick={() => handleChangePage("AddServices")}
+-            className="p-2 md:p-3  border-1 border-slate hover:bg-[#2e318f] active:bg-[#2e318f]  hover:text-white font-semibold text-xl h-full"
++            className={`p-2 md:p-3 border border-[#222222] font-semibold text-xl h-full transition-colors ${page === "AddServices" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+           >
+             Add Services
+           </button>
+@@ -113,31 +98,31 @@ const Dashboard = () => {
+         {role === "admin" && (
+           <button
+             onClick={() => handleChangePage("AddProducts")}
+-            className="p-2 md:p-3  border-y border-r border-slate hover:bg-[#2e318f] hover:text-white font-semibold text-xl h-full"
++            className={`p-2 md:p-3 border border-[#222222] font-semibold text-xl h-full transition-colors ${page === "AddProducts" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+           >
+             Add Products
+           </button>
+         )}
+         <button
+           onClick={() => handleChangePage("UpdateMe")}
+-          className="p-1 md:p-3  border-y border-x border-slate hover:bg-[#2e318f] hover:text-white font-semibold  text-base md:text-xl md:h-full h-[45.5px] leading-5"
++          className={`p-1 md:p-3 border border-[#222222] font-semibold text-base md:text-xl md:h-full h-[45.5px] leading-5 transition-colors ${page === "UpdateMe" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+         >
+           Update Password
+         </button>
+         <button
+           onClick={() => handleChangePage("AddPicture")}
+-          className="p-2 md:p-3  border-y border-r md:border-l-0 border-l border-slate hover:bg-[#2e318f] hover:text-white font-semibold text-xl md:h-full"
++          className={`p-2 md:p-3 border border-[#222222] font-semibold text-xl md:h-full transition-colors ${page === "AddPicture" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+         >
+           Add Picture
+         </button>
+         <button
+           onClick={handleLogout}
+-          className="p-2 md:p-3  border-y border-x border-slate hover:bg-[#2e318f] hover:text-white font-semibold text-xl md:h-full"
++          className="p-2 md:p-3 border border-[#222222] bg-[#111111] text-[#a0a0a0] hover:bg-red-900/30 hover:text-red-400 font-semibold text-xl md:h-full transition-colors"
+         >
+           Log Out
+         </button>
+       </div>
+-      {page && renderPage()}
++      <div className="mt-6">{page && renderPage()}</div>
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/Dropdown.js b/frontend/src/components/Dropdown.js
+index de12a64..e696614 100644
+--- a/frontend/src/components/Dropdown.js
++++ b/frontend/src/components/Dropdown.js
+@@ -15,28 +15,25 @@ const Dropdown = (props) => {
+   return (
+     <div
+       onMouseLeave={props.onMouseLeave}
+-      className="absolute w-full left-0 my-0 py-2 px-14 mx-0 bg-white hidden md:flex flex-col"
++      className="absolute w-full left-0 my-0 py-4 px-14 mx-0 bg-[#111111] border border-[#222222] hidden md:flex flex-col z-50"
+     >
+       <div className="m-6 ml-4 flex align-middle">
+-        <Link
+-          to={props.page ? "/products" : "/services"}
+-          className="font-semibold text-xl"
+-        >
+-          See all
++        <Link to={props.page ? "/products" : "/services"} className="font-semibold text-[#FED500] text-lg hover:underline">
++          See all →
+         </Link>
+       </div>
+-      <hr />
++      <hr className="border-[#222222]" />
+       <div className="grid grid-cols-3 mx-10 my-4 justify-content-center items-start">
+-        {doc &&
+-          doc.map((item) => (
+-            <Link
+-              to={props.page ? item.url : "/services/" + 5 + item.id + 8}
+-              className="font-semibold	 my-1 text-xl"
+-              target="_blank"
+-            >
+-              {item.name}
+-            </Link>
+-          ))}
++        {doc && doc.map((item) => (
++          <Link
++            key={item._id || item.id}
++            to={props.page ? item.url : "/services/" + 5 + item.id + 8}
++            className="font-semibold my-2 text-lg text-[#a0a0a0] hover:text-white transition-colors"
++            target={props.page ? "_blank" : undefined}
++          >
++            {item.name}
++          </Link>
++        ))}
+       </div>
+     </div>
+   );
+diff --git a/frontend/src/components/ErrorPage.js b/frontend/src/components/ErrorPage.js
+index 5b11ed3..7102dce 100644
+--- a/frontend/src/components/ErrorPage.js
++++ b/frontend/src/components/ErrorPage.js
+@@ -1,11 +1,18 @@
+-
+-import React from 'react';
++import React from "react";
++import { Link } from "react-router-dom";
+ 
+ const ErrorPage = () => {
+   return (
+-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+-      <h1 className="text-6xl font-bold text-gray-700">404</h1>
+-      <p className="text-2xl font-semibold text-gray-600">Page Not Found</p>
++    <div className="min-h-screen bg-[#090909] flex flex-col items-center justify-center px-6 text-center">
++      <h1 className="text-8xl md:text-9xl font-bold gold-gradient-text mb-4">404</h1>
++      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Page not found</h2>
++      <p className="text-[#a0a0a0] mb-8 max-w-md">The page you're looking for doesn't exist or has been moved.</p>
++      <Link
++        to="/"
++        className="rounded-full bg-[#FED500] text-[#090909] px-8 py-3 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
++      >
++        Go Home
++      </Link>
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/Footer.js b/frontend/src/components/Footer.js
+index 1997dea..a194fc2 100644
+--- a/frontend/src/components/Footer.js
++++ b/frontend/src/components/Footer.js
+@@ -1,85 +1,84 @@
+ import React from "react";
+ import logo from "../resources/logowhite.svg";
++import { Link } from "react-router-dom";
+ 
+ const Footer = () => {
+   return (
+-    <section>
+-      <div className=" flex flex-col justify-between py-2 px-2 mx-auto my-0 bg-theme">
+-        <div className="flex flex-col-reverse md:flex-row justify-between items-center p-6 my-0 space-y-2">
+-          <div className="flex flex-col-reverse md:flex-col justify-center items-center md:space-y-12 p-4 md:w-1/3">
+-            <img src={logo} className="hidden md:block md:w-3/5" alt="logo" />
+-          </div>
+-
+-          <div className="flex flex-row justify-center items-center md:space-x-12 md:w-2/3">
+-            <div className="flex flex-col justify-start items-start space-y-4 md:space-y-3 p-2 md:w-1/2">
+-              {/* eslint-disable-next-line */}
+-              <a href="#" className="text-white">
+-                Registered Office: Kaduna, Kaduna State, Nigeria
++    <footer className="bg-[#090909] border-t border-[#222222]">
++      <div className="max-w-7xl mx-auto px-6 py-16">
++        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
++          {/* Brand Column */}
++          <div className="flex flex-col space-y-6">
++            <img src={logo} className="w-40" alt="Edges Enterprise" />
++            <p className="text-[#666666] text-sm leading-relaxed">
++              Software engineering, fintech, telecommunications and enterprise technology solutions.
++            </p>
++            <div className="flex flex-row space-x-4">
++              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-[#666666] hover:text-[#FED500] transition-colors">
++                <i className="fa-brands fa-facebook fa-lg"></i>
+               </a>
+-              {/*  eslint-disable-next-line */}
+-              <a href="#" className="text-white">
+-                Operations Office: Abuja, FCT, Nigeria
++              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-[#666666] hover:text-[#FED500] transition-colors">
++                <i className="fa-brands fa-instagram fa-lg"></i>
+               </a>
+-              {/* eslint-disable-next-line */}
+-              <a href="#" className="text-white">
+-                Remote-first — serving clients globally
+-              </a>
+-            </div>
+-            <div className="flex flex-col justify-center items-start space-y-6 md:space-y-3 p-2 md:w-1/2">
+-              <a href="mailto:contact@edgesenterprise.com" className="text-white">
+-                For business enquiries: contact@edgesenterprise.com
++              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-[#666666] hover:text-[#FED500] transition-colors">
++                <i className="fa-brands fa-linkedin fa-lg"></i>
+               </a>
+-              <a href="mailto:hr@edgesenterprise.com" className="text-white">
+-                For job oppurtunities: hr@edgesenterprise.com
++              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="text-[#666666] hover:text-[#FED500] transition-colors">
++                <i className="fa-brands fa-twitter fa-lg"></i>
+               </a>
+-              <a href="/" className="text-white">
+-                Privacy Policy
++              <a href="https://whatsapp.com" target="_blank" rel="noreferrer" className="text-[#666666] hover:text-[#FED500] transition-colors">
++                <i className="fa-brands fa-whatsapp fa-lg"></i>
+               </a>
+             </div>
+           </div>
+ 
+-          {/* <h2></h2> */}
+-        </div>
+-        <hr className="text-white mb-2" />
+-        <div className="flex flex-row justify-between p-1 my-2 md:p-3 md:px-12">
+-          <div className="flex flex-row justify-center items-center space-x-2">
+-            <a href="https://facebook.com" target="_blank" rel="noreferrer">
+-              <i
+-                className="fa-brands fa-facebook fa-lg"
+-                style={{ color: "#ffffff", cursor: "pointer" }}
+-              ></i>
+-            </a>
+-            <a href="https://instagram.com" target="_blank" rel="noreferrer">
+-              <i
+-                className="fa-brands fa-instagram fa-lg"
+-                style={{ color: "#ffffff", cursor: "pointer" }}
+-              ></i>
+-            </a>
+-            <a href="https://linkedin.com" target="_blank" rel="noreferrer">
+-              <i
+-                className="fa-brands fa-linkedin fa-lg"
+-                style={{ color: "#ffffff", cursor: "pointer" }}
+-              ></i>
+-            </a>
+-            <a href="https://twitter.com" target="_blank" rel="noreferrer">
+-              <i
+-                className="fa-brands fa-twitter fa-lg"
+-                style={{ color: "#ffffff", cursor: "pointer" }}
+-              ></i>
++          {/* General */}
++          <div className="flex flex-col space-y-4">
++            <h3 className="text-white font-semibold text-sm tracking-wide uppercase">General</h3>
++            <Link to="/about" className="text-[#666666] hover:text-white text-sm transition-colors">About Us</Link>
++            <Link to="/services" className="text-[#666666] hover:text-white text-sm transition-colors">Services</Link>
++            <Link to="/products" className="text-[#666666] hover:text-white text-sm transition-colors">Products</Link>
++            <Link to="/careers" className="text-[#666666] hover:text-white text-sm transition-colors">Careers</Link>
++            <Link to="/contact" className="text-[#666666] hover:text-white text-sm transition-colors">Contact</Link>
++          </div>
++
++          {/* Services */}
++          <div className="flex flex-col space-y-4">
++            <h3 className="text-white font-semibold text-sm tracking-wide uppercase">Services</h3>
++            <span className="text-[#666666] text-sm">Custom Software</span>
++            <span className="text-[#666666] text-sm">Web Development</span>
++            <span className="text-[#666666] text-sm">Mobile Apps</span>
++            <span className="text-[#666666] text-sm">Cloud Solutions</span>
++            <span className="text-[#666666] text-sm">UI/UX Design</span>
++          </div>
++
++          {/* Contact */}
++          <div className="flex flex-col space-y-4">
++            <h3 className="text-white font-semibold text-sm tracking-wide uppercase">Contact</h3>
++            <span className="text-[#666666] text-sm">Kaduna, Kaduna State, Nigeria</span>
++            <span className="text-[#666666] text-sm">Abuja, FCT, Nigeria</span>
++            <a href="mailto:contact@edgesenterprise.com" className="text-[#666666] hover:text-[#FED500] text-sm transition-colors">
++              contact@edgesenterprise.com
+             </a>
+-            <a href="https://whatsapp.com" target="_blank" rel="noreferrer">
+-              <i
+-                className="fa-brands fa-whatsapp fa-lg"
+-                style={{ color: "#ffffff", cursor: "pointer" }}
+-              ></i>
++            <a href="mailto:hr@edgesenterprise.com" className="text-[#666666] hover:text-[#FED500] text-sm transition-colors">
++              hr@edgesenterprise.com
+             </a>
+           </div>
+-          <small className=" text-white">
+-            Copyright {new Date().getFullYear()}. All rights reserved.
++        </div>
++
++        <hr className="border-[#222222] my-12" />
++
++        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
++          <small className="text-[#666666] text-xs">
++            Copyright {new Date().getFullYear()} Edges Enterprise. All rights reserved.
+           </small>
++          <div className="flex space-x-6">
++            <span className="text-[#666666] text-xs hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
++            <span className="text-[#666666] text-xs hover:text-white cursor-pointer transition-colors">Terms of Service</span>
++          </div>
+         </div>
+       </div>
+-    </section>
++    </footer>
+   );
+ };
+ 
+diff --git a/frontend/src/components/ForgotPassword.js b/frontend/src/components/ForgotPassword.js
+index 2e8ea7a..c8fb926 100644
+--- a/frontend/src/components/ForgotPassword.js
++++ b/frontend/src/components/ForgotPassword.js
+@@ -1,79 +1,49 @@
+-import React from "react";
+-import { useState } from "react";
++import React, { useState } from "react";
+ import { Link } from "react-router-dom";
+-import notify from "./toast";
+-import useStore from "./../store/store";
++import useStore from "../store/store";
++import notify from "./toast.js";
+ 
+ const ForgotPassword = () => {
+-  const [email, setEmail] = useState({ email: "" });
+-  const postForgotPassword = useStore((state) => state.postForgotPassword);
+-
+-  const handleChange = (e) => {
+-    const { name, value } = e.target;
+-    setEmail((prev) => ({
+-      ...prev,
+-      [name]: value,
+-    }));
+-  };
++  const [email, setEmail] = useState("");
++  const patchForgotPassword = useStore((state) => state.patchForgotPassword);
+ 
+   const handleSubmit = async (e) => {
+-    console.log(email);
+-    if (!email.email || !document.getElementById("typeEmail").checkValidity()) {
+-      notify("Please enter correct email");
+-      return;
+-    }
+     e.preventDefault();
+     try {
+-      await postForgotPassword(email);
++      await patchForgotPassword({ email });
++      notify("Reset link sent to your email");
+     } catch (error) {
+-      notify("User not registered with this email!");
+-      return;
++      notify("Error sending reset link");
+     }
+-    notify("Password reset email sent");
+   };
++
+   return (
+-    <div className="container my-6 flex justify-center items-center">
+-      <div className="card text-center w-[300px]">
+-        <div className="card-header h5 text-white bg-theme">Password Reset</div>
+-        <div className="card-body px-5">
+-          <p className="card-text py-2">
+-            Enter your email address and we'll send you an email with
+-            instructions to reset your password.
+-          </p>
+-          <div className="form-outline">
++    <div className="min-h-screen bg-[#090909] flex items-center justify-center px-6 py-12">
++      <div className="max-w-md w-full bg-[#111111] border border-[#222222] rounded-2xl p-12">
++        <h2 className="text-3xl font-bold text-white mb-2">Reset password</h2>
++        <p className="text-[#666666] mb-8">Enter your email and we'll send you a reset link</p>
++        <form onSubmit={handleSubmit} className="space-y-5">
++          <div>
++            <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Email</label>
+             <input
+               type="email"
+-              name="email"
+-              value={email.email}
+-              onChange={(e) => handleChange(e)}
+-              id="typeEmail"
+-              className="form-control my-3"
++              value={email}
++              onChange={(e) => setEmail(e.target.value)}
++              className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++              placeholder="you@edgesenterprise.com"
++              required
+             />
+-            <label className="form-label" for="typeEmail">
+-              Email input
+-            </label>
+           </div>
+           <button
+-            onClick={handleSubmit}
+-            className="btn text-white bg-theme w-100 hover:bg-[#1a1269]"
++            type="submit"
++            className="w-full py-3 bg-[#FED500] text-[#090909] font-semibold rounded-lg hover:bg-[#e5c000] transition-colors"
+           >
+-            Send Email
++            Send Reset Link
+           </button>
+-          <div className="d-flex justify-content-between mt-4 space-x-4 ">
+-            <Link
+-              className="bg-theme text-white p-2 px-2 w-1/2 rounded-full hover:bg-[#1a1269]"
+-              to="/login"
+-            >
+-              Login
+-            </Link>
+-            <Link
+-              className="bg-theme text-white p-2 px-2 w-1/2 rounded-full hover:bg-[#1a1269]"
+-              to="/signup"
+-            >
+-              Register
+-            </Link>
+-          </div>
+-        </div>
++        </form>
++        <p className="mt-6 text-center text-[#666666] text-sm">
++          Remember your password? <Link to="/login" className="text-[#FED500] hover:underline">Sign in</Link>
++        </p>
+       </div>
+     </div>
+   );
+diff --git a/frontend/src/components/Home.js b/frontend/src/components/Home.js
+index 645edd8..db8572a 100644
+--- a/frontend/src/components/Home.js
++++ b/frontend/src/components/Home.js
+@@ -5,76 +5,103 @@ import officeAvatar from "./../resources/officeAvatar.svg";
+ import documentAvatar from "./../resources/documentAvatar.svg";
+ import starAvatar from "./../resources/starAvatar.svg";
+ import office from "./../resources/office.jpg";
+-import { useNavigate } from "react-router-dom";
++import { useNavigate, Link } from "react-router-dom";
+ import HomeSecond from "./HomeSecond";
+ import Testimonial from "./Testimonial";
++
+ const Home = () => {
+   const navigate = useNavigate();
++
+   return (
+-    <div className="flex flex-col mx-auto my-0 p-0">
+-      <img src={banner} alt="banner" className="" loading="lazy" />
+-      <div className="justify-center items-center text-center flex flex-col m-4 p-4">
+-        <h1 className="md:text-6xl text-4xl font-bold">
+-          A Journey of <span className="text-theme">Success</span>
+-        </h1>
+-        <div className="flex flex-col md:flex-row justify-center items-center md:space-x-24 py-4 p-3">
+-          <div className="flex flex-col items-center justify-center text-center p-4 space-y-2">
+-            <img
+-              src={userAvatar}
+-              className="max-w-20 max-h-20"
+-              alt=""
+-              srcset=""
+-            />
+-            <h1 className="text-4xl font-bold">800+</h1>
+-            <p>People on board</p>
++    <div className="flex flex-col mx-auto my-0 p-0 bg-[#090909]">
++      {/* HERO */}
++      <section className="relative w-full overflow-hidden">
++        <img src={banner} alt="banner" className="w-full opacity-60" loading="lazy" />
++        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
++        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
++          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white max-w-4xl leading-tight">
++            A Journey of <span className="gold-gradient-text">Success</span>
++          </h1>
++          <p className="mt-6 text-[#a0a0a0] text-lg md:text-xl max-w-2xl">
++            We design and build exceptional technology solutions that drive business transformation across industries.
++          </p>
++          <div className="mt-8 flex flex-col sm:flex-row gap-4">
++            <Link
++              to="/contact"
++              className="rounded-full bg-[#FED500] text-[#090909] px-8 py-3 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
++            >
++              Book a strategy call
++            </Link>
++            <button
++              onClick={() => navigate("/about")}
++              className="rounded-full border border-[#333] text-white px-8 py-3 text-sm font-semibold hover:border-[#FED500] hover:text-[#FED500] transition-colors"
++            >
++              Learn More
++            </button>
+           </div>
++        </div>
++      </section>
+ 
+-          <div className="flex flex-col items-center justify-center text-center p-4 space-y-2">
+-            <img
+-              src={officeAvatar}
+-              alt=""
+-              className="max-w-20 max-h-20"
+-              srcset=""
+-            />
+-            <h1 className="text-4xl font-bold">3</h1>
+-            <p>Global Offices</p>
++      {/* STATS */}
++      <section className="py-16 md:py-24 px-6 bg-[#090909]">
++        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
++          <div className="flex flex-col items-center text-center space-y-3">
++            <img src={userAvatar} className="w-12 h-12 opacity-80" alt="" />
++            <h2 className="text-4xl md:text-5xl font-bold text-white">800+</h2>
++            <p className="text-[#666666] text-sm">People on board</p>
++          </div>
++          <div className="flex flex-col items-center text-center space-y-3">
++            <img src={officeAvatar} className="w-12 h-12 opacity-80" alt="" />
++            <h2 className="text-4xl md:text-5xl font-bold text-white">3</h2>
++            <p className="text-[#666666] text-sm">Global Offices</p>
++          </div>
++          <div className="flex flex-col items-center text-center space-y-3">
++            <img src={documentAvatar} className="w-12 h-12 opacity-80" alt="" />
++            <h2 className="text-4xl md:text-5xl font-bold text-white">50+</h2>
++            <p className="text-[#666666] text-sm">Projects completed</p>
+           </div>
++          <div className="flex flex-col items-center text-center space-y-3">
++            <img src={starAvatar} className="w-12 h-12 opacity-80" alt="" />
++            <h2 className="text-4xl md:text-5xl font-bold text-white">4.7</h2>
++            <p className="text-[#666666] text-sm">Overall Rating</p>
++          </div>
++        </div>
++      </section>
+ 
+-          <div className="flex flex-col items-center justify-center text-center p-4 space-y-2">
+-            <img
+-              src={documentAvatar}
+-              alt=""
+-              className="max-w-20 max-h-20"
+-              srcset=""
+-            />
+-            <h1 className="text-4xl font-bold">50+</h1>
+-            <p>Projects completed</p>
++      {/* RESULTS / TRUST BAR */}
++      <section className="py-12 px-6 bg-[#111111] border-y border-[#222222]">
++        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
++          <div className="flex items-center gap-2">
++            <div className="flex">
++              {[1,2,3,4,5].map(i => (
++                <i key={i} className="fa-solid fa-star text-[#FED500] text-sm"></i>
++              ))}
++            </div>
++            <span className="text-white font-semibold text-sm">5.0</span>
++            <span className="text-[#666666] text-sm ml-2">94% Job Success</span>
+           </div>
++          <p className="text-[#a0a0a0] text-sm text-center md:text-right max-w-lg">
++            We design and build platforms where two or more sides of a market meet — and transact with trust.
++          </p>
++        </div>
++      </section>
+ 
+-          <div className="flex flex-col items-center justify-center text-center p-4 space-y-2">
++      {/* ABOUT / DISCOVER */}
++      <section className="py-16 md:py-24 px-6 bg-[#090909]">
++        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
++          <div className="lg:w-1/2">
+             <img
+-              src={starAvatar}
+-              alt=""
+-              className="max-w-20 max-h-20"
+-              srcset=""
++              src={office}
++              className="w-full rounded-lg border border-[#222222]"
++              alt="Our office"
++              loading="lazy"
+             />
+-            <h1 className="text-4xl font-bold">4.7</h1>
+-            <p>Overall Rating</p>
+           </div>
+-        </div>
+-        <div className="flex flex-col md:bg-transparent bg-[#dbeafe] lg:flex-row -mx-10 my-4 lg:p-2 md:relative justify-center lg:justify-end items-center lg:items-center md:items-end">
+-          <img
+-            src={office}
+-            className="lg:h-4/6 md:h-3/5 md:w-2/5 h-2/3  md:top-auto md:left-10 md:absolute lg:w-5/12"
+-            alt=""
+-            loading="lazy"
+-          />
+-
+-          <div className="md:bg-[#dbeafe] md:ps-24 flex flex-col text-left items-start justify-center lg:h-[32rem] lg:w-3/5 md:h-[22rem] md:w-3/5 md:mx-0 md:my-0 my-4 mx-2  md:p-10 space-y-4 lg:space-y-12 r-8">
+-            <h1 className="font-bold md:text-3xl text-3xl lg:text-4xl">
++          <div className="lg:w-1/2 flex flex-col space-y-6">
++            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+               Discovering your needs
+-            </h1>
+-            <p className="md:text-l lg:text-xl">
++            </h2>
++            <p className="text-[#a0a0a0] text-base md:text-lg leading-relaxed">
+               Our team of over 100 blends the skills of engineers, developers,
+               UX architects, and designers to craft impactful solutions.
+               Together, we have aided businesses in their journey toward digital
+@@ -82,16 +109,101 @@ const Home = () => {
+             </p>
+             <button
+               onClick={() => navigate("/about")}
+-              className="font-semibold text-white rounded-full bg-theme p-2 px-3 hover:bg-[#1a1269]"
++              className="self-start rounded-full bg-[#FED500] text-[#090909] px-6 py-3 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
+             >
+               Learn More
+             </button>
+           </div>
+         </div>
+-      </div>
++      </section>
++
++      {/* MILESTONE */}
++      <section className="py-16 md:py-24 px-6 bg-[#111111]">
++        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
++          <div className="md:w-2/3">
++            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
++              Products that drive revenue, enable scale, and process real transactions.
++            </h2>
++            <p className="mt-6 text-[#a0a0a0] text-base md:text-lg">
++              See what we've built — from enterprise platforms to consumer-facing applications.
++            </p>
++            <button
++              onClick={() => navigate("/products")}
++              className="mt-8 rounded-full border border-[#333] text-white px-6 py-3 text-sm font-semibold hover:border-[#FED500] hover:text-[#FED500] transition-colors"
++            >
++              Get started
++            </button>
++          </div>
++          <div className="md:w-1/3 flex justify-center">
++            <div className="text-center">
++              <span className="text-7xl md:text-8xl font-bold gold-gradient-text">50+</span>
++              <p className="text-[#666666] text-sm mt-2">Projects Delivered</p>
++            </div>
++          </div>
++        </div>
++      </section>
+ 
++      {/* TABBED SECTIONS */}
+       <HomeSecond />
++
++      {/* TESTIMONIALS */}
+       <Testimonial />
++
++      {/* CTA SECTION */}
++      <section className="py-16 md:py-24 px-6 bg-[#111111] border-t border-[#222222]">
++        <div className="max-w-4xl mx-auto text-center space-y-8">
++          <h2 className="text-3xl md:text-5xl font-bold text-white">
++            Create to captivate
++          </h2>
++          <p className="text-[#a0a0a0] text-lg md:text-xl max-w-2xl mx-auto">
++            Edges Enterprise is a technology partner for ambitious organizations.
++            We don't sell code. We sell confidence in the outcome.
++          </p>
++          <Link
++            to="/contact"
++            className="inline-block rounded-full bg-[#FED500] text-[#090909] px-8 py-3 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
++          >
++            Contact us
++          </Link>
++        </div>
++      </section>
++
++      {/* DISCUSS / BOOK CALL */}
++      <section className="py-16 md:py-24 px-6 bg-[#090909]">
++        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
++          <div className="md:w-1/2 space-y-6">
++            <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
++              Let's talk about what your platform needs to be true in 12 months.
++            </h2>
++            <p className="text-[#a0a0a0] text-base">
++              During this call we do a quick intro and discuss your project and its specific needs.
++            </p>
++            <Link
++              to="/contact"
++              className="inline-block rounded-full bg-[#FED500] text-[#090909] px-8 py-3 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
++            >
++              Book a call
++            </Link>
++          </div>
++          <div className="md:w-1/2 bg-[#111111] border border-[#222222] rounded-lg p-8">
++            <h3 className="text-white font-semibold text-lg mb-6">Tell us more about your project</h3>
++            <p className="text-[#666666] text-sm mb-6">
++              Share your project details with us, and we'll respond promptly.
++            </p>
++            <div className="flex flex-col space-y-4">
++              <Link to="/contact" className="text-[#FED500] text-sm font-medium hover:underline">
++                Growth ($20k – $50k) →
++              </Link>
++              <Link to="/contact" className="text-[#FED500] text-sm font-medium hover:underline">
++                Scale ($50k – $100k) →
++              </Link>
++              <Link to="/contact" className="text-[#FED500] text-sm font-medium hover:underline">
++                Enterprise ($100k+) →
++              </Link>
++            </div>
++          </div>
++        </div>
++      </section>
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/HomeSecond.js b/frontend/src/components/HomeSecond.js
+index 43d3c99..7680fa1 100644
+--- a/frontend/src/components/HomeSecond.js
++++ b/frontend/src/components/HomeSecond.js
+@@ -1,8 +1,8 @@
+ import React, { useState } from "react";
+-
+ import Industries from "./Industries";
+ import Services from "./Services";
+ import Products from "./Products";
++
+ const HomeSecond = () => {
+   const [page, setPage] = useState("Industries");
+   const handleChangePage = (val) => {
+@@ -10,43 +10,62 @@ const HomeSecond = () => {
+     else if (val === "Services") setPage("Services");
+     else setPage("Industries");
+   };
++
+   return (
+-    <div className="flex flex-col p-2 sm:m-2 md:m-12">
+-      <div className="flex flex-row justify-start items-start">
+-        <button
+-          onClick={() => handleChangePage("Industries")}
+-          className="p-2 md:p-3  border-1 border-slate hover:bg-[#2e318f] active:bg-[#2e318f]  hover:text-white font-semibold text-xl"
+-        >
+-          Industries
+-        </button>
+-        <button
+-          onClick={() => handleChangePage("Services")}
+-          className="p-2 md:p-3  border-y border-slate hover:bg-[#2e318f] hover:text-white font-semibold text-xl"
+-        >
+-          Services
+-        </button>
+-        <button
+-          onClick={() => handleChangePage("Products")}
+-          className="p-2 md:p-3  border-1 border-slate hover:bg-[#2e318f] hover:text-white font-semibold text-xl"
+-        >
+-          Products
+-        </button>
+-      </div>
++    <div className="flex flex-col py-16 md:py-24 px-6 bg-[#090909]">
++      <div className="max-w-7xl mx-auto w-full">
++        {/* Section Header */}
++        <div className="text-center mb-12">
++          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
++            We've achieved partnerships, certifications, and customer growth
++          </h2>
++          <p className="text-[#a0a0a0] text-base md:text-lg max-w-3xl mx-auto">
++            Edges Enterprise's rich experience and strong work ethic have
++            forged valuable industry partnerships, leading to coveted
++            certifications from industry leaders.
++          </p>
++        </div>
+ 
+-      {page === "Industries" && <Industries />}
+-      {page === "Services" && <Services />}
+-      {page === "Products" && <Products />}
++        {/* Tabs */}
++        <div className="flex flex-row justify-center items-center mb-12">
++          <button
++            onClick={() => handleChangePage("Industries")}
++            className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 ${
++              page === "Industries"
++                ? "border-[#FED500] text-white"
++                : "border-transparent text-[#666666] hover:text-white"
++            }`}
++          >
++            Industries
++          </button>
++          <button
++            onClick={() => handleChangePage("Services")}
++            className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 ${
++              page === "Services"
++                ? "border-[#FED500] text-white"
++                : "border-transparent text-[#666666] hover:text-white"
++            }`}
++          >
++            Services
++          </button>
++          <button
++            onClick={() => handleChangePage("Products")}
++            className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 ${
++              page === "Products"
++                ? "border-[#FED500] text-white"
++                : "border-transparent text-[#666666] hover:text-white"
++            }`}
++          >
++            Products
++          </button>
++        </div>
+ 
+-      <div className=" text-center space-y-6 flex flex-col mt-16 p-6">
+-        <h1 className="md:text-5xl text-4xl font-bold">
+-          We've achieved partnerships, certifications, and customer growth
+-        </h1>
+-        <p className="">
+-          Edges Enterprise's rich experience and strong work ethic have
+-          forged valuable industry partnerships, leading to coveted
+-          certifications from industry leaders and enabling seamless acquisition
+-          of new businesses and customers.
+-        </p>
++        {/* Content */}
++        <div className="min-h-[400px]">
++          {page === "Industries" && <Industries />}
++          {page === "Services" && <Services />}
++          {page === "Products" && <Products />}
++        </div>
+       </div>
+     </div>
+   );
+diff --git a/frontend/src/components/Industries.js b/frontend/src/components/Industries.js
+index 38e7655..2b852d2 100644
+--- a/frontend/src/components/Industries.js
++++ b/frontend/src/components/Industries.js
+@@ -3,64 +3,33 @@ import education from "./../resources/education.png";
+ import travel from "./../resources/travel.png";
+ import finance from "./../resources/finance.png";
+ import health from "./../resources/health.png";
++
+ const Industries = () => {
+-  return (
+-    <div className="flex flex-col">
+-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
+-        <div
+-          className="flex flex-col p-12 space-y-10 justify-center md:w-1/2"
+-          style={{ backgroundImage: `url(${health})` }}
+-        >
+-          <h1 className="font-bold text-white text-4xl  lg:text-5xl">
+-            Healthcare
+-          </h1>
+-          <p className="text-white">
+-            Our applications have been instrumental in revolutionizing
+-            healthcare education and patient management, driving significant
+-            advancements in the industry.
+-          </p>
+-        </div>
+-        <div
+-          className="flex flex-col p-12 space-y-10 justify-center md:w-1/2 "
+-          style={{ backgroundImage: `url(${travel})` }}
+-        >
+-          <h1 className="font-bold text-white text-4xl  lg:text-5xl">Travel</h1>
+-          <p className="text-white">
+-            With our dedicated team of software developers, machine learning
+-            experts, and data engineers, we empower leading travel & hospitality
+-            search engines.
+-          </p>
+-        </div>
+-      </div>
++  const industries = [
++    { name: "Healthcare", img: health, desc: "Our applications have been instrumental in revolutionizing healthcare education and patient management, driving significant advancements in the industry." },
++    { name: "Travel", img: travel, desc: "With our dedicated team of software developers, machine learning experts, and data engineers, we empower leading travel & hospitality search engines." },
++    { name: "Finance", img: finance, desc: "Our experts have collaborated with a diverse array of organizations, assisting them in adapting to the rapid and dynamic transformations within the financial sector." },
++    { name: "Education", img: education, desc: "We have joined forces with prominent education and financial institutions, as well as nonprofits, to revolutionize and modernize global learning approaches." },
++  ];
+ 
+-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
+-        <div
+-          className="flex flex-col p-12 space-y-10 justify-center md:w-1/2 "
+-          style={{ backgroundImage: `url(${finance})` }}
+-        >
+-          <h1 className="font-bold text-white text-4xl  lg:text-5xl">
+-            Finance
+-          </h1>
+-          <p className="text-white">
+-            Our experts have collaborated with a diverse array of organizations,
+-            assisting them in adapting to the rapid and dynamic transformations
+-            within the financial sector.
+-          </p>
+-        </div>
++  return (
++    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#222222] border border-[#222222]">
++      {industries.map((ind, idx) => (
+         <div
+-          className="flex flex-col  p-12 space-y-10 justify-center md:w-1/2 "
+-          style={{ backgroundImage: `url(${education})` }}
++          key={idx}
++          className="relative flex flex-col p-10 md:p-12 space-y-6 justify-end min-h-[320px] overflow-hidden group"
+         >
+-          <h1 className="font-bold text-white text-4xl  lg:text-5xl">
+-            Education
+-          </h1>
+-          <p className="text-white">
+-            We have joined forces with prominent education and financial
+-            institutions, as well as nonprofits, to revolutionize and modernize
+-            global learning approaches.
+-          </p>
++          <div
++            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
++            style={{ backgroundImage: `url(${ind.img})` }}
++          />
++          <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-[#090909]/70 to-transparent" />
++          <div className="relative z-10">
++            <h3 className="font-bold text-2xl md:text-3xl text-white mb-3">{ind.name}</h3>
++            <p className="text-[#a0a0a0] text-sm leading-relaxed">{ind.desc}</p>
++          </div>
+         </div>
+-      </div>
++      ))}
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/Login.js b/frontend/src/components/Login.js
+index 937b2db..2667c4a 100644
+--- a/frontend/src/components/Login.js
++++ b/frontend/src/components/Login.js
+@@ -1,134 +1,85 @@
+-import React, { useEffect, useState } from "react";
+-import "./../css/login.css";
++import React, { useState } from "react";
+ import { Link, useNavigate } from "react-router-dom";
+-import login from "./../resources/login.svg";
+-import notify from "./toast";
+-import useStore from "./../store/store";
+-import LoadingBar from "react-top-loading-bar";
++import useStore from "../store/store";
++import notify from "./toast.js";
++import loginImg from "./../resources/login.svg";
+ 
+ const Login = () => {
+-  const isLoggedIn = useStore((state) => state.isLoggedIn);
++  const navigate = useNavigate();
++  const postLoginData = useStore((state) => state.postLoginData);
+   const setIsLoggedIn = useStore((state) => state.setIsLoggedIn);
++
+   const [loginData, setLoginData] = useState({
+     email: "",
+     password: "",
+   });
+-  const [progress, setProgress] = useState(0);
+-
+-  const navigate = useNavigate();
+-  const postLoginData = useStore((state) => state.postLoginData);
+ 
+   const handleChange = (e) => {
+     const { name, value } = e.target;
+-    setLoginData((prev) => ({
+-      ...prev,
+-      [name]: value,
+-    }));
++    setLoginData((prev) => ({ ...prev, [name]: value }));
+   };
+ 
+   const handleSubmit = async (e) => {
+-    if (
+-      !loginData.email ||
+-      !loginData.password ||
+-      !document.getElementById("form3Example3").checkValidity()
+-    ) {
+-      notify("Please enter correct email and password");
+-      return;
+-    }
+     e.preventDefault();
+     try {
+-      setProgress(80);
+       await postLoginData(loginData);
+-      setProgress(100);
++      setIsLoggedIn(true);
++      notify("Login Successful");
++      navigate("/dashboard");
+     } catch (error) {
+-      setProgress(100);
+-      notify("Wrong Email or Password");
+-      return;
++      notify("Invalid email or password");
+     }
+-    setIsLoggedIn(true);
+-    notify("Logged In successfully");
+-    navigate("/dashboard");
+   };
+ 
+-  useEffect(() => {
+-    if (isLoggedIn) navigate("/dashboard");
+-  });
+-
+   return (
+-    <div>
+-      <LoadingBar
+-        color="#f11946"
+-        progress={progress}
+-        onLoaderFinished={() => setProgress(0)}
+-      />
+-      <section className="mt-16 mb-36">
+-        <div className="container-fluid h-custom">
+-          <div className="row d-flex justify-content-center align-items-center h-100">
+-            <div className="col-md-9 col-lg-6 col-xl-5">
+-              <img src={login} className="img-fluid" alt="Sample " />
++    <div className="min-h-screen bg-[#090909] flex items-center justify-center px-6 py-12">
++      <div className="max-w-5xl w-full flex flex-col md:flex-row bg-[#111111] border border-[#222222] rounded-2xl overflow-hidden">
++        <div className="md:w-1/2 p-12 flex flex-col justify-center">
++          <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Welcome back</h2>
++          <p className="text-[#666666] mb-8">Sign in to access your dashboard</p>
++          <form onSubmit={handleSubmit} className="space-y-5">
++            <div>
++              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Email</label>
++              <input
++                type="email"
++                name="email"
++                value={loginData.email}
++                onChange={handleChange}
++                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++                placeholder="you@edgesenterprise.com"
++                required
++              />
+             </div>
+-            <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+-              <h1 className="text-center mb-8 text-4xl font-bold">Login</h1>
+-              <form>
+-                <div className="form-outline mb-4">
+-                  <input
+-                    type="email"
+-                    id="form3Example3"
+-                    onChange={(e) => handleChange(e)}
+-                    name="email"
+-                    value={loginData.email}
+-                    className="form-control form-control-lg"
+-                    placeholder="Enter a valid email address"
+-                    required
+-                  />
+-                  <label className="form-label" for="form3Example3">
+-                    Email address
+-                  </label>
+-                </div>
+-
+-                <div className="form-outline mb-3">
+-                  <input
+-                    type="password"
+-                    id="form3Example4"
+-                    onChange={(e) => handleChange(e)}
+-                    name="password"
+-                    value={loginData.password}
+-                    className="form-control form-control-lg"
+-                    placeholder="Enter password"
+-                    required
+-                  />
+-                  <label className="form-label" for="form3Example4">
+-                    Password
+-                  </label>
+-                </div>
+-
+-                <div className="d-flex justify-content-between align-items-center">
+-                  <Link to="/forgotPassword" className="text-body">
+-                    Forgot password?
+-                  </Link>
+-                </div>
+-
+-                <div className="text-center text-lg-start mt-4 pt-2">
+-                  <button
+-                    onClick={handleSubmit}
+-                    type="submit"
+-                    className="btn hover:bg-[#1a1269] text-white bg-[#2e318f] btn-lg"
+-                    style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+-                  >
+-                    Login
+-                  </button>
+-                  <p className="small fw-bold mt-2 pt-1 mb-0">
+-                    Don't have an account?{" "}
+-                    <Link to="/signup" className="link-danger">
+-                      Register
+-                    </Link>
+-                  </p>
+-                </div>
+-              </form>
++            <div>
++              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Password</label>
++              <input
++                type="password"
++                name="password"
++                value={loginData.password}
++                onChange={handleChange}
++                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++                placeholder="••••••••"
++                required
++              />
++            </div>
++            <div className="flex items-center justify-between">
++              <Link to="/forgotPassword" className="text-sm text-[#FED500] hover:underline">Forgot password?</Link>
+             </div>
+-          </div>
++            <button
++              type="submit"
++              className="w-full py-3 bg-[#FED500] text-[#090909] font-semibold rounded-lg hover:bg-[#e5c000] transition-colors"
++            >
++              Sign In
++            </button>
++          </form>
++          <p className="mt-6 text-center text-[#666666] text-sm">
++            Don't have an account? <Link to="/signup" className="text-[#FED500] hover:underline">Sign up</Link>
++          </p>
++        </div>
++        <div className="md:w-1/2 bg-[#0a0a0a] flex items-center justify-center p-12">
++          <img src={loginImg} alt="Login" className="w-full max-w-sm opacity-80" />
+         </div>
+-      </section>
++      </div>
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/Navbar.js b/frontend/src/components/Navbar.js
+index 0afd14e..3b78de1 100644
+--- a/frontend/src/components/Navbar.js
++++ b/frontend/src/components/Navbar.js
+@@ -6,7 +6,6 @@ import useStore from "../store/store";
+ 
+ const Navbar = (props) => {
+   const isLoggedIn = useStore((state) => state.isLoggedIn);
+-
+   const [drop, setDrop] = useState(false);
+   const [dropPage, setDropPage] = useState(true);
+   const containerRef = useRef(null);
+@@ -17,7 +16,6 @@ const Navbar = (props) => {
+     } else {
+       setDropPage(false);
+     }
+-
+     if (
+       e.target &&
+       e.target.childNodes.length > 1 &&
+@@ -26,52 +24,44 @@ const Navbar = (props) => {
+       setDrop(true);
+       e.target.childNodes[1].childNodes[0].childNodes[0].setAttribute(
+         "stroke",
+-        "#000000"
++        "#FED500"
+       );
+     }
+   };
+ 
+   const handleHideDropdown = useCallback(() => {
+     setDrop(false);
+-    document
+-      .getElementsByClassName("arrow")[0]
+-      .setAttribute("stroke", "#0A76DB");
+-    document
+-      .getElementsByClassName("arrow")[1]
+-      .setAttribute("stroke", "#0A76DB");
++    const arrows = document.getElementsByClassName("arrow");
++    if (arrows[0]) arrows[0].setAttribute("stroke", "#a0a0a0");
++    if (arrows[1]) arrows[1].setAttribute("stroke", "#a0a0a0");
+   }, []);
+ 
+   useEffect(() => {
+     const handleContainerMouseLeave = (e) => {
+-      if (!containerRef.current.contains(e.target)) {
++      if (containerRef.current && !containerRef.current.contains(e.target)) {
+         setDrop(false);
+-        document
+-          .getElementsByClassName("arrow")[0]
+-          .setAttribute("stroke", "#0A76DB");
+-        document
+-          .getElementsByClassName("arrow")[1]
+-          .setAttribute("stroke", "#0A76DB");
++        const arrows = document.getElementsByClassName("arrow");
++        if (arrows[0]) arrows[0].setAttribute("stroke", "#a0a0a0");
++        if (arrows[1]) arrows[1].setAttribute("stroke", "#a0a0a0");
+       }
+     };
+-
+     document.addEventListener("mouseleave", handleContainerMouseLeave);
+-
+     return () => {
+       document.removeEventListener("mouseleave", handleContainerMouseLeave);
+     };
+   }, []);
+ 
+   return (
+-    <nav ref={containerRef} className="relative p-6 mx-auto">
+-      <div className="flex items-center justify-between md:space-x-6 ">
++    <nav ref={containerRef} className="relative py-4 px-6 mx-auto bg-[#090909] border-b border-[#222222]">
++      <div className="flex items-center justify-between md:space-x-6 max-w-7xl mx-auto">
+         <Link to="/" className="">
+-          <img src={logo} className="w-1/2" alt="logo" />
++          <img src={logo} className="w-40 md:w-48" alt="Edges Enterprise" />
+         </Link>
+-        <ul className="hidden menu space-x-6 md:flex">
++        <ul className="hidden menu space-x-8 md:flex items-center">
+           <li className="flex relative items-center">
+             <Link
+               to="/about"
+-              className="text-theme text-lg font-normal mr-6 hover:text-[#000000]"
++              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200"
+             >
+               About Us
+             </Link>
+@@ -80,50 +70,40 @@ const Navbar = (props) => {
+             <Link
+               onMouseEnter={(e) => handleShowDropdown(e)}
+               to="/services"
+-              className="text-theme  hover:text-[#000000] text-lg font-normal"
++              className="text-[#a0a0a0] hover:text-white text-sm font-medium tracking-wide transition-colors duration-200 flex items-center"
+             >
+               What we do?
+-              <span className="mx-3 rotate-90 inline-block">
+-                <svg
+-                  viewBox="0 0 10 19"
+-                  fill="none"
+-                  xmlns="http://www.w3.org/2000/svg"
+-                  width="7"
+-                >
++              <span className="ml-2 rotate-90 inline-block">
++                <svg viewBox="0 0 10 19" fill="none" xmlns="http://www.w3.org/2000/svg" width="6">
+                   <path
+                     className="arrow"
+                     d="m1 17.5 8-8-8-8"
+-                    stroke="#0A76DB"
+-                    stroke-width="1.2"
+-                    stroke-linecap="round"
+-                    stroke-linejoin="round"
+-                  ></path>
++                    stroke="#a0a0a0"
++                    strokeWidth="1.2"
++                    strokeLinecap="round"
++                    strokeLinejoin="round"
++                  />
+                 </svg>
+               </span>
+             </Link>
+           </li>
+-          <li className="flex relative items-center ">
++          <li className="flex relative items-center">
+             <Link
+               onMouseEnter={(e) => handleShowDropdown(e)}
+               to="/products"
+-              className="text-theme text-lg font-normal hover:text-[#000000]"
++              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200 flex items-center"
+             >
+               Our Products
+-              <span className="mx-3 rotate-90 inline-block">
+-                <svg
+-                  viewBox="0 0 10 19"
+-                  fill="none"
+-                  xmlns="http://www.w3.org/2000/svg"
+-                  width="7"
+-                >
++              <span className="ml-2 rotate-90 inline-block">
++                <svg viewBox="0 0 10 19" fill="none" xmlns="http://www.w3.org/2000/svg" width="6">
+                   <path
+                     className="arrow"
+                     d="m1 17.5 8-8-8-8"
+-                    stroke="#0A76DB"
+-                    stroke-width="1.2"
+-                    stroke-linecap="round"
+-                    stroke-linejoin="round"
+-                  ></path>
++                    stroke="#a0a0a0"
++                    strokeWidth="1.2"
++                    strokeLinecap="round"
++                    strokeLinejoin="round"
++                  />
+                 </svg>
+               </span>
+             </Link>
+@@ -131,7 +111,7 @@ const Navbar = (props) => {
+           <li className="flex relative items-center">
+             <Link
+               to={isLoggedIn ? "/dashboard" : "/login"}
+-              className="text-theme ml-2 mr-4 text-lg font-normal hover:text-[#000000]"
++              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200"
+             >
+               {isLoggedIn ? "Dashboard" : "Our Portal"}
+             </Link>
+@@ -139,7 +119,7 @@ const Navbar = (props) => {
+           <li className="flex relative items-center">
+             <Link
+               to="/careers"
+-              className="text-theme text-lg font-normal hover:text-[#000000]"
++              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200"
+             >
+               Careers
+             </Link>
+@@ -148,9 +128,9 @@ const Navbar = (props) => {
+         <div className="hidden md:block">
+           <Link
+             to="/contact"
+-            className="rounded-full bg-theme text-[#FFFFFF] lg:p-2 md::px-8 md:text-sm hover:bg-[#000000]"
++            className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2.5 text-sm font-semibold hover:bg-[#e5c000] transition-colors duration-200"
+           >
+-            Get Started
++            Book a call
+           </Link>
+         </div>
+ 
+@@ -166,44 +146,34 @@ const Navbar = (props) => {
+       </div>
+       <div className="md:hidden">
+         <div
+-          className="absolute items-center self-end flex-col py-8 mt-10 hidden space-y-6 font-bold bg-white sm:self-center sm:w-auto left-6 right-6 drop-shadow-md"
++          className="absolute items-center self-end flex-col py-8 mt-6 hidden space-y-6 font-bold bg-[#111111] border border-[#222222] sm:self-center sm:w-auto left-6 right-6 drop-shadow-xl z-50 rounded-lg"
+           id="menu"
+         >
+-          <Link
+-            to="/about"
+-            className="text-theme font-semibold hover:text-[#000000]"
+-          >
++          <Link to="/about" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+             About Us
+           </Link>
+-          <Link
+-            to="/services"
+-            className="text-theme font-semibold hover:text-[#000000]]"
+-          >
++          <Link to="/services" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+             What we do?
+           </Link>
+-          <Link
+-            to="/products"
+-            className="text-theme font-semibold hover:text-[#000000]"
+-          >
++          <Link to="/products" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+             Our Products
+           </Link>
+-          <Link
+-            to={isLoggedIn ? "/dashboard" : "/login"}
+-            className="text-theme font-semibold hover:text-[#000000]"
+-          >
++          <Link to={isLoggedIn ? "/dashboard" : "/login"} className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+             {isLoggedIn ? "Dashboard" : "Our Portal"}
+           </Link>
+-          <Link
+-            to="/careers"
+-            className="text-theme font-semibold hover:text-[#000000]"
+-          >
++          <Link to="/careers" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+             Careers
+           </Link>
++          <Link to="/contact" className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2.5 text-sm font-semibold">
++            Book a call
++          </Link>
+         </div>
+       </div>
+-      {drop && <Dropdown onMouseLeave={handleHideDropdown} page={dropPage} />}
++      {drop && (
++        <Dropdown page={dropPage} onMouseLeave={handleHideDropdown} />
++      )}
+     </nav>
+   );
+ };
+ 
+-export default memo(Navbar);
++export default Navbar;
+diff --git a/frontend/src/components/OngoingProjects.js b/frontend/src/components/OngoingProjects.js
+index fb895e2..0ea6014 100644
+--- a/frontend/src/components/OngoingProjects.js
++++ b/frontend/src/components/OngoingProjects.js
+@@ -2,25 +2,9 @@ import React from "react";
+ 
+ const OngoingProjects = () => {
+   return (
+-    <div>
+-      <table class="table">
+-        <thead>
+-          <tr>
+-            <th scope="col">Project ID</th>
+-            <th scope="col">Project Title</th>
+-            <th scope="col">Service</th>
+-            <th scope="col">Expected Date of Completion</th>
+-          </tr>
+-        </thead>
+-        <tbody>
+-          <tr>
+-            <th scope="row">edg89cd</th>
+-            <td>Spark Inventory</td>
+-            <td>Web Development</td>
+-            <td>10-10-2023</td>
+-          </tr>
+-        </tbody>
+-      </table>
++    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg">
++      <h3 className="text-white font-semibold text-lg mb-4">Ongoing Projects</h3>
++      <p className="text-[#a0a0a0] text-sm">No ongoing projects to display at this time.</p>
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/Products.js b/frontend/src/components/Products.js
+index 087e8a8..5d9f698 100644
+--- a/frontend/src/components/Products.js
++++ b/frontend/src/components/Products.js
+@@ -4,36 +4,20 @@ import useStore from "../store/store";
+ const Products = () => {
+   const AllProducts = useStore((state) => state.products);
+   return (
+-    <div className="flex flex-col">
+-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
+-        <div className="flex flex-col border-slate border-1 p-12 space-y-10 justify-center md:w-1/2">
+-          <h1 className="font-bold text-4xl  lg:text-5xl">
+-            {AllProducts[0].name}
+-          </h1>
+-          <p className="">{AllProducts[0].description}</p>
++    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#222222] border border-[#222222]">
++      {AllProducts.slice(0, 4).map((item, index) => (
++        <div
++          key={item._id || index}
++          className="flex flex-col p-10 md:p-12 space-y-6 justify-center bg-[#111111] min-h-[280px] card-hover"
++        >
++          <h3 className="font-bold text-2xl md:text-3xl text-white">
++            {item.name}
++          </h3>
++          <p className="text-[#a0a0a0] text-sm leading-relaxed">
++            {item.description}
++          </p>
+         </div>
+-        <div className="flex flex-col border-slate border-l md:border-l-0 border-r md:border-t border-b p-12 space-y-10 justify-center md:w-1/2 ">
+-          <h1 className="font-bold  text-4xl lg:text-5xl">
+-            {AllProducts[1].name}
+-          </h1>
+-          <p className="">{AllProducts[1].description}</p>
+-        </div>
+-      </div>
+-
+-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
+-        <div className="flex flex-col border-slate border-x border-b p-12 space-y-10 justify-center items center md:w-1/2">
+-          <h1 className="font-bold  text-4xl lg:text-5xl">
+-            {AllProducts[2].name}
+-          </h1>
+-          <p className="">{AllProducts[2].description}</p>
+-        </div>
+-        <div className="flex flex-col border-slate md:border-x-0 border-x md:border-r border-b p-12 space-y-10 justify-center items center md:w-1/2">
+-          <h1 className="font-bold  text-4xl lg:text-5xl">
+-            {AllProducts[3].name}
+-          </h1>
+-          <p className="">{AllProducts[3].description}</p>
+-        </div>
+-      </div>
++      ))}
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/ProductsMain.js b/frontend/src/components/ProductsMain.js
+index ed190fd..1775f03 100644
+--- a/frontend/src/components/ProductsMain.js
++++ b/frontend/src/components/ProductsMain.js
+@@ -7,33 +7,32 @@ const ProductsMain = () => {
+   const AllProducts = useStore((state) => state.products);
+ 
+   return (
+-    <div>
+-      <>
+-        <div className="flex flex-col justify-center p-0 mx-auto">
+-          <img src={productBanner} alt="" loading="lazy" />
+-          <div className="flex flex-col items-center justify-center text-center mt-2 md:m-4 space-y-4 p-2">
+-            <h1 className="md:text-5xl text-4xl font-bold text-center my-10 md:mb-12">
+-              Delivering High <br />
+-              Class Engineering Projects
+-            </h1>
+-          </div>
+-          <div className="flex flex-col p-4  items-center  mx-auto">
+-            <div className="flex flex-col  items-center justify-center md:my-4 md:mx-36">
+-              <div className="grid grid-cols-1 md:grid-cols-2">
+-                {AllProducts.map((item,index) => (
+-                  <SingleProduct
+-                    name={item.name}
+-                    description={item.description}
+-                    key={item.id}
+-                    url={item.url}
+-                    id={index}
+-                  />
+-                ))}
+-              </div>
+-            </div>
+-          </div>
++    <div className="bg-[#090909]">
++      {/* Banner */}
++      <div className="relative w-full overflow-hidden">
++        <img src={productBanner} alt="" className="w-full opacity-50" loading="lazy" />
++        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
++        <div className="absolute inset-0 flex items-center justify-center">
++          <h1 className="text-4xl md:text-6xl font-bold text-white text-center px-6">
++            Delivering High <br /> <span className="gold-gradient-text">Class Engineering Projects</span>
++          </h1>
+         </div>
+-      </>
++      </div>
++
++      {/* Products Grid */}
++      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
++        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
++          {AllProducts.map((item, index) => (
++            <SingleProduct
++              name={item.name}
++              description={item.description}
++              key={item.id}
++              url={item.url}
++              id={index}
++            />
++          ))}
++        </div>
++      </div>
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/ResetPassword.js b/frontend/src/components/ResetPassword.js
+index 63faea0..41519f9 100644
+--- a/frontend/src/components/ResetPassword.js
++++ b/frontend/src/components/ResetPassword.js
+@@ -1,89 +1,75 @@
+-import React from "react";
+-import { useState } from "react";
+-import { Link, useNavigate, useParams } from "react-router-dom";
+-import notify from "./toast";
++import React, { useState } from "react";
++import { useParams, useNavigate } from "react-router-dom";
+ import useStore from "../store/store";
++import notify from "./toast.js";
+ 
+ const ResetPassword = () => {
+-  const params = useParams();
+-  console.log(params.token);
+-  const [data, setData] = useState({ password: "", confirmPassword: "" });
+-  const patchResetPassword = useStore((state) => state.patchResetPassword);
++  const { token } = useParams();
+   const navigate = useNavigate();
++  const patchResetPassword = useStore((state) => state.patchResetPassword);
++
++  const [data, setData] = useState({
++    password: "",
++    passwordConfirm: "",
++  });
+ 
+   const handleChange = (e) => {
+     const { name, value } = e.target;
+-    setData((prev) => ({
+-      ...prev,
+-      [name]: value,
+-    }));
++    setData((prev) => ({ ...prev, [name]: value }));
+   };
+ 
+   const handleSubmit = async (e) => {
+-    if (!data.password || !data.confirmPassword) {
+-      notify("Please enter Password and Password Confirm");
++    e.preventDefault();
++    if (data.password !== data.passwordConfirm) {
++      notify("Passwords do not match");
+       return;
+     }
+-    e.preventDefault();
+     try {
+-      await patchResetPassword(params.token, data);
++      await patchResetPassword({ password: data.password, passwordConfirm: data.passwordConfirm, token });
++      notify("Password reset successful");
++      navigate("/login");
+     } catch (error) {
+-      notify("Passwords are not correct!");
+-      return;
++      notify("Error resetting password");
+     }
+-    notify("Updated");
+-    navigate("/login");
+   };
++
+   return (
+-    <div className="container my-6 flex justify-center items-center">
+-      <div className="card text-center w-[300px]">
+-        <div className="card-header h5 text-white bg-theme">Password Reset</div>
+-        <div className="card-body px-5">
+-          <div className="form-outline">
++    <div className="min-h-screen bg-[#090909] flex items-center justify-center px-6 py-12">
++      <div className="max-w-md w-full bg-[#111111] border border-[#222222] rounded-2xl p-12">
++        <h2 className="text-3xl font-bold text-white mb-2">New password</h2>
++        <p className="text-[#666666] mb-8">Create a strong password for your account</p>
++        <form onSubmit={handleSubmit} className="space-y-5">
++          <div>
++            <label className="block text-sm font-medium text-[#a0a0a0] mb-2">New Password</label>
+             <input
+               type="password"
+               name="password"
+               value={data.password}
+-              onChange={(e) => handleChange(e)}
+-              id="typeEmail"
+-              className="form-control my-3"
+-              placeholder="Password"
++              onChange={handleChange}
++              className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++              placeholder="••••••••"
++              required
+             />
+-            <label className="form-label" for="typeEmail">
+-              Password must contain atleast 1 capital,1 small letter,1 digit and
+-              1 special character and minimum 7 letters
+-            </label>
++          </div>
++          <div>
++            <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Confirm Password</label>
+             <input
+               type="password"
+-              name="confirmPassword"
+-              value={data.confirmPassword}
+-              onChange={(e) => handleChange(e)}
+-              id="typeEmail"
+-              className="form-control my-3"
+-              placeholder="Confirm Password"
++              name="passwordConfirm"
++              value={data.passwordConfirm}
++              onChange={handleChange}
++              className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++              placeholder="••••••••"
++              required
+             />
+           </div>
+           <button
+-            onClick={handleSubmit}
+-            className="btn  hover:bg-[#1a1269] text-white bg-theme w-100"
++            type="submit"
++            className="w-full py-3 bg-[#FED500] text-[#090909] font-semibold rounded-lg hover:bg-[#e5c000] transition-colors"
+           >
+-            Reset password
++            Reset Password
+           </button>
+-          <div className="d-flex justify-content-between mt-4 space-x-4 ">
+-            <Link
+-              className="bg-theme text-white p-2 px-2 w-1/2 rounded-full hover:bg-[#1a1269]"
+-              to="/login"
+-            >
+-              Login
+-            </Link>
+-            <Link
+-              className="bg-theme text-white p-2 px-2 w-1/2 rounded-full hover:bg-[#1a1269]"
+-              to="/signup"
+-            >
+-              Register
+-            </Link>
+-          </div>
+-        </div>
++        </form>
+       </div>
+     </div>
+   );
+diff --git a/frontend/src/components/Service.js b/frontend/src/components/Service.js
+index ca86256..3b22a27 100644
+--- a/frontend/src/components/Service.js
++++ b/frontend/src/components/Service.js
+@@ -2,26 +2,24 @@ import React, { useEffect, useState } from "react";
+ import serviceImg from "./../resources/careerImg.svg";
+ import { Link, useParams } from "react-router-dom";
+ import useStore from "../store/store";
++
+ const Service = () => {
+   const { getServiceImage } = useStore();
+   const [found, setFound] = useState(null);
+-
+   const { services } = useStore();
+   const params = useParams().id.slice(1, -1);
+   const [img, setImg] = useState(null);
+ 
+   useEffect(() => {
+-    console.log(services);
+     const foundService = services.find((item) => params === item._id);
+     setFound(foundService);
+     if (foundService) {
+       const getImage = async () => {
+         try {
+-            const response = await getServiceImage(foundService.image);
+-            const fileBlob = new Blob([response.data]);
+-            const fileUrl = URL.createObjectURL(fileBlob);
+-            setImg(fileUrl);
+-          
++          const response = await getServiceImage(foundService.image);
++          const fileBlob = new Blob([response.data]);
++          const fileUrl = URL.createObjectURL(fileBlob);
++          setImg(fileUrl);
+         } catch (error) {
+           console.log(error);
+         }
+@@ -29,70 +27,56 @@ const Service = () => {
+       getImage();
+     }
+     // eslint-disable-next-line
+-  }, [services,params]);
++  }, [services, params]);
+ 
+   if (!found || !img) return null;
++
+   return (
+     found && (
+-      <>
+-        <div className="mx-auto md:my-6 mb-24 px-10 py-2 flex flex-col-reverse justify-between md:flex-row items-center md:space-x-6 space-y-8">
+-          <div
+-            className="flex flex-col md:items-start items-center space-y-8 md:space-y-16 serviceText md:w-1/2"
+-            style={{}}
+-          >
+-            <h1 className="text-4xl md:text-5xl mt-8 font-bold">{found.name}</h1>
+-            <p className="text-2xl md:text-3xl">{found.description}</p>
++      <div className="bg-[#090909] min-h-screen">
++        <div className="mx-auto md:my-6 mb-24 px-6 md:px-10 py-8 flex flex-col-reverse justify-between md:flex-row items-center md:space-x-6 space-y-8">
++          <div className="flex flex-col md:items-start items-center space-y-8 md:space-y-16 md:w-1/2">
++            <h1 className="text-4xl md:text-5xl mt-8 font-bold text-white">{found.name}</h1>
++            <p className="text-xl md:text-2xl text-[#a0a0a0]">{found.description}</p>
+             <Link
+               to="/contact"
+-              className="bg-theme rounded-full font-semibold text-white p-3 px-4 hover:bg-[#1a1269]"
++              className="bg-[#FED500] rounded-full font-semibold text-[#090909] p-3 px-6 hover:bg-[#e5c000] transition-colors"
+             >
+               Start your Project
+             </Link>
+           </div>
+           <div className="flex md:w-1/2 md:justify-end items-center justify-center">
+-
+-          <img
+-            src={img || serviceImg}
+-            className="w-11/12 h-3/4 md:h-[400px]"
+-            alt=""
+-            loading="lazy"
+-          />
++            <img src={img || serviceImg} className="w-11/12 h-3/4 md:h-[400px] rounded-lg border border-[#222222]" alt="" loading="lazy" />
+           </div>
+         </div>
+ 
+-        <div className="flex flex-col mx-auto bg-[#FCE7F3] space-y-16 mt-24 py-16">
+-          <h1 className="text-4xl md:text-5xl font-bold text-center">
++        <div className="flex flex-col mx-auto bg-[#111111] border-y border-[#222222] space-y-16 py-16 px-6">
++          <h2 className="text-4xl md:text-5xl font-bold text-center text-white">
+             What makes it stand out
+-          </h1>
+-          <div className="grid grid-cols-1 md:grid-cols-3 justify-center items-center ">
+-            {found.features.map((item) => (
+-              <div className="flex flex-col items-start justify-center px-10 py-16 space-y-10 mx-4 border-slate border-1 bg-white max-h-80 h-80">
+-                <div className="flex flex-row items-center justify-start space-x-6">
+-                  <div className="flex flex-col items-start p-1 justify-center space-y-1/2">
+-                    <h1 className="text-3xl font-bold">{item.name}</h1>
+-                  </div>
+-                </div>
+-                <div className="flex flex-row justify-center items-center space-x-4">
+-                  <p>{item.description}</p>
+-                </div>
++          </h2>
++          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
++            {found.features.map((item, idx) => (
++              <div key={idx} className="flex flex-col items-start px-8 py-12 space-y-6 bg-[#090909] border border-[#222222] rounded-lg card-hover">
++                <h3 className="text-2xl font-bold text-white">{item.name}</h3>
++                <p className="text-[#a0a0a0] text-sm leading-relaxed">{item.description}</p>
+               </div>
+             ))}
+           </div>
+         </div>
+-        <div className="flex flex-col items-center md:flex-row my-4 p-4">
+-          <h1 className="text-5xl font-bold text-center md:w-1/2">
++
++        <div className="flex flex-col items-center md:flex-row my-16 p-6 max-w-7xl mx-auto">
++          <h2 className="text-4xl md:text-5xl font-bold text-center md:w-1/2 text-white mb-8 md:mb-0">
+             Technology Stack <br /> Used
+-          </h1>
+-          <div className="flex flex-col text-center md:w-1/2 p-6">
+-            {found.technologies &&
+-              found.technologies.map((tech) => (
+-                <div className="flex justify-center text-center hover:bg-[#FCE7F3] p-6 border-slate border-1">
+-                  <h1 className="text-3xl font-semibold">{tech}</h1>
+-                </div>
+-              ))}
++          </h2>
++          <div className="flex flex-col text-center md:w-1/2 p-6 space-y-px">
++            {found.technologies && found.technologies.map((tech, idx) => (
++              <div key={idx} className="flex justify-center text-center bg-[#111111] border border-[#222222] p-6 hover:border-[#FED500] transition-colors">
++                <h3 className="text-2xl font-semibold text-white">{tech}</h3>
++              </div>
++            ))}
+           </div>
+         </div>
+-      </>
++      </div>
+     )
+   );
+ };
+diff --git a/frontend/src/components/Services.js b/frontend/src/components/Services.js
+index ff61fcc..9c0f3e8 100644
+--- a/frontend/src/components/Services.js
++++ b/frontend/src/components/Services.js
+@@ -5,36 +5,20 @@ const Services = () => {
+   const AllServices = useStore((state) => state.services);
+ 
+   return (
+-    <div className="flex flex-col">
+-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
+-        <div className="flex flex-col border-slate border-1 p-12 space-y-10 justify-center md:w-1/2">
+-          <h1 className="font-bold text-4xl  lg:text-5xl">
+-            {AllServices[0].name}
+-          </h1>
+-          <p className="">{AllServices[0].description}</p>
++    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#222222] border border-[#222222]">
++      {AllServices.slice(0, 4).map((item, index) => (
++        <div
++          key={item._id || index}
++          className="flex flex-col p-10 md:p-12 space-y-6 justify-center bg-[#111111] min-h-[280px] card-hover"
++        >
++          <h3 className="font-bold text-2xl md:text-3xl text-white">
++            {item.name}
++          </h3>
++          <p className="text-[#a0a0a0] text-sm leading-relaxed">
++            {item.description}
++          </p>
+         </div>
+-        <div className="flex flex-col border-slate border-l md:border-l-0 border-r md:border-t border-b p-12 space-y-10 justify-center md:w-1/2 ">
+-          <h1 className="font-bold  text-4xl lg:text-5xl">
+-            {AllServices[1].name}
+-          </h1>
+-          <p className="">{AllServices[1].description}</p>
+-        </div>
+-      </div>
+-
+-      <div className="flex flex-col md:flex-row  lg:h-[28rem]">
+-        <div className="flex flex-col border-slate border-x border-b p-12 space-y-10 justify-center items center md:w-1/2">
+-          <h1 className="font-bold  text-4xl lg:text-5xl">
+-            {AllServices[2].name}
+-          </h1>
+-          <p className="">{AllServices[2].description}</p>
+-        </div>
+-        <div className="flex flex-col border-slate md:border-x-0 border-x md:border-r border-b p-12 space-y-10 justify-center items center md:w-1/2">
+-          <h1 className="font-bold  text-4xl lg:text-5xl">
+-            {AllServices[3].name}
+-          </h1>
+-          <p className="">{AllServices[3].description}</p>
+-        </div>
+-      </div>
++      ))}
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/ServicesMain.js b/frontend/src/components/ServicesMain.js
+index 2566b08..572311b 100644
+--- a/frontend/src/components/ServicesMain.js
++++ b/frontend/src/components/ServicesMain.js
+@@ -2,31 +2,36 @@ import React from "react";
+ import servicesBanner from "./../resources/servicesBanner.svg";
+ import SingleService from "./SingleService";
+ import useStore from "../store/store";
++
+ const ServicesMain = () => {
+   const { services } = useStore();
+   return (
+-    <>
+-      <div className="flex flex-col justify-center p-0 mx-auto">
+-        <img src={servicesBanner} alt="" loading="lazy" />
+-        <div className="flex flex-col items-center justify-center text-center m-4 space-y-4 p-2">
+-          <h1 className="md:text-5xl text-4xl font-bold text-center my-12 md:mb-36">
+-            Delivering Exceptional <br /> Engineering Services
++    <div className="bg-[#090909]">
++      {/* Banner */}
++      <div className="relative w-full overflow-hidden">
++        <img src={servicesBanner} alt="" className="w-full opacity-50" loading="lazy" />
++        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
++        <div className="absolute inset-0 flex items-center justify-center">
++          <h1 className="text-4xl md:text-6xl font-bold text-white text-center px-6">
++            Delivering Exceptional <br /> <span className="gold-gradient-text">Engineering Services</span>
+           </h1>
+         </div>
+-        <div className="flex flex-col bg-[#ebedfd] p-4  items-center  mx-auto">
+-          <div className="grid grid-cols-1 md:grid-cols-2 md:mx-36 -mt-24">
+-            {services.map((item) => (
+-              <SingleService
+-                name={item.name}
+-                description={item.description}
+-                key={item.id}
+-                id={item.id}
+-              />
+-            ))}
+-          </div>
++      </div>
++
++      {/* Services Grid */}
++      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
++        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
++          {services.map((item) => (
++            <SingleService
++              name={item.name}
++              description={item.description}
++              key={item.id}
++              id={item.id}
++            />
++          ))}
+         </div>
+       </div>
+-    </>
++    </div>
+   );
+ };
+ 
+diff --git a/frontend/src/components/Signup.js b/frontend/src/components/Signup.js
+index 70da1be..964b0df 100644
+--- a/frontend/src/components/Signup.js
++++ b/frontend/src/components/Signup.js
+@@ -1,164 +1,110 @@
+ import React, { useState } from "react";
+-import "./../css/login.css";
+-import LoadingBar from "react-top-loading-bar";
+-
+ import { Link, useNavigate } from "react-router-dom";
+-import signup from "./../resources/signup.svg";
++import useStore from "../store/store";
+ import notify from "./toast.js";
+-import useStore from "./../store/store";
++import signupImg from "./../resources/signup.svg";
+ 
+ const Signup = () => {
+-  const [signupData, setsignupData] = useState({
++  const navigate = useNavigate();
++  const postSignUpData = useStore((state) => state.postSignUpData);
++
++  const [signupData, setSignupData] = useState({
+     name: "",
+     email: "",
+     password: "",
+-    confirmPassword: "",
++    passwordConfirm: "",
+   });
+-  const [progress, setProgress] = useState(0);
+-
+-  const navigate = useNavigate();
+-
+-  const postSignUpData = useStore((state) => state.postSignUpData);
+ 
+   const handleChange = (e) => {
+     const { name, value } = e.target;
+-    setsignupData((prev) => ({
+-      ...prev,
+-      [name]: value,
+-    }));
++    setSignupData((prev) => ({ ...prev, [name]: value }));
+   };
+ 
+   const handleSubmit = async (e) => {
+-    if (
+-      !signupData.email ||
+-      !signupData.name ||
+-      !signupData.password ||
+-      !signupData.confirmPassword ||
+-      !document.getElementById("form3Example4").checkValidity()
+-    ) {
+-      notify("Please enter correct credentials");
+-      return;
+-    }
+-    if (signupData.password !== signupData.confirmPassword) {
+-      notify("Password do not match");
++    e.preventDefault();
++    if (signupData.password !== signupData.passwordConfirm) {
++      notify("Passwords do not match");
+       return;
+     }
+-    e.preventDefault();
+     try {
+-      setProgress(80);
+       await postSignUpData(signupData);
+-      setProgress(100);
++      notify("Account created successfully");
++      navigate("/login");
+     } catch (error) {
+-      setProgress(100);
+-      notify("Wrong Email or Password");
+-      return;
++      notify("Error creating account");
+     }
+-    notify("Signed up successfully.Now Login with your credentials");
+-    navigate("/login");
+   };
+ 
+   return (
+-    <div>
+-      <LoadingBar
+-        color="#f11946"
+-        progress={progress}
+-        onLoaderFinished={() => setProgress(0)}
+-      />
+-      <section className="md:mb-10 mb-48 mt-4">
+-        <div className="container-fluid h-custom">
+-          <div className="row d-flex justify-content-center align-items-center h-100">
+-            <div className="col-md-9 col-lg-6 col-xl-5">
+-              <img src={signup} className="img-fluid" alt="Sample " />
++    <div className="min-h-screen bg-[#090909] flex items-center justify-center px-6 py-12">
++      <div className="max-w-5xl w-full flex flex-col md:flex-row bg-[#111111] border border-[#222222] rounded-2xl overflow-hidden">
++        <div className="md:w-1/2 p-12 flex flex-col justify-center">
++          <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Create account</h2>
++          <p className="text-[#666666] mb-8">Join Edges Enterprise today</p>
++          <form onSubmit={handleSubmit} className="space-y-5">
++            <div>
++              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Full Name</label>
++              <input
++                type="text"
++                name="name"
++                value={signupData.name}
++                onChange={handleChange}
++                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++                placeholder="John Doe"
++                required
++              />
+             </div>
+-            <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+-              <h1 className="text-center mb-8 mt-6 text-4xl font-bold">
+-                Sign Up
+-              </h1>
+-              <form>
+-                <div className="form-outline mb-4">
+-                  <input
+-                    type="text"
+-                    id="form3Example3"
+-                    onChange={(e) => handleChange(e)}
+-                    name="name"
+-                    value={signupData.name}
+-                    className="form-control form-control-lg"
+-                    placeholder="Enter a valid name"
+-                    required
+-                  />
+-                  <label className="form-label" for="form3Example3">
+-                    Name
+-                  </label>
+-                </div>
+-                <div className="form-outline mb-4">
+-                  <input
+-                    type="email"
+-                    id="form3Example4"
+-                    onChange={(e) => handleChange(e)}
+-                    name="email"
+-                    value={signupData.email}
+-                    className="form-control form-control-lg"
+-                    placeholder="Enter a valid email address"
+-                    required
+-                  />
+-                  <label className="form-label" for="form3Example4">
+-                    Email address
+-                  </label>
+-                </div>
+-
+-                <div className="form-outline mb-3">
+-                  <input
+-                    type="password"
+-                    id="form3Example5"
+-                    onChange={(e) => handleChange(e)}
+-                    name="password"
+-                    value={signupData.password}
+-                    className="form-control form-control-lg"
+-                    placeholder="Enter password"
+-                    required
+-                  />
+-                  <label className="form-label" for="form3Example5">
+-                    Password must contain atleast 1 capital,1 small letter,1
+-                    digit and 1 special character and minimum 7 letters
+-                  </label>
+-                </div>
+-                <div className="form-outline mb-3">
+-                  <input
+-                    type="password"
+-                    id="form3Example6"
+-                    onChange={(e) => handleChange(e)}
+-                    name="confirmPassword"
+-                    value={signupData.confirmPassword}
+-                    className="form-control form-control-lg"
+-                    placeholder="Enter confirm password"
+-                    required
+-                  />
+-                  <label className="form-label" for="form3Example6">
+-                    Confirm Password
+-                  </label>
+-                </div>
+-
+-                <div className="text-center text-lg-start mt-4 pt-2">
+-                  <button
+-                    onClick={handleSubmit}
+-                    type="submit"
+-                    className="btn hover:bg-[#1a1269] text-white bg-[#2e318f] btn-lg"
+-                    style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+-                  >
+-                    Sign Up
+-                  </button>
+-                  <p className="small fw-bold mt-2 pt-1">
+-                    Already have an account?{" "}
+-                    <Link to="/login" className="link-primary">
+-                      Login
+-                    </Link>
+-                  </p>
+-                </div>
+-              </form>
++            <div>
++              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Email</label>
++              <input
++                type="email"
++                name="email"
++                value={signupData.email}
++                onChange={handleChange}
++                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++                placeholder="you@edgesenterprise.com"
++                required
++              />
++            </div>
++            <div>
++              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Password</label>
++              <input
++                type="password"
++                name="password"
++                value={signupData.password}
++                onChange={handleChange}
++                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++                placeholder="••••••••"
++                required
++              />
+             </div>
+-          </div>
++            <div>
++              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Confirm Password</label>
++              <input
++                type="password"
++                name="passwordConfirm"
++                value={signupData.passwordConfirm}
++                onChange={handleChange}
++                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
++                placeholder="••••••••"
++                required
++              />
++            </div>
++            <button
++              type="submit"
++              className="w-full py-3 bg-[#FED500] text-[#090909] font-semibold rounded-lg hover:bg-[#e5c000] transition-colors"
++            >
++              Sign Up
++            </button>
++          </form>
++          <p className="mt-6 text-center text-[#666666] text-sm">
++            Already have an account? <Link to="/login" className="text-[#FED500] hover:underline">Sign in</Link>
++          </p>
++        </div>
++        <div className="md:w-1/2 bg-[#0a0a0a] flex items-center justify-center p-12">
++          <img src={signupImg} alt="Signup" className="w-full max-w-sm opacity-80" />
+         </div>
+-      </section>
++      </div>
+     </div>
+   );
+ };
+diff --git a/frontend/src/components/SingleProduct.js b/frontend/src/components/SingleProduct.js
+index 54769c1..f820c2f 100644
+--- a/frontend/src/components/SingleProduct.js
++++ b/frontend/src/components/SingleProduct.js
+@@ -4,38 +4,27 @@ import logo from "./../resources/logo.svg";
+ import text from "./../resources/text.png";
+ import web from "./../resources/web.png";
+ import matours from "./../resources/matours.png";
+-const SingleProduct = ({name,description,id,url}) => {
++
++const SingleProduct = ({ name, description, id, url }) => {
+   const [hover, setHover] = useState(false);
+-  const logos=[matours,text,web,logo]
+-  const handleMouseEnter = () => {
+-    setHover(true);
+-  };
+-  const handleMouseLeave = () => {
+-    setHover(false);
+-  };
+-  const styles = {
+-    backgroundColor: hover ? "#FCE7F3" : "white",
+-  };
++  const logos = [matours, text, web, logo];
++
+   return (
+     <div
+-      onMouseEnter={handleMouseEnter}
+-      onMouseLeave={handleMouseLeave}
+-      className="flex flex-col items-start justify-center py-8 px-10 m-3 space-y-2 md:space-y-6 border-slate border-1 group transition-colors"
+-      style={styles}
++      onMouseEnter={() => setHover(true)}
++      onMouseLeave={() => setHover(false)}
++      className="flex flex-col items-start justify-center py-10 px-8 md:px-10 space-y-4 bg-[#111111] border border-[#222222] rounded-lg transition-all duration-300 min-h-[280px]"
++      style={{ borderColor: hover ? '#FED500' : '#222222' }}
+     >
+-      <img src={logos[id]} className="w-1/3 h-1/3" alt="" />
+-      <h1 className="text-2xl md:text-3xl font-bold">
+-        {name}
+-      </h1>
+-      <p>
+-        {description}
+-      </p>
++      <img src={logos[id]} className="w-16 h-16 object-contain opacity-80" alt="" />
++      <h3 className="text-xl md:text-2xl font-bold text-white">{name}</h3>
++      <p className="text-[#a0a0a0] text-sm leading-relaxed flex-grow">{description}</p>
+       <Link
+         to={url}
+-        className="p-2 px-3 border-slate border-1 rounded-full hover:bg-theme hover:text-white"
++        className="mt-4 inline-flex items-center text-[#FED500] text-sm font-semibold hover:underline"
+         target="_blank"
+       >
+-        Visit Website
++        Visit Website <span className="ml-2">→</span>
+       </Link>
+     </div>
+   );
+diff --git a/frontend/src/components/SingleService.js b/frontend/src/components/SingleService.js
+index 5a05c00..87686b9 100644
+--- a/frontend/src/components/SingleService.js
++++ b/frontend/src/components/SingleService.js
+@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
+ 
+ const SingleService = ({ name, description, id }) => {
+   return (
+-    <div className="flex flex-col items-start justify-center py-8 px-10 m-3 space-y-2 md:space-y-6 bg-white border-slate border-1 h-80">
+-      <h1 className="text-2xl md:text-3xl font-bold">{name}</h1>
+-      <p>{description}</p>
++    <div className="flex flex-col items-start justify-center py-10 px-8 md:px-10 space-y-4 bg-[#111111] border border-[#222222] rounded-lg card-hover min-h-[280px]">
++      <h3 className="text-xl md:text-2xl font-bold text-white">{name}</h3>
++      <p className="text-[#a0a0a0] text-sm leading-relaxed flex-grow">{description}</p>
+       <Link
+         to={`/services/${5 + id + 8}`}
+-        className="p-2 text-white px-3 bg-theme rounded-full hover:bg-[#1a1269]"
++        className="mt-4 inline-flex items-center text-[#FED500] text-sm font-semibold hover:underline"
+       >
+-        Learn More
++        Learn More <span className="ml-2">→</span>
+       </Link>
+     </div>
+   );
+diff --git a/frontend/src/components/Testimonial.js b/frontend/src/components/Testimonial.js
+index 6694667..beafe01 100644
+--- a/frontend/src/components/Testimonial.js
++++ b/frontend/src/components/Testimonial.js
+@@ -3,14 +3,16 @@ import "slick-carousel/slick/slick.css";
+ import "slick-carousel/slick/slick-theme.css";
+ import Slider from "react-slick";
+ import useStore from "./../store/store";
+-import  fourth from './../resources/1.jpg'
++import fourth from './../resources/1.jpg'
+ import second from './../resources/2.jpg'
+ import third from './../resources/3.jpg'
+ import first from './../resources/4.png'
++
+ const Testimonial = () => {
+   const [slidesToShow, setSlidesToShow] = useState(2);
+   const reviews = useStore((state) => state.reviews);
+-  const images=[first,second,third,fourth]
++  const images = [first, second, third, fourth];
++
+   useEffect(() => {
+     const handleResize = () => {
+       if (window.innerWidth < 1024) {
+@@ -19,10 +21,8 @@ const Testimonial = () => {
+         setSlidesToShow(2);
+       }
+     };
+-
+     window.addEventListener("resize", handleResize);
+-    handleResize(); // Initial setting based on the current window width
+-
++    handleResize();
+     return () => {
+       window.removeEventListener("resize", handleResize);
+     };
+@@ -34,39 +34,49 @@ const Testimonial = () => {
+     speed: 500,
+     slidesToShow: slidesToShow,
+     slidesToScroll: 1,
++    arrows: false,
++    dotsClass: "slick-dots custom-dots",
+   };
++
+   return (
+-    <div className="flex flex-col bg-[#2e318f] pt-12 pb-6 px-6 md:px-24 space-y-4 lg:space-y-10">
+-      <h2 className="text-5xl text-center text-white  font-bold">
+-        What our clients say
+-      </h2>
+-      <div className="h-96 md:h-[32rem] mb-4">
+-        <Slider {...settings}>
+-          {reviews.map((item,index)=><div className="div" key={item._id}>
+-            <div className="flex flex-col items-center justify-center min-h-[334px] max-h-96 m-6 md:py-12 p-6 md:space-y-12 space-y-8 bg-white">
+-              <div className="flex flex-row items-center justify-start space-x-6">
+-                <img
+-                  src={images[index]}
+-                  alt=""
+-                  className="rounded-full h-1/5 w-1/5 aspect-square"
+-                  loading="lazy"
+-                />
+-                <div className="flex flex-col items-start p-1 justify-center space-y-1/2">
+-                  <h1 className="text-2xl font-semibold">{item.user.name}</h1>
+-                  <p>{item.createdAt.split('T')[0]}</p>
++    <div className="bg-[#111111] border-y border-[#222222] py-16 md:py-24 px-6">
++      <div className="max-w-6xl mx-auto">
++        <div className="text-center mb-12">
++          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
++            What our clients say
++          </h2>
++          <p className="text-[#a0a0a0] text-base">
++            Real feedback from real partners — not after the pitch, after launch.
++          </p>
++        </div>
++        <div className="h-auto pb-8">
++          <Slider {...settings}>
++            {reviews.map((item, index) => (
++              <div className="px-3" key={item._id}>
++                <div className="flex flex-col items-start p-8 bg-[#090909] border border-[#222222] rounded-lg min-h-[320px]">
++                  <div className="flex items-center space-x-4 mb-6">
++                    <img
++                      src={images[index]}
++                      alt=""
++                      className="rounded-full w-14 h-14 object-cover border border-[#222222]"
++                      loading="lazy"
++                    />
++                    <div>
++                      <h4 className="text-white font-semibold text-base">{item.user.name}</h4>
++                      <p className="text-[#666666] text-xs">{item.createdAt.split('T')[0]}</p>
++                    </div>
++                  </div>
++                  <p className="text-[#a0a0a0] text-sm leading-relaxed flex-grow">
++                    "{item.review}"
++                  </p>
++                  <div className="mt-6 pt-4 border-t border-[#222222] w-full">
++                    <span className="text-[#FED500] text-xs font-medium">{item.service.name}</span>
++                  </div>
+                 </div>
+               </div>
+-              <p className="text-sm md:text-base">
+-                {item.review}
+-              </p>
+-              <div className="flex flex-col space-y-4">
+-                <hr className="block lg:w-72 w-32 h-1 mx-auto bg-gray-100 md:mb-2 rounded dark:bg-gray-700" />
+-                <h1 className="font-normal text-l self-center">{item.service.name}</h1>
+-              </div>
+-            </div>
+-          </div>)}
+-  
+-        </Slider> 
++            ))}
++          </Slider>
++        </div>
+       </div>
+     </div>
+   );
+diff --git a/frontend/src/components/UpdateMe.js b/frontend/src/components/UpdateMe.js
+index 3ac600a..11dc3c7 100644
+--- a/frontend/src/components/UpdateMe.js
++++ b/frontend/src/components/UpdateMe.js
+@@ -1,121 +1,66 @@
+ import React, { useState } from "react";
+-import signup from "./../resources/signup.svg";
+-import notify from "./toast.js";
+ import useStore from "../store/store";
+-import LoadingBar from "react-top-loading-bar";
++import notify from "./toast.js";
+ 
+ const UpdateMe = () => {
+-  const updatePassword = useStore((state) => state.patchUpdatePassword);
+-  const [updateData, setupdateData] = useState({
+-    oldPassword: "",
+-    password: "",
+-    confirmPassword: "",
++  const patchUpdatePassword = useStore((state) => state.patchUpdatePassword);
++  const [data, setData] = useState({
++    passwordCurrent: "", password: "", passwordConfirm: "",
+   });
+-  const [progress, setProgress] = useState(0);
+ 
+   const handleChange = (e) => {
+     const { name, value } = e.target;
+-    setupdateData((prev) => ({
+-      ...prev,
+-      [name]: value,
+-    }));
++    setData((prev) => ({ ...prev, [name]: value }));
+   };
+ 
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+-    console.log(updateData);
++    if (data.password !== data.passwordConfirm) {
++      notify("Passwords do not match");
++      return;
++    }
+     try {
+-      setProgress(80);
+-      await updatePassword(updateData);
+-      notify("Updated successfull");
+-      setProgress(100);
++      await patchUpdatePassword(data);
++      notify("Password updated successfully");
+     } catch (error) {
+-      setProgress(100);
+-      notify("Please provide correct passwords");
+-      return;
++      notify("Error updating password");
+     }
+   };
++
+   return (
+-    <>
+-      <LoadingBar
+-        color="#f11946"
+-        progress={progress}
+-        onLoaderFinished={() => setProgress(0)}
+-      />
++    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5 max-w-lg">
++      <h3 className="text-white font-semibold text-lg mb-2">Update Password</h3>
+       <div>
+-        <section className="md:mb-10 mb-48 mt-4">
+-          <div className="container-fluid h-custom">
+-            <div className="row d-flex justify-content-center align-items-center h-100">
+-              <div className="col-md-9 col-lg-6 col-xl-5">
+-                <img src={signup} className="img-fluid" alt="Sample " />
+-              </div>
+-              <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+-                <h1 className="text-center mb-8 mt-6 text-4xl font-bold">
+-                  Update Password
+-                </h1>
+-                <form>
+-                  <div className="form-outline mb-3">
+-                    <input
+-                      type="password"
+-                      id="form3Example5"
+-                      onChange={(e) => handleChange(e)}
+-                      name="oldPassword"
+-                      value={updateData.oldPassword}
+-                      className="form-control form-control-lg"
+-                      placeholder="Enter old password"
+-                    />
+-                    <label className="form-label" for="form3Example5">
+-                      Old Password
+-                    </label>
+-                  </div>
+-
+-                  <div className="form-outline mb-3">
+-                    <input
+-                      type="password"
+-                      id="form3Example6"
+-                      onChange={(e) => handleChange(e)}
+-                      name="password"
+-                      value={updateData.password}
+-                      className="form-control form-control-lg"
+-                      placeholder="Enter new password"
+-                    />
+-                    <label className="form-label" for="form3Example5">
+-                      Password must be alphanumeric,containing a special
+-                      character and upper case letter and 7 letters minimum
+-                    </label>
+-                  </div>
+-                  <div className="form-outline mb-3">
+-                    <input
+-                      type="password"
+-                      id="form3Example7"
+-                      onChange={(e) => handleChange(e)}
+-                      name="confirmPassword"
+-                      value={updateData.confirmPassword}
+-                      className="form-control form-control-lg"
+-                      placeholder="Enter confrim password"
+-                    />
+-                    <label className="form-label" for="form3Example6">
+-                      Confirm Password
+-                    </label>
+-                  </div>
+-
+-                  <div className="text-center text-lg-start mt-4 pt-2">
+-                    <button
+-                      onClick={handleSubmit}
+-                      type="submit"
+-                      className="btn hover:bg-[#1a1269] text-white bg-[#2e318f] btn-lg"
+-                      style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+-                    >
+-                      Update
+-                    </button>
+-                  </div>
+-                </form>
+-              </div>
+-            </div>
+-          </div>
+-        </section>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Current Password</label>
++        <input
++          type="password" name="passwordCurrent" value={data.passwordCurrent} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="••••••••" required
++        />
++      </div>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">New Password</label>
++        <input
++          type="password" name="password" value={data.password} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="••••••••" required
++        />
++      </div>
++      <div>
++        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Confirm New Password</label>
++        <input
++          type="password" name="passwordConfirm" value={data.passwordConfirm} onChange={handleChange}
++          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
++          placeholder="••••••••" required
++        />
+       </div>
+-    </>
++      <button
++        type="submit" onClick={handleSubmit}
++        className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
++      >
++        Update Password
++      </button>
++    </div>
+   );
+ };
+ 
+diff --git a/frontend/src/index.css b/frontend/src/index.css
+index bd6213e..cb7a605 100644
+--- a/frontend/src/index.css
++++ b/frontend/src/index.css
+@@ -1,3 +1,49 @@
+ @tailwind base;
+ @tailwind components;
+-@tailwind utilities;
+\ No newline at end of file
++@tailwind utilities;
++
++@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
++
++:root {
++  --bg-primary: #090909;
++  --bg-surface: #111111;
++  --bg-elevated: #1a1a1a;
++  --border-color: #222222;
++  --text-primary: #ffffff;
++  --text-muted: #a0a0a0;
++  --text-dim: #666666;
++  --accent-gold: #FED500;
++  --accent-gold-hover: #e5c000;
++}
++
++html {
++  scroll-behavior: smooth;
++}
++
++body {
++  font-family: 'Inter', system-ui, -apple-system, sans-serif;
++  background-color: var(--bg-primary);
++  color: var(--text-primary);
++  -webkit-font-smoothing: antialiased;
++  -moz-osx-font-smoothing: grayscale;
++}
++
++::selection {
++  background-color: var(--accent-gold);
++  color: var(--bg-primary);
++}
++
++/* Custom scrollbar */
++::-webkit-scrollbar {
++  width: 8px;
++}
++::-webkit-scrollbar-track {
++  background: var(--bg-primary);
++}
++::-webkit-scrollbar-thumb {
++  background: var(--border-color);
++  border-radius: 4px;
++}
++::-webkit-scrollbar-thumb:hover {
++  background: var(--text-dim);
++}
+diff --git a/frontend/tailwind.config.js b/frontend/tailwind.config.js
+index 91af21f..7f61a98 100644
+--- a/frontend/tailwind.config.js
++++ b/frontend/tailwind.config.js
+@@ -1,27 +1,35 @@
+ /** @type {import('tailwindcss').Config} */
+-
+ module.exports = {
+   content: [
+     "./src/**/*.{js,jsx,ts,tsx}",
+   ],
+   theme: {
+     extend: {
+-
++      colors: {
++        // U1CORE dark palette
++        u1: {
++          black:    '#090909',
++          surface:  '#111111',
++          elevated: '#1a1a1a',
++          border:   '#222222',
++          muted:    '#666666',
++          silver:   '#a0a0a0',
++          gold:     '#FED500',
++          'gold-hover': '#e5c000',
++        },
++      },
++      fontFamily: {
++        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
++      },
+     },
+     colors: {
+       transparent: 'transparent',
+       current: 'currentColor',
+-      'white': '#ffffff',
+-      'slate': '#94a3b8',
+-      // Edges Enterprise brand palette — futuristic corporate (electric blue / cyan on deep navy)
+-      'theme': '#0B63F6',     // primary brand blue
+-      'accent': '#00D1FF',    // cyan glow accent
+-      'midnight': '#060B17',  // near-black navy, hero/dark sections
+-      'graphite': '#111827',  // dark neutral surface
+-      'metal': '#7C8DB5',     // muted steel secondary text
+-      'silver': '#E7ECF5',    // light neutral surface
+-      'purple': '#6C5CE7',    // violet accent for gradients
++      white: '#ffffff',
++      slate: '#94a3b8',
++      // Legacy alias for existing components that reference 'theme'
++      theme: '#FED500',
+     },
+   },
+   plugins: [],
+-}
+\ No newline at end of file
++}
+-- 
+2.39.5
+

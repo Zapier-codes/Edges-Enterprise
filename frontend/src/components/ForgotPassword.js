@@ -1,79 +1,49 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import notify from "./toast";
-import useStore from "./../store/store";
+import useStore from "../store/store";
+import notify from "./toast.js";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState({ email: "" });
-  const postForgotPassword = useStore((state) => state.postForgotPassword);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEmail((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const [email, setEmail] = useState("");
+  const patchForgotPassword = useStore((state) => state.patchForgotPassword);
 
   const handleSubmit = async (e) => {
-    console.log(email);
-    if (!email.email || !document.getElementById("typeEmail").checkValidity()) {
-      notify("Please enter correct email");
-      return;
-    }
     e.preventDefault();
     try {
-      await postForgotPassword(email);
+      await patchForgotPassword({ email });
+      notify("Reset link sent to your email");
     } catch (error) {
-      notify("User not registered with this email!");
-      return;
+      notify("Error sending reset link");
     }
-    notify("Password reset email sent");
   };
+
   return (
-    <div className="container my-6 flex justify-center items-center">
-      <div className="card text-center w-[300px]">
-        <div className="card-header h5 text-white bg-theme">Password Reset</div>
-        <div className="card-body px-5">
-          <p className="card-text py-2">
-            Enter your email address and we'll send you an email with
-            instructions to reset your password.
-          </p>
-          <div className="form-outline">
+    <div className="min-h-screen bg-[#090909] flex items-center justify-center px-6 py-12">
+      <div className="max-w-md w-full bg-[#111111] border border-[#222222] rounded-2xl p-12">
+        <h2 className="text-3xl font-bold text-white mb-2">Reset password</h2>
+        <p className="text-[#666666] mb-8">Enter your email and we'll send you a reset link</p>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Email</label>
             <input
               type="email"
-              name="email"
-              value={email.email}
-              onChange={(e) => handleChange(e)}
-              id="typeEmail"
-              className="form-control my-3"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+              placeholder="you@edgesenterprise.com"
+              required
             />
-            <label className="form-label" for="typeEmail">
-              Email input
-            </label>
           </div>
           <button
-            onClick={handleSubmit}
-            className="btn text-white bg-theme w-100 hover:bg-[#1a1269]"
+            type="submit"
+            className="w-full py-3 bg-[#FED500] text-[#090909] font-semibold rounded-lg hover:bg-[#e5c000] transition-colors"
           >
-            Send Email
+            Send Reset Link
           </button>
-          <div className="d-flex justify-content-between mt-4 space-x-4 ">
-            <Link
-              className="bg-theme text-white p-2 px-2 w-1/2 rounded-full hover:bg-[#1a1269]"
-              to="/login"
-            >
-              Login
-            </Link>
-            <Link
-              className="bg-theme text-white p-2 px-2 w-1/2 rounded-full hover:bg-[#1a1269]"
-              to="/signup"
-            >
-              Register
-            </Link>
-          </div>
-        </div>
+        </form>
+        <p className="mt-6 text-center text-[#666666] text-sm">
+          Remember your password? <Link to="/login" className="text-[#FED500] hover:underline">Sign in</Link>
+        </p>
       </div>
     </div>
   );

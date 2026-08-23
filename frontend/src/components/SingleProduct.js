@@ -4,38 +4,27 @@ import logo from "./../resources/logo.svg";
 import text from "./../resources/text.png";
 import web from "./../resources/web.png";
 import matours from "./../resources/matours.png";
-const SingleProduct = ({name,description,id,url}) => {
+
+const SingleProduct = ({ name, description, id, url }) => {
   const [hover, setHover] = useState(false);
-  const logos=[matours,text,web,logo]
-  const handleMouseEnter = () => {
-    setHover(true);
-  };
-  const handleMouseLeave = () => {
-    setHover(false);
-  };
-  const styles = {
-    backgroundColor: hover ? "#FCE7F3" : "white",
-  };
+  const logos = [matours, text, web, logo];
+
   return (
     <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="flex flex-col items-start justify-center py-8 px-10 m-3 space-y-2 md:space-y-6 border-slate border-1 group transition-colors"
-      style={styles}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="flex flex-col items-start justify-center py-10 px-8 md:px-10 space-y-4 bg-[#111111] border border-[#222222] rounded-lg transition-all duration-300 min-h-[280px]"
+      style={{ borderColor: hover ? '#FED500' : '#222222' }}
     >
-      <img src={logos[id]} className="w-1/3 h-1/3" alt="" />
-      <h1 className="text-2xl md:text-3xl font-bold">
-        {name}
-      </h1>
-      <p>
-        {description}
-      </p>
+      <img src={logos[id]} className="w-16 h-16 object-contain opacity-80" alt="" />
+      <h3 className="text-xl md:text-2xl font-bold text-white">{name}</h3>
+      <p className="text-[#a0a0a0] text-sm leading-relaxed flex-grow">{description}</p>
       <Link
         to={url}
-        className="p-2 px-3 border-slate border-1 rounded-full hover:bg-theme hover:text-white"
+        className="mt-4 inline-flex items-center text-[#FED500] text-sm font-semibold hover:underline"
         target="_blank"
       >
-        Visit Website
+        Visit Website <span className="ml-2">→</span>
       </Link>
     </div>
   );

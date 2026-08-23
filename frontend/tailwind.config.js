@@ -1,30 +1,34 @@
 /** @type {import('tailwindcss').Config} */
-
 module.exports = {
-  darkMode: 'class',
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
+      colors: {
+        // U1CORE dark palette
+        u1: {
+          black:    '#090909',
+          surface:  '#111111',
+          elevated: '#1a1a1a',
+          border:   '#222222',
+          muted:    '#666666',
+          silver:   '#a0a0a0',
+          gold:     '#FED500',
+          'gold-hover': '#e5c000',
+        },
+      },
       fontFamily: {
-        display: ['"Space Grotesk"', 'sans-serif'],
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
     },
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
-      'white': '#ffffff',
-      'slate': '#94a3b8',
-      // Edges Enterprise brand palette — futuristic corporate (electric blue / cyan on deep navy)
-      'theme': '#0B63F6',     // primary brand blue
-      'accent': '#00D1FF',    // cyan glow accent
-      'midnight': '#060B17',  // near-black navy, hero/dark sections
-      'graphite': '#111827',  // dark neutral surface
-      'metal': '#7C8DB5',     // muted steel secondary text
-      'silver': '#E7ECF5',    // light neutral surface
-      'purple': '#6C5CE7',    // violet accent for gradients
+      white: '#ffffff',
+      slate: '#94a3b8',
+      // Legacy alias for existing components that reference 'theme'
+      theme: '#FED500',
     },
   },
   plugins: [],

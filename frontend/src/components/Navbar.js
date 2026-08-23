@@ -1,206 +1,179 @@
-import React, { useState, useEffect, useRef, memo } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import logo from "./../resources/logo2.svg";
 import Dropdown from "./Dropdown";
-import ThemeToggle from "./ThemeToggle";
 import useStore from "../store/store";
 
-const NAV_LINKS = [
-  { to: "/about", label: "About Us" },
-  { to: "/services", label: "What we do?", hasDropdown: true, isProducts: false },
-  { to: "/products", label: "Our Products", hasDropdown: true, isProducts: true },
-  { to: "/careers", label: "Careers" },
-];
-
-const linkClasses =
-  "text-theme dark:text-accent text-lg font-normal hover:text-black dark:hover:text-white transition-colors";
-
-const mobileLinkClasses =
-  "text-theme dark:text-accent font-semibold text-lg hover:text-black dark:hover:text-white transition-colors";
-
-const Navbar = () => {
+const Navbar = (props) => {
   const isLoggedIn = useStore((state) => state.isLoggedIn);
-
   const [drop, setDrop] = useState(false);
   const [dropPage, setDropPage] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const containerRef = useRef(null);
 
-  const showDropdown = (isProducts) => {
-    setDropPage(isProducts);
-    setDrop(true);
+  const handleShowDropdown = (e) => {
+    if (e.target.innerText === "Our Products") {
+      setDropPage(true);
+    } else {
+      setDropPage(false);
+    }
+    if (
+      e.target &&
+      e.target.childNodes.length > 1 &&
+      e.target.childNodes[1].childNodes[0].childNodes[0]
+    ) {
+      setDrop(true);
+      e.target.childNodes[1].childNodes[0].childNodes[0].setAttribute(
+        "stroke",
+        "#FED500"
+      );
+    }
   };
-  const hideDropdown = () => setDrop(false);
 
-  // Close the desktop dropdown when the pointer leaves the navbar entirely.
-  useEffect(() => {
-    const handleLeave = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setDrop(false);
-      }
-    };
-    document.addEventListener("mouseleave", handleLeave);
-    return () => document.removeEventListener("mouseleave", handleLeave);
+  const handleHideDropdown = useCallback(() => {
+    setDrop(false);
+    const arrows = document.getElementsByClassName("arrow");
+    if (arrows[0]) arrows[0].setAttribute("stroke", "#a0a0a0");
+    if (arrows[1]) arrows[1].setAttribute("stroke", "#a0a0a0");
   }, []);
 
-  // Lock body scroll while the mobile menu is open, and close it if the
-  // viewport grows past the mobile breakpoint (e.g. rotating a tablet).
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    const handleResize = () => {
-      if (window.innerWidth >= 768) setMobileOpen(false);
+    const handleContainerMouseLeave = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setDrop(false);
+        const arrows = document.getElementsByClassName("arrow");
+        if (arrows[0]) arrows[0].setAttribute("stroke", "#a0a0a0");
+        if (arrows[1]) arrows[1].setAttribute("stroke", "#a0a0a0");
+      }
     };
-    window.addEventListener("resize", handleResize);
+    document.addEventListener("mouseleave", handleContainerMouseLeave);
     return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("mouseleave", handleContainerMouseLeave);
     };
-  }, [mobileOpen]);
+  }, []);
 
   return (
-    <nav ref={containerRef} className="relative p-4 sm:p-6 mx-auto">
-      <div className="flex items-center justify-between">
-        <Link to="/" onClick={() => setMobileOpen(false)}>
-          <img src={logo} className="w-32 sm:w-40 md:w-48" alt="logo" />
+    <nav ref={containerRef} className="relative py-4 px-6 mx-auto bg-[#090909] border-b border-[#222222]">
+      <div className="flex items-center justify-between md:space-x-6 max-w-7xl mx-auto">
+        <Link to="/" className="">
+          <img src={logo} className="w-40 md:w-48" alt="Edges Enterprise" />
         </Link>
-
-        {/* Desktop / tablet nav (md and up) */}
-        <ul className="hidden md:flex items-center space-x-6 lg:space-x-8">
-          {NAV_LINKS.map((item) => (
-            <li key={item.to} className="relative flex items-center">
-              <Link
-                to={item.to}
-                onMouseEnter={
-                  item.hasDropdown ? () => showDropdown(item.isProducts) : undefined
-                }
-                className={linkClasses}
-              >
-                {item.label}
-                {item.hasDropdown && (
-                  <span className="ml-2 inline-block align-middle">
-                    <svg
-                      viewBox="0 0 10 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="7"
-                      className="rotate-90"
-                    >
-                      <path
-                        d="m1 17.5 8-8-8-8"
-                        stroke="currentColor"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                )}
-              </Link>
-            </li>
-          ))}
-          <li className="flex items-center">
-            <Link to={isLoggedIn ? "/dashboard" : "/login"} className={linkClasses}>
+        <ul className="hidden menu space-x-8 md:flex items-center">
+          <li className="flex relative items-center">
+            <Link
+              to="/about"
+              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200"
+            >
+              About Us
+            </Link>
+          </li>
+          <li className="flex relative items-center">
+            <Link
+              onMouseEnter={(e) => handleShowDropdown(e)}
+              to="/services"
+              className="text-[#a0a0a0] hover:text-white text-sm font-medium tracking-wide transition-colors duration-200 flex items-center"
+            >
+              What we do?
+              <span className="ml-2 rotate-90 inline-block">
+                <svg viewBox="0 0 10 19" fill="none" xmlns="http://www.w3.org/2000/svg" width="6">
+                  <path
+                    className="arrow"
+                    d="m1 17.5 8-8-8-8"
+                    stroke="#a0a0a0"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </Link>
+          </li>
+          <li className="flex relative items-center">
+            <Link
+              onMouseEnter={(e) => handleShowDropdown(e)}
+              to="/products"
+              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200 flex items-center"
+            >
+              Our Products
+              <span className="ml-2 rotate-90 inline-block">
+                <svg viewBox="0 0 10 19" fill="none" xmlns="http://www.w3.org/2000/svg" width="6">
+                  <path
+                    className="arrow"
+                    d="m1 17.5 8-8-8-8"
+                    stroke="#a0a0a0"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </Link>
+          </li>
+          <li className="flex relative items-center">
+            <Link
+              to={isLoggedIn ? "/dashboard" : "/login"}
+              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200"
+            >
               {isLoggedIn ? "Dashboard" : "Our Portal"}
             </Link>
           </li>
+          <li className="flex relative items-center">
+            <Link
+              to="/careers"
+              className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200"
+            >
+              Careers
+            </Link>
+          </li>
         </ul>
-
-        <div className="hidden md:flex items-center space-x-3">
-          <ThemeToggle />
+        <div className="hidden md:block">
           <Link
             to="/contact"
-            className="rounded-full bg-theme text-white px-6 py-2 text-sm font-medium hover:bg-black dark:hover:bg-accent dark:hover:text-midnight transition-colors"
+            className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2.5 text-sm font-semibold hover:bg-[#e5c000] transition-colors duration-200"
           >
-            Get Started
+            Book a call
           </Link>
         </div>
 
-        {/* Mobile controls (below md) */}
-        <div className="flex items-center space-x-2 md:hidden">
-          <ThemeToggle />
-          <button
-            type="button"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-menu"
-            onClick={() => setMobileOpen((v) => !v)}
-            className="relative h-9 w-9 flex flex-col items-center justify-center gap-1.5 focus:outline-none"
-          >
-            <motion.span
-              animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              className="block h-0.5 w-6 bg-graphite dark:bg-silver rounded-full"
-              transition={{ duration: 0.2 }}
-            />
-            <motion.span
-              animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block h-0.5 w-6 bg-graphite dark:bg-silver rounded-full"
-              transition={{ duration: 0.15 }}
-            />
-            <motion.span
-              animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              className="block h-0.5 w-6 bg-graphite dark:bg-silver rounded-full"
-              transition={{ duration: 0.2 }}
-            />
-          </button>
+        <button
+          id="menu-btn"
+          className="hamburger block md:hidden focus:outline-none"
+          onClick={props.hamburger}
+        >
+          <span className="hamburger-top"></span>
+          <span className="hamburger-middle"></span>
+          <span className="hamburger-bottom"></span>
+        </button>
+      </div>
+      <div className="md:hidden">
+        <div
+          className="absolute items-center self-end flex-col py-8 mt-6 hidden space-y-6 font-bold bg-[#111111] border border-[#222222] sm:self-center sm:w-auto left-6 right-6 drop-shadow-xl z-50 rounded-lg"
+          id="menu"
+        >
+          <Link to="/about" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+            About Us
+          </Link>
+          <Link to="/services" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+            What we do?
+          </Link>
+          <Link to="/products" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+            Our Products
+          </Link>
+          <Link to={isLoggedIn ? "/dashboard" : "/login"} className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+            {isLoggedIn ? "Dashboard" : "Our Portal"}
+          </Link>
+          <Link to="/careers" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
+            Careers
+          </Link>
+          <Link to="/contact" className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2.5 text-sm font-semibold">
+            Book a call
+          </Link>
         </div>
       </div>
-
-      {/* Mobile menu panel */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            id="mobile-menu"
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="md:hidden absolute left-4 right-4 sm:left-6 sm:right-6 mt-4 z-40 flex flex-col items-center space-y-5 py-8 px-6
-                       bg-white dark:bg-graphite rounded-2xl shadow-xl dark:shadow-black/40"
-          >
-            {NAV_LINKS.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setMobileOpen(false)}
-                className={mobileLinkClasses}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              to={isLoggedIn ? "/dashboard" : "/login"}
-              onClick={() => setMobileOpen(false)}
-              className={mobileLinkClasses}
-            >
-              {isLoggedIn ? "Dashboard" : "Our Portal"}
-            </Link>
-            <Link
-              to="/contact"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-full bg-theme text-white px-8 py-2 text-sm font-medium hover:bg-black dark:hover:bg-accent dark:hover:text-midnight transition-colors"
-            >
-              Get Started
-            </Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop services/products dropdown */}
-      <AnimatePresence>
-        {drop && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-          >
-            <Dropdown onMouseLeave={hideDropdown} page={dropPage} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {drop && (
+        <Dropdown page={dropPage} onMouseLeave={handleHideDropdown} />
+      )}
     </nav>
   );
 };
 
-export default memo(Navbar);
+export default Navbar;

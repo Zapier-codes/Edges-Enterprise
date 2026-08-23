@@ -1,0 +1,609 @@
+From 0c5212d9b10f561af62d936530727424c2811246 Mon Sep 17 00:00:00 2001
+From: Claude <claude@anthropic.com>
+Date: Sun, 23 Aug 2026 20:41:02 +0000
+Subject: [PATCH] Rebuild Navbar as responsive, animated, React-state-driven
+ component
+
+- Install framer-motion
+- Replace the old classList.toggle('open')/getElementById DOM hacks
+  with real React state (mobileOpen) and Framer Motion (AnimatePresence)
+- Mobile menu: animated hamburger -> X, slide/fade panel, closes on
+  link click, closes automatically if the viewport grows past the
+  md breakpoint (e.g. rotating a tablet), locks body scroll while open
+- Desktop services/products dropdown now animates in/out instead of
+  popping, and Dropdown.js gets dark: variants + a proper list key
+- Add proper aria-label/aria-expanded/aria-controls to the menu button
+- Remove now-unused hamburger DOM-manipulation code from App.js and
+  the matching hand-rolled CSS from App.css
+---
+ frontend/package-lock.json          |  47 +++-
+ frontend/package.json               |   1 +
+ frontend/src/App.css                |  41 ----
+ frontend/src/App.js                 |   9 +-
+ frontend/src/components/Dropdown.js |   9 +-
+ frontend/src/components/Navbar.js   | 324 ++++++++++++++--------------
+ 6 files changed, 210 insertions(+), 221 deletions(-)
+
+diff --git a/frontend/package-lock.json b/frontend/package-lock.json
+index 3bf86a7..8815d05 100644
+--- a/frontend/package-lock.json
++++ b/frontend/package-lock.json
+@@ -1,17 +1,18 @@
+ {
+-  "name": "frontend",
++  "name": "edges-enterprise-frontend",
+   "version": "0.1.0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+-      "name": "frontend",
++      "name": "edges-enterprise-frontend",
+       "version": "0.1.0",
+       "dependencies": {
+         "@testing-library/jest-dom": "^5.17.0",
+         "@testing-library/react": "^13.4.0",
+         "@testing-library/user-event": "^13.5.0",
+         "axios": "^1.4.0",
++        "framer-motion": "^11.18.2",
+         "joi": "^17.9.2",
+         "js-cookie": "^3.0.5",
+         "jwt-decode": "^3.1.2",
+@@ -8589,6 +8590,33 @@
+         "url": "https://www.patreon.com/infusion"
+       }
+     },
++    "node_modules/framer-motion": {
++      "version": "11.18.2",
++      "resolved": "https://registry.npmjs.org/framer-motion/-/framer-motion-11.18.2.tgz",
++      "integrity": "sha512-5F5Och7wrvtLVElIpclDT0CBzMVg3dL22B64aZwHtsIY8RB4mXICLrkajK4G9R+ieSAGcgrLeae2SeUTg2pr6w==",
++      "license": "MIT",
++      "dependencies": {
++        "motion-dom": "^11.18.1",
++        "motion-utils": "^11.18.1",
++        "tslib": "^2.4.0"
++      },
++      "peerDependencies": {
++        "@emotion/is-prop-valid": "*",
++        "react": "^18.0.0 || ^19.0.0",
++        "react-dom": "^18.0.0 || ^19.0.0"
++      },
++      "peerDependenciesMeta": {
++        "@emotion/is-prop-valid": {
++          "optional": true
++        },
++        "react": {
++          "optional": true
++        },
++        "react-dom": {
++          "optional": true
++        }
++      }
++    },
+     "node_modules/fresh": {
+       "version": "0.5.2",
+       "resolved": "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz",
+@@ -12416,6 +12444,21 @@
+         "mkdirp": "bin/cmd.js"
+       }
+     },
++    "node_modules/motion-dom": {
++      "version": "11.18.1",
++      "resolved": "https://registry.npmjs.org/motion-dom/-/motion-dom-11.18.1.tgz",
++      "integrity": "sha512-g76KvA001z+atjfxczdRtw/RXOM3OMSdd1f4DL77qCTF/+avrRJiawSG4yDibEQ215sr9kpinSlX2pCTJ9zbhw==",
++      "license": "MIT",
++      "dependencies": {
++        "motion-utils": "^11.18.1"
++      }
++    },
++    "node_modules/motion-utils": {
++      "version": "11.18.1",
++      "resolved": "https://registry.npmjs.org/motion-utils/-/motion-utils-11.18.1.tgz",
++      "integrity": "sha512-49Kt+HKjtbJKLtgO/LKj9Ld+6vw9BjH5d9sc40R/kVyH8GLAXgT42M2NnuPcJNuA3s9ZfZBUcwIgpmZWGEE+hA==",
++      "license": "MIT"
++    },
+     "node_modules/ms": {
+       "version": "2.1.2",
+       "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz",
+diff --git a/frontend/package.json b/frontend/package.json
+index 49f6882..2b023bc 100644
+--- a/frontend/package.json
++++ b/frontend/package.json
+@@ -7,6 +7,7 @@
+     "@testing-library/react": "^13.4.0",
+     "@testing-library/user-event": "^13.5.0",
+     "axios": "^1.4.0",
++    "framer-motion": "^11.18.2",
+     "joi": "^17.9.2",
+     "js-cookie": "^3.0.5",
+     "jwt-decode": "^3.1.2",
+diff --git a/frontend/src/App.css b/frontend/src/App.css
+index 3bec727..5b6e8a8 100644
+--- a/frontend/src/App.css
++++ b/frontend/src/App.css
+@@ -2,47 +2,6 @@ body{
+     margin: 0;
+     padding: 0;
+ }
+-.hamburger{
+-    cursor: pointer;
+-    height: 24px;
+-    width: 24px;
+-    transition: all 0.25s;
+-    position: relative;
+-}
+-.hamburger-top,
+-.hamburger-middle,
+-.hamburger-bottom{
+-position: absolute;
+-top: 0;
+-left: 0;
+-width: 24px;
+-height: 2px;
+-background: #000;
+-transform: rotate(0);
+-transition: all 0.5;
+-}
+-.hamburger-middle
+-{
+-    transform: translateY(7px);
+-}
+-.hamburger-bottom
+-{
+-    transform: translateY(14px);
+-}
+-.open
+-{
+-    transform: rotate(90deg);
+-    transform: translateY(0px);
+-}
+-.open .hamburger-top{
+-    transform: rotate(45deg) translateY(6px) translate(6px);
+-}
+-.open .hamburger-middle
+-{display: none;}
+-.open .hamburger-bottom{
+-    transform: rotate(-45deg) translateY(6px) translate(-6px);
+-}
+-
+ 
+ select option:first-child {
+     color: gray;
+diff --git a/frontend/src/App.js b/frontend/src/App.js
+index a6078a3..0ed9258 100644
+--- a/frontend/src/App.js
++++ b/frontend/src/App.js
+@@ -22,13 +22,6 @@ import ResetPassword from "./components/ResetPassword";
+ 
+ function App() {
+   const setIsLoggedIn=useStore(state=>state.setIsLoggedIn)
+-  const hamburger = () => {
+-    var elem = document.getElementById("menu-btn");
+-    var nav = document.getElementById("menu");
+-    elem.classList.toggle("open");
+-    nav.classList.toggle("flex");
+-    nav.classList.toggle("hidden");
+-  };
+ 
+   const {getAllServices,getAllProducts,getAllReviews}=useStore()
+     useEffect(()=>{
+@@ -51,7 +44,7 @@ function App() {
+ 
+   return (
+     <>
+-      <Navbar hamburger={hamburger}/>
++      <Navbar/>
+       <Routes>
+         <Route exact element={<Home />} path="/" />
+         <Route exact element={<About />} path="/about" />
+diff --git a/frontend/src/components/Dropdown.js b/frontend/src/components/Dropdown.js
+index de12a64..6c20ee6 100644
+--- a/frontend/src/components/Dropdown.js
++++ b/frontend/src/components/Dropdown.js
+@@ -15,23 +15,24 @@ const Dropdown = (props) => {
+   return (
+     <div
+       onMouseLeave={props.onMouseLeave}
+-      className="absolute w-full left-0 my-0 py-2 px-14 mx-0 bg-white hidden md:flex flex-col"
++      className="absolute w-full left-0 my-0 py-2 px-14 mx-0 bg-white dark:bg-graphite hidden md:flex flex-col shadow-lg dark:shadow-black/40"
+     >
+       <div className="m-6 ml-4 flex align-middle">
+         <Link
+           to={props.page ? "/products" : "/services"}
+-          className="font-semibold text-xl"
++          className="font-semibold text-xl text-graphite dark:text-silver hover:text-theme dark:hover:text-accent"
+         >
+           See all
+         </Link>
+       </div>
+-      <hr />
++      <hr className="border-slate/30" />
+       <div className="grid grid-cols-3 mx-10 my-4 justify-content-center items-start">
+         {doc &&
+           doc.map((item) => (
+             <Link
++              key={item.id}
+               to={props.page ? item.url : "/services/" + 5 + item.id + 8}
+-              className="font-semibold	 my-1 text-xl"
++              className="font-semibold my-1 text-xl text-graphite dark:text-silver hover:text-theme dark:hover:text-accent"
+               target="_blank"
+             >
+               {item.name}
+diff --git a/frontend/src/components/Navbar.js b/frontend/src/components/Navbar.js
+index 75d756a..080e4f3 100644
+--- a/frontend/src/components/Navbar.js
++++ b/frontend/src/components/Navbar.js
+@@ -1,212 +1,204 @@
+-import React, { useState, useEffect, useRef, useCallback, memo } from "react";
++import React, { useState, useEffect, useRef, memo } from "react";
+ import { Link } from "react-router-dom";
++import { motion, AnimatePresence } from "framer-motion";
+ import logo from "./../resources/logo2.svg";
+ import Dropdown from "./Dropdown";
+ import ThemeToggle from "./ThemeToggle";
+ import useStore from "../store/store";
+ 
+-const Navbar = (props) => {
++const NAV_LINKS = [
++  { to: "/about", label: "About Us" },
++  { to: "/services", label: "What we do?", hasDropdown: true, isProducts: false },
++  { to: "/products", label: "Our Products", hasDropdown: true, isProducts: true },
++  { to: "/careers", label: "Careers" },
++];
++
++const linkClasses =
++  "text-theme dark:text-accent text-lg font-normal hover:text-black dark:hover:text-white transition-colors";
++
++const mobileLinkClasses =
++  "text-theme dark:text-accent font-semibold text-lg hover:text-black dark:hover:text-white transition-colors";
++
++const Navbar = () => {
+   const isLoggedIn = useStore((state) => state.isLoggedIn);
+ 
+   const [drop, setDrop] = useState(false);
+   const [dropPage, setDropPage] = useState(true);
++  const [mobileOpen, setMobileOpen] = useState(false);
+   const containerRef = useRef(null);
+ 
+-  const handleShowDropdown = (e) => {
+-    if (e.target.innerText === "Our Products") {
+-      setDropPage(true);
+-    } else {
+-      setDropPage(false);
+-    }
+-
+-    if (
+-      e.target &&
+-      e.target.childNodes.length > 1 &&
+-      e.target.childNodes[1].childNodes[0].childNodes[0]
+-    ) {
+-      setDrop(true);
+-      e.target.childNodes[1].childNodes[0].childNodes[0].setAttribute(
+-        "stroke",
+-        "#000000"
+-      );
+-    }
++  const showDropdown = (isProducts) => {
++    setDropPage(isProducts);
++    setDrop(true);
+   };
++  const hideDropdown = () => setDrop(false);
+ 
+-  const handleHideDropdown = useCallback(() => {
+-    setDrop(false);
+-    document
+-      .getElementsByClassName("arrow")[0]
+-      .setAttribute("stroke", "#0A76DB");
+-    document
+-      .getElementsByClassName("arrow")[1]
+-      .setAttribute("stroke", "#0A76DB");
+-  }, []);
+-
++  // Close the desktop dropdown when the pointer leaves the navbar entirely.
+   useEffect(() => {
+-    const handleContainerMouseLeave = (e) => {
+-      if (!containerRef.current.contains(e.target)) {
++    const handleLeave = (e) => {
++      if (containerRef.current && !containerRef.current.contains(e.target)) {
+         setDrop(false);
+-        document
+-          .getElementsByClassName("arrow")[0]
+-          .setAttribute("stroke", "#0A76DB");
+-        document
+-          .getElementsByClassName("arrow")[1]
+-          .setAttribute("stroke", "#0A76DB");
+       }
+     };
++    document.addEventListener("mouseleave", handleLeave);
++    return () => document.removeEventListener("mouseleave", handleLeave);
++  }, []);
+ 
+-    document.addEventListener("mouseleave", handleContainerMouseLeave);
+-
++  // Lock body scroll while the mobile menu is open, and close it if the
++  // viewport grows past the mobile breakpoint (e.g. rotating a tablet).
++  useEffect(() => {
++    document.body.style.overflow = mobileOpen ? "hidden" : "";
++    const handleResize = () => {
++      if (window.innerWidth >= 768) setMobileOpen(false);
++    };
++    window.addEventListener("resize", handleResize);
+     return () => {
+-      document.removeEventListener("mouseleave", handleContainerMouseLeave);
++      document.body.style.overflow = "";
++      window.removeEventListener("resize", handleResize);
+     };
+-  }, []);
++  }, [mobileOpen]);
+ 
+   return (
+-    <nav ref={containerRef} className="relative p-6 mx-auto">
+-      <div className="flex items-center justify-between md:space-x-6 ">
+-        <Link to="/" className="">
+-          <img src={logo} className="w-1/2" alt="logo" />
++    <nav ref={containerRef} className="relative p-4 sm:p-6 mx-auto">
++      <div className="flex items-center justify-between">
++        <Link to="/" onClick={() => setMobileOpen(false)}>
++          <img src={logo} className="w-32 sm:w-40 md:w-48" alt="logo" />
+         </Link>
+-        <ul className="hidden menu space-x-6 md:flex">
+-          <li className="flex relative items-center">
+-            <Link
+-              to="/about"
+-              className="text-theme dark:text-accent text-lg font-normal mr-6 hover:text-[#000000] dark:hover:text-white"
+-            >
+-              About Us
+-            </Link>
+-          </li>
+-          <li className="flex relative items-center">
+-            <Link
+-              onMouseEnter={(e) => handleShowDropdown(e)}
+-              to="/services"
+-              className="text-theme dark:text-accent  hover:text-[#000000] dark:hover:text-white text-lg font-normal"
+-            >
+-              What we do?
+-              <span className="mx-3 rotate-90 inline-block">
+-                <svg
+-                  viewBox="0 0 10 19"
+-                  fill="none"
+-                  xmlns="http://www.w3.org/2000/svg"
+-                  width="7"
+-                >
+-                  <path
+-                    className="arrow"
+-                    d="m1 17.5 8-8-8-8"
+-                    stroke="#0A76DB"
+-                    stroke-width="1.2"
+-                    stroke-linecap="round"
+-                    stroke-linejoin="round"
+-                  ></path>
+-                </svg>
+-              </span>
+-            </Link>
+-          </li>
+-          <li className="flex relative items-center ">
+-            <Link
+-              onMouseEnter={(e) => handleShowDropdown(e)}
+-              to="/products"
+-              className="text-theme dark:text-accent text-lg font-normal hover:text-[#000000] dark:hover:text-white"
+-            >
+-              Our Products
+-              <span className="mx-3 rotate-90 inline-block">
+-                <svg
+-                  viewBox="0 0 10 19"
+-                  fill="none"
+-                  xmlns="http://www.w3.org/2000/svg"
+-                  width="7"
+-                >
+-                  <path
+-                    className="arrow"
+-                    d="m1 17.5 8-8-8-8"
+-                    stroke="#0A76DB"
+-                    stroke-width="1.2"
+-                    stroke-linecap="round"
+-                    stroke-linejoin="round"
+-                  ></path>
+-                </svg>
+-              </span>
+-            </Link>
+-          </li>
+-          <li className="flex relative items-center">
+-            <Link
+-              to={isLoggedIn ? "/dashboard" : "/login"}
+-              className="text-theme dark:text-accent ml-2 mr-4 text-lg font-normal hover:text-[#000000] dark:hover:text-white"
+-            >
++
++        {/* Desktop / tablet nav (md and up) */}
++        <ul className="hidden md:flex items-center space-x-6 lg:space-x-8">
++          {NAV_LINKS.map((item) => (
++            <li key={item.to} className="relative flex items-center">
++              <Link
++                to={item.to}
++                onMouseEnter={
++                  item.hasDropdown ? () => showDropdown(item.isProducts) : undefined
++                }
++                className={linkClasses}
++              >
++                {item.label}
++                {item.hasDropdown && (
++                  <span className="ml-2 inline-block align-middle">
++                    <svg
++                      viewBox="0 0 10 19"
++                      fill="none"
++                      xmlns="http://www.w3.org/2000/svg"
++                      width="7"
++                      className="rotate-90"
++                    >
++                      <path
++                        d="m1 17.5 8-8-8-8"
++                        stroke="currentColor"
++                        strokeWidth="1.2"
++                        strokeLinecap="round"
++                        strokeLinejoin="round"
++                      />
++                    </svg>
++                  </span>
++                )}
++              </Link>
++            </li>
++          ))}
++          <li className="flex items-center">
++            <Link to={isLoggedIn ? "/dashboard" : "/login"} className={linkClasses}>
+               {isLoggedIn ? "Dashboard" : "Our Portal"}
+             </Link>
+           </li>
+-          <li className="flex relative items-center">
+-            <Link
+-              to="/careers"
+-              className="text-theme dark:text-accent text-lg font-normal hover:text-[#000000] dark:hover:text-white"
+-            >
+-              Careers
+-            </Link>
+-          </li>
+         </ul>
++
+         <div className="hidden md:flex items-center space-x-3">
+           <ThemeToggle />
+           <Link
+             to="/contact"
+-            className="rounded-full bg-theme text-[#FFFFFF] lg:p-2 md::px-8 md:text-sm hover:bg-[#000000] dark:hover:bg-accent dark:hover:text-midnight"
++            className="rounded-full bg-theme text-white px-6 py-2 text-sm font-medium hover:bg-black dark:hover:bg-accent dark:hover:text-midnight transition-colors"
+           >
+             Get Started
+           </Link>
+         </div>
+ 
++        {/* Mobile controls (below md) */}
+         <div className="flex items-center space-x-2 md:hidden">
+           <ThemeToggle />
+-        <button
+-          id="menu-btn"
+-          className="hamburger block md:hidden focus:outline-none"
+-          onClick={props.hamburger}
+-        >
+-          <span className="hamburger-top"></span>
+-          <span className="hamburger-middle"></span>
+-          <span className="hamburger-bottom"></span>
+-        </button>
++          <button
++            type="button"
++            aria-label={mobileOpen ? "Close menu" : "Open menu"}
++            aria-expanded={mobileOpen}
++            aria-controls="mobile-menu"
++            onClick={() => setMobileOpen((v) => !v)}
++            className="relative h-9 w-9 flex flex-col items-center justify-center gap-1.5 focus:outline-none"
++          >
++            <motion.span
++              animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
++              className="block h-0.5 w-6 bg-graphite dark:bg-silver rounded-full"
++              transition={{ duration: 0.2 }}
++            />
++            <motion.span
++              animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
++              className="block h-0.5 w-6 bg-graphite dark:bg-silver rounded-full"
++              transition={{ duration: 0.15 }}
++            />
++            <motion.span
++              animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
++              className="block h-0.5 w-6 bg-graphite dark:bg-silver rounded-full"
++              transition={{ duration: 0.2 }}
++            />
++          </button>
+         </div>
+       </div>
+-      <div className="md:hidden">
+-        <div
+-          className="absolute items-center self-end flex-col py-8 mt-10 hidden space-y-6 font-bold bg-white dark:bg-graphite sm:self-center sm:w-auto left-6 right-6 drop-shadow-md dark:shadow-black/40"
+-          id="menu"
+-        >
+-          <Link
+-            to="/about"
+-            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
+-          >
+-            About Us
+-          </Link>
+-          <Link
+-            to="/services"
+-            className="text-theme dark:text-accent font-semibold hover:text-[#000000]] dark:hover:text-white"
+-          >
+-            What we do?
+-          </Link>
+-          <Link
+-            to="/products"
+-            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
+-          >
+-            Our Products
+-          </Link>
+-          <Link
+-            to={isLoggedIn ? "/dashboard" : "/login"}
+-            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
++
++      {/* Mobile menu panel */}
++      <AnimatePresence>
++        {mobileOpen && (
++          <motion.div
++            id="mobile-menu"
++            initial={{ opacity: 0, y: -12 }}
++            animate={{ opacity: 1, y: 0 }}
++            exit={{ opacity: 0, y: -12 }}
++            transition={{ duration: 0.2, ease: "easeOut" }}
++            className="md:hidden absolute left-4 right-4 sm:left-6 sm:right-6 mt-4 z-40 flex flex-col items-center space-y-5 py-8 px-6
++                       bg-white dark:bg-graphite rounded-2xl shadow-xl dark:shadow-black/40"
+           >
+-            {isLoggedIn ? "Dashboard" : "Our Portal"}
+-          </Link>
+-          <Link
+-            to="/careers"
+-            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
++            {NAV_LINKS.map((item) => (
++              <Link
++                key={item.to}
++                to={item.to}
++                onClick={() => setMobileOpen(false)}
++                className={mobileLinkClasses}
++              >
++                {item.label}
++              </Link>
++            ))}
++            <Link
++              to={isLoggedIn ? "/dashboard" : "/login"}
++              onClick={() => setMobileOpen(false)}
++              className={mobileLinkClasses}
++            >
++              {isLoggedIn ? "Dashboard" : "Our Portal"}
++            </Link>
++            <Link
++              to="/contact"
++              onClick={() => setMobileOpen(false)}
++              className="rounded-full bg-theme text-white px-8 py-2 text-sm font-medium hover:bg-black dark:hover:bg-accent dark:hover:text-midnight transition-colors"
++            >
++              Get Started
++            </Link>
++          </motion.div>
++        )}
++      </AnimatePresence>
++
++      {/* Desktop services/products dropdown */}
++      <AnimatePresence>
++        {drop && (
++          <motion.div
++            initial={{ opacity: 0, y: -8 }}
++            animate={{ opacity: 1, y: 0 }}
++            exit={{ opacity: 0, y: -8 }}
++            transition={{ duration: 0.15 }}
+           >
+-            Careers
+-          </Link>
+-        </div>
+-      </div>
+-      {drop && <Dropdown onMouseLeave={handleHideDropdown} page={dropPage} />}
++            <Dropdown onMouseLeave={hideDropdown} page={dropPage} />
++          </motion.div>
++        )}
++      </AnimatePresence>
+     </nav>
+   );
+ };
+-- 
+2.43.0
+

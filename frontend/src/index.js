@@ -7,18 +7,15 @@ import { BrowserRouter } from "react-router-dom";
 import { ToastContainer, Zoom  } from 'react-toastify';
 // eslint-disable-next-line
 import useStore from './store/store';
-import { ThemeProvider } from './context/ThemeContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
     <BrowserRouter>
     <ToastContainer transition={Zoom} autoClose={2000}/>
 
     <App />
     </BrowserRouter>
-    </ThemeProvider>
   </React.StrictMode>
 );
 

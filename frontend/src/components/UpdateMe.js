@@ -1,121 +1,66 @@
 import React, { useState } from "react";
-import signup from "./../resources/signup.svg";
-import notify from "./toast.js";
 import useStore from "../store/store";
-import LoadingBar from "react-top-loading-bar";
+import notify from "./toast.js";
 
 const UpdateMe = () => {
-  const updatePassword = useStore((state) => state.patchUpdatePassword);
-  const [updateData, setupdateData] = useState({
-    oldPassword: "",
-    password: "",
-    confirmPassword: "",
+  const patchUpdatePassword = useStore((state) => state.patchUpdatePassword);
+  const [data, setData] = useState({
+    passwordCurrent: "", password: "", passwordConfirm: "",
   });
-  const [progress, setProgress] = useState(0);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setupdateData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(updateData);
-    try {
-      setProgress(80);
-      await updatePassword(updateData);
-      notify("Updated successfull");
-      setProgress(100);
-    } catch (error) {
-      setProgress(100);
-      notify("Please provide correct passwords");
+    if (data.password !== data.passwordConfirm) {
+      notify("Passwords do not match");
       return;
     }
+    try {
+      await patchUpdatePassword(data);
+      notify("Password updated successfully");
+    } catch (error) {
+      notify("Error updating password");
+    }
   };
+
   return (
-    <>
-      <LoadingBar
-        color="#f11946"
-        progress={progress}
-        onLoaderFinished={() => setProgress(0)}
-      />
+    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5 max-w-lg">
+      <h3 className="text-white font-semibold text-lg mb-2">Update Password</h3>
       <div>
-        <section className="md:mb-10 mb-48 mt-4">
-          <div className="container-fluid h-custom">
-            <div className="row d-flex justify-content-center align-items-center h-100">
-              <div className="col-md-9 col-lg-6 col-xl-5">
-                <img src={signup} className="img-fluid" alt="Sample " />
-              </div>
-              <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-                <h1 className="text-center mb-8 mt-6 text-4xl font-bold">
-                  Update Password
-                </h1>
-                <form>
-                  <div className="form-outline mb-3">
-                    <input
-                      type="password"
-                      id="form3Example5"
-                      onChange={(e) => handleChange(e)}
-                      name="oldPassword"
-                      value={updateData.oldPassword}
-                      className="form-control form-control-lg"
-                      placeholder="Enter old password"
-                    />
-                    <label className="form-label" for="form3Example5">
-                      Old Password
-                    </label>
-                  </div>
-
-                  <div className="form-outline mb-3">
-                    <input
-                      type="password"
-                      id="form3Example6"
-                      onChange={(e) => handleChange(e)}
-                      name="password"
-                      value={updateData.password}
-                      className="form-control form-control-lg"
-                      placeholder="Enter new password"
-                    />
-                    <label className="form-label" for="form3Example5">
-                      Password must be alphanumeric,containing a special
-                      character and upper case letter and 7 letters minimum
-                    </label>
-                  </div>
-                  <div className="form-outline mb-3">
-                    <input
-                      type="password"
-                      id="form3Example7"
-                      onChange={(e) => handleChange(e)}
-                      name="confirmPassword"
-                      value={updateData.confirmPassword}
-                      className="form-control form-control-lg"
-                      placeholder="Enter confrim password"
-                    />
-                    <label className="form-label" for="form3Example6">
-                      Confirm Password
-                    </label>
-                  </div>
-
-                  <div className="text-center text-lg-start mt-4 pt-2">
-                    <button
-                      onClick={handleSubmit}
-                      type="submit"
-                      className="btn hover:bg-[#1a1269] text-white bg-[#2e318f] btn-lg"
-                      style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
-                    >
-                      Update
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
+        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Current Password</label>
+        <input
+          type="password" name="passwordCurrent" value={data.passwordCurrent} onChange={handleChange}
+          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          placeholder="••••••••" required
+        />
       </div>
-    </>
+      <div>
+        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">New Password</label>
+        <input
+          type="password" name="password" value={data.password} onChange={handleChange}
+          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          placeholder="••••••••" required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Confirm New Password</label>
+        <input
+          type="password" name="passwordConfirm" value={data.passwordConfirm} onChange={handleChange}
+          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          placeholder="••••••••" required
+        />
+      </div>
+      <button
+        type="submit" onClick={handleSubmit}
+        className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
+      >
+        Update Password
+      </button>
+    </div>
   );
 };
 

@@ -1,0 +1,85 @@
+From b335d7611376281d9eb0cc65362595257c3a9c81 Mon Sep 17 00:00:00 2001
+From: Claude <claude@anthropic.com>
+Date: Sun, 23 Aug 2026 20:32:58 +0000
+Subject: [PATCH] Adopt Space Grotesk / Inter typography for modern
+ product-studio feel
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Chose these to match the bold-headline / clean-body aesthetic we're
+going for, without copying anything from the reference site — both
+are open-licensed (SIL OFL) Google Fonts, safe to use commercially.
+
+- Load via Google Fonts CDN (same pattern already used for Bootstrap
+  and Font Awesome in index.html), with preconnect hints
+- Register 'display' (Space Grotesk) and 'sans' (Inter) in
+  tailwind.config.js
+- Set Inter as the default body font and Space Grotesk on all
+  heading tags (h1-h6) in the base layer
+
+NOTE: fonts are CDN-loaded, not self-hosted, because this sandbox's
+network egress doesn't currently allow fonts.google.com /
+fonts.gstatic.com. Self-hosting (better for GDPR/privacy — avoids a
+third-party request to Google on every page load) is a quick swap
+later if those domains get allowlisted.
+---
+ frontend/public/index.html  | 4 +++-
+ frontend/src/index.css      | 5 ++++-
+ frontend/tailwind.config.js | 5 ++++-
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/frontend/public/index.html b/frontend/public/index.html
+index e2d5158..ddb02a3 100644
+--- a/frontend/public/index.html
++++ b/frontend/public/index.html
+@@ -26,7 +26,9 @@
+         }
+       })();
+     </script>
+-    <!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700,900&display=swap" rel="stylesheet"> -->
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+     
+     <script src="https://kit.fontawesome.com/159a6538d8.js" crossorigin="anonymous"></script>
+diff --git a/frontend/src/index.css b/frontend/src/index.css
+index c234a59..8696f20 100644
+--- a/frontend/src/index.css
++++ b/frontend/src/index.css
+@@ -4,10 +4,13 @@
+ 
+ @layer base {
+   html {
+-    @apply bg-white text-graphite dark:bg-midnight dark:text-silver;
++    @apply bg-white text-graphite dark:bg-midnight dark:text-silver font-sans;
+   }
+   body {
+     @apply bg-white text-graphite dark:bg-midnight dark:text-silver;
+     transition: background-color 0.25s ease, color 0.25s ease;
+   }
++  h1, h2, h3, h4, h5, h6 {
++    @apply font-display;
++  }
+ }
+\ No newline at end of file
+diff --git a/frontend/tailwind.config.js b/frontend/tailwind.config.js
+index 2b8cc03..f8513ed 100644
+--- a/frontend/tailwind.config.js
++++ b/frontend/tailwind.config.js
+@@ -7,7 +7,10 @@ module.exports = {
+   ],
+   theme: {
+     extend: {
+-
++      fontFamily: {
++        display: ['"Space Grotesk"', 'sans-serif'],
++        sans: ['Inter', 'sans-serif'],
++      },
+     },
+     colors: {
+       transparent: 'transparent',
+-- 
+2.43.0
+

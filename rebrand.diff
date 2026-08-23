@@ -1,0 +1,442 @@
+diff --git a/README.md b/README.md
+index b729f4f..9ad2ed5 100644
+--- a/README.md
++++ b/README.md
+@@ -1,20 +1,18 @@
+-# Machine-Mind-Innovations
+-A Software Company website.
++# Edges Enterprise
+ 
+-Machine Minds Innovations is a complete website solution for a large software development company. It has been designed with the MVC( model view controller ) architecture of software design. 
++Edges Enterprise Ltd is a Nigerian software development and technology services company. This repository contains our corporate website and client platform, covering software engineering, fintech, telecommunications, and general engineering/procurement/maintenance (GEP) services.
+ 
+-It has a large number of features such as :
+-- A standalone website for visitors
+-- Admin dashboard functionality to add jobs services and products.
+-- Employee dashboard functionality to monitor ongoing projects.
+-- Client dashboard functionality to view the progress of ongoing projects.
+-- Email functionality with complete authentication.
++The platform is built with an MVC (Model-View-Controller) architecture.
+ 
+-The API of this website is perfectly secured, authenticated, and finely shaped according to MVC architecture. A considerable number of npm libraries are used to make the API efficient and fast. No compromises have been made on the Authentication and Security of Signed Up users. Update password, Forgot Password, Welcome Email, Password Reset Email, Role restriction, Route protection, Pre and Post data-save middlewares, Dealing with static files, Image editing and file uploading, and concepts of Aggregation pipelines have been used.
++Features include:
++- A standalone marketing website for visitors
++- Admin dashboard functionality to manage jobs, services, and products
++- Employee dashboard functionality to monitor ongoing projects
++- Client dashboard functionality to track the progress of ongoing projects
++- Email functionality with complete authentication flows
+ 
+-Styling is the core of an eye-catching website or app. I've greatly focused on styling and the website is styled fully responsive for all types of screens that exist nowadays. Whether it is a Desktop, Laptop, or Mobile Phone (portrait and landscape) the website is perfectly styled with media queries and content shifting. The front end is designed with Tailwind CSS, Custom CSS, and Bootstrap.
++The API is secured, authenticated, and structured according to MVC architecture, using a considerable number of npm libraries to keep it efficient and fast. Authentication and security for signed-up users is a priority — password updates, forgot-password flows, welcome emails, password reset emails, role restriction, route protection, pre/post data-save middleware, static file handling, image editing and file uploads, and aggregation pipelines are all in use.
+ 
+-Performance is a critical aspect of website development, as it directly impacts user experience, search engine rankings, and overall business success. The website is fast and used the most popular javascript frontend library React. API store has been created with the State management library Zustand which consumes less boilerplate and is efficient.
+-
+-Many other features can be added based on the requirements of the business. There is always room for improvement!
++The frontend uses a futuristic, corporate visual identity — deep navy backgrounds with electric blue and cyan accents — built fully responsive for desktop, laptop, and mobile (portrait and landscape). Styling is done with Tailwind CSS, custom CSS, and Bootstrap, and the UI is built with React. State is managed with Zustand for a lean, efficient store.
+ 
++Many more features can be added based on business requirements — there is always room to grow.
+diff --git a/api/package.json b/api/package.json
+index caa2bdf..e9b705e 100644
+--- a/api/package.json
++++ b/api/package.json
+@@ -1,13 +1,13 @@
+ {
+-  "name": "project",
++  "name": "edges-enterprise-api",
+   "version": "1.0.0",
+-  "description": "",
++  "description": "Edges Enterprise Ltd — API for the corporate website and client platform.",
+   "main": "app.js",
+   "scripts": {
+     "test": "echo \"Error: no test specified\" && exit 1",
+     "start": "node server.js"
+   },
+-  "author": "",
++  "author": "Edges Enterprise Ltd",
+   "license": "ISC",
+   "dependencies": {
+     "@mapbox/node-pre-gyp": "^1.0.0-alpha3",
+diff --git a/api/utils/email.js b/api/utils/email.js
+index cb20f51..4c3b669 100644
+--- a/api/utils/email.js
++++ b/api/utils/email.js
+@@ -36,7 +36,7 @@ class Email{
+ 
+     async sendWelcome()
+     {
+-        await this.send('Welcome','Welcome to Machine Minds Innovations') //signing up the user
++        await this.send('Welcome','Welcome to Edges Enterprise') //signing up the user
+     }
+ 
+     async sendResetPassword(url)
+diff --git a/frontend/package.json b/frontend/package.json
+index 33a9067..49f6882 100644
+--- a/frontend/package.json
++++ b/frontend/package.json
+@@ -1,5 +1,5 @@
+ {
+-  "name": "frontend",
++  "name": "edges-enterprise-frontend",
+   "version": "0.1.0",
+   "private": true,
+   "dependencies": {
+diff --git a/frontend/public/index.html b/frontend/public/index.html
+index fa63136..7e6c83a 100644
+--- a/frontend/public/index.html
++++ b/frontend/public/index.html
+@@ -4,13 +4,13 @@
+     <meta charset="utf-8" />
+     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+-    <meta name="theme-color" content="#000000" />
++    <meta name="theme-color" content="#060B17" />
+     <meta
+       name="description"
+-      content="Web site created using create-react-app"
++      content="Edges Enterprise Ltd — software engineering, fintech, telecommunications and enterprise technology solutions."
+     />
+ 
+-    <title>Machine Mind Innovations</title>
++    <title>Edges Enterprise</title>
+     <!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700,900&display=swap" rel="stylesheet"> -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+     
+diff --git a/frontend/public/manifest.json b/frontend/public/manifest.json
+index 080d6c7..5c2e994 100644
+--- a/frontend/public/manifest.json
++++ b/frontend/public/manifest.json
+@@ -1,6 +1,6 @@
+ {
+-  "short_name": "React App",
+-  "name": "Create React App Sample",
++  "short_name": "Edges Enterprise",
++  "name": "Edges Enterprise Ltd",
+   "icons": [
+     {
+       "src": "favicon.ico",
+@@ -20,6 +20,6 @@
+   ],
+   "start_url": ".",
+   "display": "standalone",
+-  "theme_color": "#000000",
++  "theme_color": "#060B17",
+   "background_color": "#ffffff"
+ }
+diff --git a/frontend/src/components/Careers.js b/frontend/src/components/Careers.js
+index 168251d..5d42822 100644
+--- a/frontend/src/components/Careers.js
++++ b/frontend/src/components/Careers.js
+@@ -32,7 +32,7 @@ const Careers = () => {
+               Fresh Graduate Hiring
+             </h1>
+             <p className="md:text-l lg:text-xl p-2">
+-              Recently graduated? Thrive yourself with Machine Minds Innovations
++              Recently graduated? Thrive yourself with Edges Enterprise
+               by registering to our Fresh Graduate Hiring Program 2023 before
+               3rd January {new Date().getFullYear() + 1}!
+             </p>
+diff --git a/frontend/src/components/Contact.js b/frontend/src/components/Contact.js
+index 4e339a6..d14e3fb 100644
+--- a/frontend/src/components/Contact.js
++++ b/frontend/src/components/Contact.js
+@@ -41,7 +41,7 @@ const Contact = () => {
+                 type="email"
+                 id="email"
+                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
+-                placeholder="name@mminnovations.com"
++                placeholder="name@edgesenterprise.com"
+                 required
+               />
+             </div>
+diff --git a/frontend/src/components/Footer.js b/frontend/src/components/Footer.js
+index 57c2893..1997dea 100644
+--- a/frontend/src/components/Footer.js
++++ b/frontend/src/components/Footer.js
+@@ -14,23 +14,23 @@ const Footer = () => {
+             <div className="flex flex-col justify-start items-start space-y-4 md:space-y-3 p-2 md:w-1/2">
+               {/* eslint-disable-next-line */}
+               <a href="#" className="text-white">
+-                123 Main Street, Anytown, USA
++                Registered Office: Kaduna, Kaduna State, Nigeria
+               </a>
+               {/*  eslint-disable-next-line */}
+               <a href="#" className="text-white">
+-                456 Elm Avenue, Somewhereville, Canada
++                Operations Office: Abuja, FCT, Nigeria
+               </a>
+               {/* eslint-disable-next-line */}
+               <a href="#" className="text-white">
+-                789 Oak Lane, Nowhere City, Australia
++                Remote-first — serving clients globally
+               </a>
+             </div>
+             <div className="flex flex-col justify-center items-start space-y-6 md:space-y-3 p-2 md:w-1/2">
+-              <a href="mailto:contact@mminnovations.com" className="text-white">
+-                For business enquiries: contact@mminnovations.com
++              <a href="mailto:contact@edgesenterprise.com" className="text-white">
++                For business enquiries: contact@edgesenterprise.com
+               </a>
+-              <a href="mailto:hr@mminnovations.com" className="text-white">
+-                For job oppurtunities: hr@mminnovations.com
++              <a href="mailto:hr@edgesenterprise.com" className="text-white">
++                For job oppurtunities: hr@edgesenterprise.com
+               </a>
+               <a href="/" className="text-white">
+                 Privacy Policy
+diff --git a/frontend/src/components/HomeSecond.js b/frontend/src/components/HomeSecond.js
+index 5e9dfc2..43d3c99 100644
+--- a/frontend/src/components/HomeSecond.js
++++ b/frontend/src/components/HomeSecond.js
+@@ -42,7 +42,7 @@ const HomeSecond = () => {
+           We've achieved partnerships, certifications, and customer growth
+         </h1>
+         <p className="">
+-          Machine Minds Innovations rich experience and strong work ethic have
++          Edges Enterprise's rich experience and strong work ethic have
+           forged valuable industry partnerships, leading to coveted
+           certifications from industry leaders and enabling seamless acquisition
+           of new businesses and customers.
+diff --git a/frontend/src/components/OngoingProjects.js b/frontend/src/components/OngoingProjects.js
+index 272b95b..fb895e2 100644
+--- a/frontend/src/components/OngoingProjects.js
++++ b/frontend/src/components/OngoingProjects.js
+@@ -14,7 +14,7 @@ const OngoingProjects = () => {
+         </thead>
+         <tbody>
+           <tr>
+-            <th scope="row">mmi89cd</th>
++            <th scope="row">edg89cd</th>
+             <td>Spark Inventory</td>
+             <td>Web Development</td>
+             <td>10-10-2023</td>
+diff --git a/frontend/src/resources/logo.svg b/frontend/src/resources/logo.svg
+index 020b60e..0af44d5 100644
+--- a/frontend/src/resources/logo.svg
++++ b/frontend/src/resources/logo.svg
+@@ -1 +1,11 @@
+-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 166.62 175.96"><defs><style>.cls-1{fill:url(#linear-gradient);}.cls-2{fill:url(#linear-gradient-2);}.cls-3{fill:url(#linear-gradient-3);}.cls-4{fill:url(#linear-gradient-4);}.cls-5{fill:url(#linear-gradient-5);}.cls-6{fill:url(#linear-gradient-6);}.cls-7{fill:url(#linear-gradient-7);}.cls-8{fill:url(#linear-gradient-8);}.cls-9{fill:url(#linear-gradient-9);}.cls-10{fill:url(#linear-gradient-10);}.cls-11{fill:url(#linear-gradient-11);}.cls-12{fill:url(#linear-gradient-12);}.cls-13{fill:url(#linear-gradient-13);}.cls-14{fill:url(#linear-gradient-14);}.cls-15{fill:url(#linear-gradient-15);}.cls-16{fill:url(#linear-gradient-16);}.cls-17{fill:url(#linear-gradient-17);}.cls-18{fill:url(#linear-gradient-18);}.cls-19{fill:url(#linear-gradient-19);}.cls-20{fill:url(#linear-gradient-20);}.cls-21{fill:url(#linear-gradient-21);}</style><linearGradient id="linear-gradient" x1="208.3" y1="336.74" x2="208.3" y2="148.61" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2c4d8d"/><stop offset="0.06" stop-color="#335a99"/><stop offset="0.28" stop-color="#4c86c2"/><stop offset="0.48" stop-color="#5ea6e0"/><stop offset="0.65" stop-color="#69b9f2"/><stop offset="0.76" stop-color="#6dc0f9"/><stop offset="0.77" stop-color="#6ec2f9"/><stop offset="0.86" stop-color="#7cdcfb"/><stop offset="0.94" stop-color="#84ecfd"/><stop offset="1" stop-color="#87f1fd"/></linearGradient><linearGradient id="linear-gradient-2" x1="261.65" y1="336.74" x2="261.65" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-3" x1="274.86" y1="336.74" x2="274.86" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-4" x1="272.74" y1="336.74" x2="272.74" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-5" x1="270.13" y1="336.74" x2="270.13" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-6" x1="87" y1="174.72" x2="87" y2="-13.41" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-7" x1="253.69" y1="336.74" x2="253.69" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-8" x1="87" y1="174.72" x2="87" y2="-13.41" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-9" x1="253.69" y1="336.74" x2="253.69" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-10" x1="209.61" y1="336.74" x2="209.61" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-11" x1="225.14" y1="336.74" x2="225.14" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-12" x1="234.3" y1="336.74" x2="234.3" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-13" x1="243.66" y1="336.74" x2="243.66" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-14" x1="253.46" y1="336.74" x2="253.46" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-15" x1="239.64" y1="336.74" x2="239.64" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-16" x1="248.8" y1="336.74" x2="248.8" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-17" x1="240" y1="336.74" x2="240" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-18" x1="281.63" y1="336.74" x2="281.63" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-19" x1="320.13" y1="336.74" x2="320.13" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-20" x1="324.32" y1="336.74" x2="324.32" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-21" x1="306.26" y1="336.74" x2="306.26" y2="148.61" xlink:href="#linear-gradient"/></defs><title>logo</title><g id="OBJECTS"><g id="_Group_2" data-name="&lt;Group&gt;"><g id="_Group_3" data-name="&lt;Group&gt;"><path id="_Path_" data-name="&lt;Path&gt;" class="cls-1" d="M249.84,334.35a84,84,0,0,1,0-168l.07,6.6a77.43,77.43,0,0,0,0,154.85Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_4" data-name="&lt;Group&gt;"><path id="_Path_2" data-name="&lt;Path&gt;" class="cls-2" d="M281.5,233.47H241.8a3.3,3.3,0,0,1,0-6.6h36.4V191.82a3.3,3.3,0,0,1,6.6,0v38.35A3.3,3.3,0,0,1,281.5,233.47Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_5" data-name="&lt;Group&gt;"><path id="_Path_3" data-name="&lt;Path&gt;" class="cls-3" d="M320,248.77H229.69a3.3,3.3,0,0,1,0-6.6h87V229.82a3.3,3.3,0,1,1,6.6,0v15.64A3.3,3.3,0,0,1,320,248.77Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_6" data-name="&lt;Group&gt;"><path id="_Path_4" data-name="&lt;Path&gt;" class="cls-4" d="M317.58,264.06H227.89a3.3,3.3,0,0,1,0-6.6h89.69a3.3,3.3,0,1,1,0,6.6Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_7" data-name="&lt;Group&gt;"><path id="_Path_5" data-name="&lt;Path&gt;" class="cls-5" d="M299.36,301.54H285.87a3.3,3.3,0,0,1-3.3-3.3V280H240.9a3.3,3.3,0,0,1,0-6.6h45a3.3,3.3,0,0,1,3.3,3.3v18.23h10.19a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_8" data-name="&lt;Group&gt;"><circle id="_Path_6" data-name="&lt;Path&gt;" class="cls-6" cx="87" cy="168.62" r="4.04"/><path id="_Compound_Path_" data-name="&lt;Compound Path&gt;" class="cls-7" d="M253.69,338a7.34,7.34,0,1,1,7.34-7.34A7.35,7.35,0,0,1,253.69,338Zm0-8.08a.74.74,0,1,0,.74.74A.74.74,0,0,0,253.69,329.91Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_9" data-name="&lt;Group&gt;"><circle id="_Path_7" data-name="&lt;Path&gt;" class="cls-8" cx="87" cy="7.34" r="4.04"/><path id="_Compound_Path_2" data-name="&lt;Compound Path&gt;" class="cls-9" d="M253.69,176.69a7.34,7.34,0,1,1,7.34-7.34A7.35,7.35,0,0,1,253.69,176.69Zm0-8.08a.74.74,0,1,0,.74.74A.74.74,0,0,0,253.69,168.62Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_10" data-name="&lt;Group&gt;"><g id="_Group_11" data-name="&lt;Group&gt;"><path id="_Path_8" data-name="&lt;Path&gt;" class="cls-10" d="M208.56,269.22a15.3,15.3,0,0,1-5.09-.94c-10.27-3.61-20.37-16.82-21.53-23.54-.44-2.56-2.16-3.29-6.61-4.57a36.64,36.64,0,0,1-4.61-1.56,3.3,3.3,0,1,1,2.65-6,31.33,31.33,0,0,0,3.79,1.26c4.26,1.23,10.1,2.91,11.29,9.79.75,4.34,9.19,15.61,17.21,18.43,3.18,1.12,4.89.34,5.9-.47-.18-1.7-3.34-6.08-5.26-8.74-4.15-5.74-7.73-10.7-6.3-15.07a6.44,6.44,0,0,1,4.47-4.13,21.59,21.59,0,0,1,9-1.12c1.73.11,2.2.14,5.44-4.92,4.44-6.93,12.69-8.79,18.72-10.14,2.19-.49,5.44-1.22,6.26-1.93-.09-1.85-2-4.3-4.68-6s-6.91-3.09-10.41-1.51c-7,3.16-13.12.88-15.33-2.86-1.54-2.61-1.4-6.52,2.39-9.37,2.59-1.94,4.25-5,4.43-6.37a7,7,0,0,0-1.8.17A29.21,29.21,0,0,1,202,188.21a3.3,3.3,0,0,1,2.52-6.1,22.78,22.78,0,0,0,12.65,1c6.14-1.23,8.37,1.52,9.16,3.27,2.14,4.78-2.42,11.59-6.53,14.67a1.93,1.93,0,0,0-.69.75,2.5,2.5,0,0,0,.93.66c.58.26,2.74,1,6-.48,5-2.27,11.27-1.53,16.7,2,4.75,3.07,7.7,7.56,7.7,11.72,0,5.66-6.06,7-11.42,8.23s-11.64,2.62-14.61,7.27c-4.58,7.14-6.87,8.24-11.43,7.95a15.1,15.1,0,0,0-6.52.82l-.22.08c.16,1.76,3.52,6.42,5.36,9,4.63,6.41,9.41,13,4.52,17.35A11.28,11.28,0,0,1,208.56,269.22Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_12" data-name="&lt;Group&gt;"><path id="_Path_9" data-name="&lt;Path&gt;" class="cls-11" d="M202.55,318.52a3.29,3.29,0,0,1-2-.67c-3.42-2.59-9-9.7-5.42-18.08,2.64-6.24,6.71-9.1,10-11.39a21.41,21.41,0,0,0,3.92-3.2c1.05-1.21,1.88-3.46,2.68-5.64,1.54-4.18,3.46-9.38,8.64-9.58,3.92-.12,6.65,3.25,9.81,7.18,3,3.74,6.42,8,11,9.65a23,23,0,0,0,5.84,1c2.64.21,5.38.43,7.62,1.75a3.3,3.3,0,0,1-3.35,5.69c-.94-.55-2.9-.71-4.8-.86a28.34,28.34,0,0,1-7.57-1.34c-6.32-2.3-10.52-7.52-13.89-11.72-1.44-1.79-3.62-4.5-4.53-4.73-.66,0-2,3.7-2.59,5.27-1,2.73-2,5.56-3.9,7.69a26.92,26.92,0,0,1-5.11,4.27c-3,2.09-5.79,4.06-7.69,8.56-2.45,5.8,3.26,10.21,3.32,10.25a3.3,3.3,0,0,1-2,5.93Z" transform="translate(-166.69 -162.02)"/></g></g><g id="_Group_13" data-name="&lt;Group&gt;"><path id="_Path_10" data-name="&lt;Path&gt;" class="cls-12" d="M234.3,195.91a3.3,3.3,0,0,1-3.3-3.3V181.82a3.3,3.3,0,0,1,6.6,0v10.79A3.3,3.3,0,0,1,234.3,195.91Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_14" data-name="&lt;Group&gt;"><path id="_Path_11" data-name="&lt;Path&gt;" class="cls-13" d="M243.66,200.86a3.3,3.3,0,0,1-3.3-3.3V181.82a3.3,3.3,0,0,1,6.6,0v15.73A3.3,3.3,0,0,1,243.66,200.86Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_15" data-name="&lt;Group&gt;"><path id="_Path_12" data-name="&lt;Path&gt;" class="cls-14" d="M253.46,209.32a3.3,3.3,0,0,1-3.3-3.3v-24.2a3.3,3.3,0,0,1,6.6,0V206A3.3,3.3,0,0,1,253.46,209.32Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_16" data-name="&lt;Group&gt;"><path id="_Path_13" data-name="&lt;Path&gt;" class="cls-15" d="M247.48,305.54H231.81a3.3,3.3,0,0,1,0-6.6h15.68a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_17" data-name="&lt;Group&gt;"><path id="_Path_14" data-name="&lt;Path&gt;" class="cls-16" d="M255.35,314.3H242.26a3.3,3.3,0,0,1,0-6.6h13.09a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_18" data-name="&lt;Group&gt;"><path id="_Path_15" data-name="&lt;Path&gt;" class="cls-17" d="M246.55,323.06H233.46a3.3,3.3,0,0,1,0-6.6h13.09a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-166.69 -162.02)"/></g><g id="_Group_19" data-name="&lt;Group&gt;"><g id="_Group_20" data-name="&lt;Group&gt;"><path id="_Compound_Path_3" data-name="&lt;Compound Path&gt;" class="cls-18" d="M281.63,192.64a9,9,0,1,1,9-9A9,9,0,0,1,281.63,192.64Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.28,3.28,0,0,0,281.63,180.38Z" transform="translate(-166.69 -162.02)"/></g></g><g id="_Group_21" data-name="&lt;Group&gt;"><g id="_Group_22" data-name="&lt;Group&gt;"><path id="_Compound_Path_4" data-name="&lt;Compound Path&gt;" class="cls-19" d="M320.13,229.77a9,9,0,1,1,9-9A9,9,0,0,1,320.13,229.77Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.28,3.28,0,0,0,320.13,217.5Z" transform="translate(-166.69 -162.02)"/></g></g><g id="_Group_23" data-name="&lt;Group&gt;"><g id="_Group_24" data-name="&lt;Group&gt;"><path id="_Compound_Path_5" data-name="&lt;Compound Path&gt;" class="cls-20" d="M324.32,270.06a9,9,0,1,1,9-9A9,9,0,0,1,324.32,270.06Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.29,3.29,0,0,0,324.32,257.79Z" transform="translate(-166.69 -162.02)"/></g></g><g id="_Group_25" data-name="&lt;Group&gt;"><g id="_Group_26" data-name="&lt;Group&gt;"><path id="_Compound_Path_6" data-name="&lt;Compound Path&gt;" class="cls-21" d="M306.26,306.73a9,9,0,1,1,9-9A9,9,0,0,1,306.26,306.73Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.28,3.28,0,0,0,306.26,294.46Z" transform="translate(-166.69 -162.02)"/></g></g></g></g></svg>
+\ No newline at end of file
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 80" fill="none">
++  <defs>
++    <linearGradient id="edgeIconGradient" x1="0" y1="0" x2="60" y2="80" gradientUnits="userSpaceOnUse">
++      <stop offset="0" stop-color="#0B63F6"/>
++      <stop offset="1" stop-color="#00D1FF"/>
++    </linearGradient>
++  </defs>
++  <polygon points="0,4 58,4 44,24 0,24" fill="url(#edgeIconGradient)"/>
++  <polygon points="0,32 58,32 48,52 0,52" fill="url(#edgeIconGradient)" opacity="0.85"/>
++  <polygon points="0,60 58,60 38,80 0,80" fill="url(#edgeIconGradient)" opacity="0.7"/>
++</svg>
+diff --git a/frontend/src/resources/logo2.svg b/frontend/src/resources/logo2.svg
+index 0287275..f39726e 100644
+--- a/frontend/src/resources/logo2.svg
++++ b/frontend/src/resources/logo2.svg
+@@ -1 +1,15 @@
+-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 495.5 175.96"><defs><style>.cls-1{fill:url(#linear-gradient);}.cls-2{fill:url(#linear-gradient-2);}.cls-3{fill:url(#linear-gradient-3);}.cls-4{fill:url(#linear-gradient-4);}.cls-5{fill:url(#linear-gradient-5);}.cls-6{fill:url(#linear-gradient-6);}.cls-7{fill:url(#linear-gradient-7);}.cls-8{fill:url(#linear-gradient-8);}.cls-9{fill:url(#linear-gradient-9);}.cls-10{fill:url(#linear-gradient-10);}.cls-11{fill:url(#linear-gradient-11);}.cls-12{fill:url(#linear-gradient-12);}.cls-13{fill:url(#linear-gradient-13);}.cls-14{fill:url(#linear-gradient-14);}.cls-15{fill:url(#linear-gradient-15);}.cls-16{fill:url(#linear-gradient-16);}.cls-17{fill:url(#linear-gradient-17);}.cls-18{fill:url(#linear-gradient-18);}.cls-19{fill:url(#linear-gradient-19);}.cls-20{fill:url(#linear-gradient-20);}.cls-21{fill:url(#linear-gradient-21);}.cls-22{font-size:44.17px;font-family:Poppins-Regular, Poppins;}</style><linearGradient id="linear-gradient" x1="48.17" y1="336.74" x2="48.17" y2="148.61" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2c4d8d"/><stop offset="0.06" stop-color="#335a99"/><stop offset="0.28" stop-color="#4c86c2"/><stop offset="0.48" stop-color="#5ea6e0"/><stop offset="0.65" stop-color="#69b9f2"/><stop offset="0.76" stop-color="#6dc0f9"/><stop offset="0.77" stop-color="#6ec2f9"/><stop offset="0.86" stop-color="#7cdcfb"/><stop offset="0.94" stop-color="#84ecfd"/><stop offset="1" stop-color="#87f1fd"/></linearGradient><linearGradient id="linear-gradient-2" x1="101.52" y1="336.74" x2="101.52" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-3" x1="114.72" y1="336.74" x2="114.72" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-4" x1="112.61" y1="336.74" x2="112.61" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-5" x1="110" y1="336.74" x2="110" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-6" x1="87" y1="174.72" x2="87" y2="-13.41" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-7" x1="93.56" y1="336.74" x2="93.56" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-8" x1="87" y1="174.72" x2="87" y2="-13.41" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-9" x1="93.56" y1="336.74" x2="93.56" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-10" x1="49.48" y1="336.74" x2="49.48" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-11" x1="65" y1="336.74" x2="65" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-12" x1="74.17" y1="336.74" x2="74.17" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-13" x1="83.53" y1="336.74" x2="83.53" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-14" x1="93.33" y1="336.74" x2="93.33" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-15" x1="79.51" y1="336.74" x2="79.51" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-16" x1="88.67" y1="336.74" x2="88.67" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-17" x1="79.87" y1="336.74" x2="79.87" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-18" x1="121.49" y1="336.74" x2="121.49" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-19" x1="159.99" y1="336.74" x2="159.99" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-20" x1="164.19" y1="336.74" x2="164.19" y2="148.61" xlink:href="#linear-gradient"/><linearGradient id="linear-gradient-21" x1="146.13" y1="336.74" x2="146.13" y2="148.61" xlink:href="#linear-gradient"/></defs><title>logo2</title><g id="OBJECTS"><g id="_Group_2" data-name="&lt;Group&gt;"><g id="_Group_3" data-name="&lt;Group&gt;"><path id="_Path_" data-name="&lt;Path&gt;" class="cls-1" d="M89.71,334.35a84,84,0,0,1,0-168l.07,6.6a77.43,77.43,0,0,0,0,154.85Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_4" data-name="&lt;Group&gt;"><path id="_Path_2" data-name="&lt;Path&gt;" class="cls-2" d="M121.37,233.47H81.67a3.3,3.3,0,0,1,0-6.6h36.4V191.82a3.3,3.3,0,0,1,6.6,0v38.35A3.3,3.3,0,0,1,121.37,233.47Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_5" data-name="&lt;Group&gt;"><path id="_Path_3" data-name="&lt;Path&gt;" class="cls-3" d="M159.89,248.77H69.56a3.3,3.3,0,0,1,0-6.6h87V229.82a3.3,3.3,0,1,1,6.6,0v15.64A3.3,3.3,0,0,1,159.89,248.77Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_6" data-name="&lt;Group&gt;"><path id="_Path_4" data-name="&lt;Path&gt;" class="cls-4" d="M157.45,264.06H67.76a3.3,3.3,0,0,1,0-6.6h89.69a3.3,3.3,0,1,1,0,6.6Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_7" data-name="&lt;Group&gt;"><path id="_Path_5" data-name="&lt;Path&gt;" class="cls-5" d="M139.23,301.54H125.74a3.3,3.3,0,0,1-3.3-3.3V280H80.77a3.3,3.3,0,0,1,0-6.6h45a3.3,3.3,0,0,1,3.3,3.3v18.23h10.19a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_8" data-name="&lt;Group&gt;"><circle id="_Path_6" data-name="&lt;Path&gt;" class="cls-6" cx="87" cy="168.62" r="4.04"/><path id="_Compound_Path_" data-name="&lt;Compound Path&gt;" class="cls-7" d="M93.56,338a7.34,7.34,0,1,1,7.34-7.34A7.35,7.35,0,0,1,93.56,338Zm0-8.08a.74.74,0,1,0,.74.74A.74.74,0,0,0,93.56,329.91Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_9" data-name="&lt;Group&gt;"><circle id="_Path_7" data-name="&lt;Path&gt;" class="cls-8" cx="87" cy="7.34" r="4.04"/><path id="_Compound_Path_2" data-name="&lt;Compound Path&gt;" class="cls-9" d="M93.56,176.69a7.34,7.34,0,1,1,7.34-7.34A7.35,7.35,0,0,1,93.56,176.69Zm0-8.08a.74.74,0,1,0,.74.74A.74.74,0,0,0,93.56,168.62Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_10" data-name="&lt;Group&gt;"><g id="_Group_11" data-name="&lt;Group&gt;"><path id="_Path_8" data-name="&lt;Path&gt;" class="cls-10" d="M48.43,269.22a15.3,15.3,0,0,1-5.09-.94C33.07,264.68,23,251.46,21.81,244.75c-.44-2.56-2.16-3.29-6.61-4.57a36.64,36.64,0,0,1-4.61-1.56,3.3,3.3,0,1,1,2.65-6A31.33,31.33,0,0,0,17,233.84c4.26,1.23,10.1,2.91,11.29,9.79.75,4.34,9.19,15.61,17.21,18.43,3.18,1.12,4.89.34,5.9-.47-.18-1.7-3.34-6.08-5.26-8.74-4.15-5.74-7.73-10.7-6.3-15.07a6.44,6.44,0,0,1,4.47-4.13,21.59,21.59,0,0,1,9-1.12c1.73.11,2.2.14,5.44-4.92,4.44-6.93,12.69-8.79,18.72-10.14,2.19-.49,5.44-1.22,6.26-1.93-.09-1.85-2-4.3-4.68-6S72.16,206.4,68.66,208c-7,3.16-13.12.88-15.33-2.86-1.54-2.61-1.4-6.52,2.39-9.37,2.59-1.94,4.25-5,4.43-6.37a7,7,0,0,0-1.8.17,29.21,29.21,0,0,1-16.46-1.34,3.3,3.3,0,0,1,2.52-6.1,22.78,22.78,0,0,0,12.65,1c6.14-1.23,8.37,1.52,9.16,3.27,2.14,4.78-2.42,11.59-6.53,14.67a1.93,1.93,0,0,0-.69.75,2.5,2.5,0,0,0,.93.66c.58.26,2.74,1,6-.48,5-2.27,11.27-1.53,16.7,2,4.75,3.07,7.7,7.56,7.7,11.72,0,5.66-6.06,7-11.42,8.23s-11.64,2.62-14.61,7.27c-4.58,7.14-6.87,8.24-11.43,7.95a15.1,15.1,0,0,0-6.52.82l-.22.08c.16,1.76,3.52,6.42,5.36,9,4.63,6.41,9.41,13,4.52,17.35A11.28,11.28,0,0,1,48.43,269.22Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_12" data-name="&lt;Group&gt;"><path id="_Path_9" data-name="&lt;Path&gt;" class="cls-11" d="M42.41,318.52a3.29,3.29,0,0,1-2-.67c-3.42-2.59-9-9.7-5.42-18.08,2.64-6.24,6.71-9.1,10-11.39a21.41,21.41,0,0,0,3.92-3.2c1.05-1.21,1.88-3.46,2.68-5.64,1.54-4.18,3.46-9.38,8.64-9.58,3.92-.12,6.65,3.25,9.81,7.18,3,3.74,6.42,8,11,9.65a23,23,0,0,0,5.84,1c2.64.21,5.38.43,7.62,1.75a3.3,3.3,0,0,1-3.35,5.69c-.94-.55-2.9-.71-4.8-.86A28.34,28.34,0,0,1,78.79,293c-6.32-2.3-10.52-7.52-13.89-11.72-1.44-1.79-3.62-4.5-4.53-4.73-.66,0-2,3.7-2.59,5.27-1,2.73-2,5.56-3.9,7.69a26.92,26.92,0,0,1-5.11,4.27c-3,2.09-5.79,4.06-7.69,8.56-2.45,5.8,3.26,10.21,3.32,10.25a3.3,3.3,0,0,1-2,5.93Z" transform="translate(-6.56 -162.02)"/></g></g><g id="_Group_13" data-name="&lt;Group&gt;"><path id="_Path_10" data-name="&lt;Path&gt;" class="cls-12" d="M74.17,195.91a3.3,3.3,0,0,1-3.3-3.3V181.82a3.3,3.3,0,0,1,6.6,0v10.79A3.3,3.3,0,0,1,74.17,195.91Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_14" data-name="&lt;Group&gt;"><path id="_Path_11" data-name="&lt;Path&gt;" class="cls-13" d="M83.53,200.86a3.3,3.3,0,0,1-3.3-3.3V181.82a3.3,3.3,0,0,1,6.6,0v15.73A3.3,3.3,0,0,1,83.53,200.86Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_15" data-name="&lt;Group&gt;"><path id="_Path_12" data-name="&lt;Path&gt;" class="cls-14" d="M93.33,209.32A3.3,3.3,0,0,1,90,206v-24.2a3.3,3.3,0,0,1,6.6,0V206A3.3,3.3,0,0,1,93.33,209.32Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_16" data-name="&lt;Group&gt;"><path id="_Path_13" data-name="&lt;Path&gt;" class="cls-15" d="M87.35,305.54H71.67a3.3,3.3,0,0,1,0-6.6H87.35a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_17" data-name="&lt;Group&gt;"><path id="_Path_14" data-name="&lt;Path&gt;" class="cls-16" d="M95.22,314.3H82.12a3.3,3.3,0,0,1,0-6.6H95.22a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_18" data-name="&lt;Group&gt;"><path id="_Path_15" data-name="&lt;Path&gt;" class="cls-17" d="M86.42,323.06H73.32a3.3,3.3,0,0,1,0-6.6H86.42a3.3,3.3,0,0,1,0,6.6Z" transform="translate(-6.56 -162.02)"/></g><g id="_Group_19" data-name="&lt;Group&gt;"><g id="_Group_20" data-name="&lt;Group&gt;"><path id="_Compound_Path_3" data-name="&lt;Compound Path&gt;" class="cls-18" d="M121.49,192.64a9,9,0,1,1,9-9A9,9,0,0,1,121.49,192.64Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.28,3.28,0,0,0,121.49,180.38Z" transform="translate(-6.56 -162.02)"/></g></g><g id="_Group_21" data-name="&lt;Group&gt;"><g id="_Group_22" data-name="&lt;Group&gt;"><path id="_Compound_Path_4" data-name="&lt;Compound Path&gt;" class="cls-19" d="M160,229.77a9,9,0,1,1,9-9A9,9,0,0,1,160,229.77Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.28,3.28,0,0,0,160,217.5Z" transform="translate(-6.56 -162.02)"/></g></g><g id="_Group_23" data-name="&lt;Group&gt;"><g id="_Group_24" data-name="&lt;Group&gt;"><path id="_Compound_Path_5" data-name="&lt;Compound Path&gt;" class="cls-20" d="M164.19,270.06a9,9,0,1,1,9-9A9,9,0,0,1,164.19,270.06Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.29,3.29,0,0,0,164.19,257.79Z" transform="translate(-6.56 -162.02)"/></g></g><g id="_Group_25" data-name="&lt;Group&gt;"><g id="_Group_26" data-name="&lt;Group&gt;"><path id="_Compound_Path_6" data-name="&lt;Compound Path&gt;" class="cls-21" d="M146.13,306.73a9,9,0,1,1,9-9A9,9,0,0,1,146.13,306.73Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28A3.28,3.28,0,0,0,146.13,294.46Z" transform="translate(-6.56 -162.02)"/></g></g></g></g><g id="DESIGNED_BY_FREEPIK" data-name="DESIGNED BY FREEPIK"><text class="cls-22" transform="translate(175.41 68.6)">Machine Mind <tspan x="0" y="53">Innovations</tspan></text></g></svg>
+\ No newline at end of file
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
++  <defs>
++    <linearGradient id="edgeMarkGradient" x1="0" y1="0" x2="60" y2="80" gradientUnits="userSpaceOnUse">
++      <stop offset="0" stop-color="#0B63F6"/>
++      <stop offset="1" stop-color="#00D1FF"/>
++    </linearGradient>
++  </defs>
++  <g>
++    <polygon points="0,4 58,4 44,24 0,24" fill="url(#edgeMarkGradient)"/>
++    <polygon points="0,32 58,32 48,52 0,52" fill="url(#edgeMarkGradient)" opacity="0.85"/>
++    <polygon points="0,60 58,60 38,80 0,80" fill="url(#edgeMarkGradient)" opacity="0.7"/>
++  </g>
++  <text x="76" y="42" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="1" fill="#060B17">EDGES</text>
++  <text x="76" y="63" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="4" fill="#7C8DB5">ENTERPRISE</text>
++</svg>
+diff --git a/frontend/src/resources/logo3.svg b/frontend/src/resources/logo3.svg
+index 5c94983..8089413 100644
+--- a/frontend/src/resources/logo3.svg
++++ b/frontend/src/resources/logo3.svg
+@@ -1 +1,13 @@
+-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 167.48 175.99"><defs><style>.cls-1{fill:#fff;}</style></defs><title>logo3</title><g id="OBJECTS"><g id="_Group_2" data-name=" Group 2"><g id="_Group_3" data-name=" Group 3"><path id="_Path_" data-name=" Path " class="cls-1" d="M83.15,172.33a84,84,0,1,1,0-168l.07,6.6a77.43,77.43,0,0,0,0,154.85Z" transform="translate(0.85 0.01)"/></g><g id="_Group_4" data-name=" Group 4"><path id="_Path_2" data-name=" Path 2" class="cls-1" d="M114.81,71.45H75.11a3.3,3.3,0,0,1,0-6.6h36.4v-35a3.3,3.3,0,1,1,6.6,0h0V68.15a3.3,3.3,0,0,1-3.3,3.3Z" transform="translate(0.85 0.01)"/></g><g id="_Group_5" data-name=" Group 5"><path id="_Path_3" data-name=" Path 3" class="cls-1" d="M153.31,86.75H63a3.3,3.3,0,0,1,0-6.6h87V67.8a3.3,3.3,0,1,1,6.6,0V83.44a3.3,3.3,0,0,1-3.29,3.31Z" transform="translate(0.85 0.01)"/></g><g id="_Group_6" data-name=" Group 6"><path id="_Path_4" data-name=" Path 4" class="cls-1" d="M150.89,102H61.2a3.3,3.3,0,0,1,0-6.6h89.69a3.3,3.3,0,0,1,0,6.6Z" transform="translate(0.85 0.01)"/></g><g id="_Group_7" data-name=" Group 7"><path id="_Path_5" data-name=" Path 5" class="cls-1" d="M132.67,139.52H119.18a3.3,3.3,0,0,1-3.3-3.3V118H74.21a3.3,3.3,0,1,1,0-6.6h45a3.3,3.3,0,0,1,3.3,3.3v18.23H132.7a3.3,3.3,0,1,1,0,6.6Z" transform="translate(0.85 0.01)"/></g><g id="_Group_8" data-name=" Group 8"><circle id="_Path_6" data-name=" Path 6" class="cls-1" cx="87.85" cy="168.63" r="4.04"/><path id="_Compound_Path_" data-name=" Compound Path " class="cls-1" d="M87,176a7.34,7.34,0,1,1,7.34-7.34h0A7.35,7.35,0,0,1,87,176Zm0-8.08a.74.74,0,1,0,.74.74h0a.74.74,0,0,0-.73-.75h0Z" transform="translate(0.85 0.01)"/></g><g id="_Group_9" data-name=" Group 9"><circle id="_Path_7" data-name=" Path 7" class="cls-1" cx="87.85" cy="7.35" r="4.04"/><path id="_Compound_Path_2" data-name=" Compound Path 2" class="cls-1" d="M87,14.67a7.34,7.34,0,1,1,7.34-7.34h0A7.35,7.35,0,0,1,87,14.67Zm0-8.08a.74.74,0,1,0,.74.74A.74.74,0,0,0,87,6.59Z" transform="translate(0.85 0.01)"/></g><g id="_Group_10" data-name=" Group 10"><g id="_Group_11" data-name=" Group 11"><path id="_Path_8" data-name=" Path 8" class="cls-1" d="M41.87,107.2a15.3,15.3,0,0,1-5.09-.94c-10.27-3.61-20.37-16.82-21.53-23.54-.44-2.56-2.16-3.29-6.61-4.57A36.64,36.64,0,0,1,4,76.59a3.3,3.3,0,1,1,2.65-6,31.33,31.33,0,0,0,3.79,1.26c4.26,1.23,10.1,2.91,11.29,9.79C22.51,86,30.95,97.25,39,100.07c3.18,1.12,4.89.34,5.9-.47-.18-1.7-3.34-6.08-5.26-8.74-4.15-5.74-7.73-10.7-6.3-15.07a6.44,6.44,0,0,1,4.47-4.13,21.59,21.59,0,0,1,9-1.12c1.73.11,2.2.14,5.44-4.92,4.44-6.93,12.69-8.79,18.72-10.14,2.19-.49,5.44-1.22,6.26-1.93-.09-1.85-2-4.3-4.68-6S65.61,44.46,62.11,46c-7,3.16-13.12.88-15.33-2.86-1.54-2.61-1.4-6.52,2.39-9.37,2.59-1.94,4.25-5,4.43-6.37a7,7,0,0,0-1.8.17,29.21,29.21,0,0,1-16.49-1.42,3.3,3.3,0,0,1,2.52-6.1,22.78,22.78,0,0,0,12.65,1c6.14-1.23,8.37,1.52,9.16,3.27,2.14,4.78-2.42,11.59-6.53,14.67a1.93,1.93,0,0,0-.69.75,2.5,2.5,0,0,0,.93.66c.58.26,2.74,1,6-.48,5-2.27,11.27-1.53,16.7,2,4.75,3.07,7.7,7.56,7.7,11.72,0,5.66-6.06,7-11.42,8.23s-11.64,2.62-14.61,7.27c-4.58,7.14-6.87,8.24-11.43,7.95a15.1,15.1,0,0,0-6.52.82l-.22.08c.16,1.76,3.52,6.42,5.36,9,4.63,6.41,9.41,13,4.52,17.35A11.28,11.28,0,0,1,41.87,107.2Z" transform="translate(0.85 0.01)"/></g><g id="_Group_12" data-name=" Group 12"><path id="_Path_9" data-name=" Path 9" class="cls-1" d="M35.86,156.5a3.29,3.29,0,0,1-2-.67c-3.42-2.59-9-9.7-5.42-18.08,2.64-6.24,6.71-9.1,10-11.39a21.41,21.41,0,0,0,3.92-3.2c1.05-1.21,1.88-3.46,2.68-5.64,1.54-4.18,3.46-9.38,8.64-9.58,3.92-.12,6.65,3.25,9.81,7.18,3,3.74,6.42,8,11,9.65a23,23,0,0,0,5.84,1c2.64.21,5.38.43,7.62,1.75a3.3,3.3,0,1,1-3.35,5.69c-.94-.55-2.9-.71-4.8-.86A28.34,28.34,0,0,1,72.23,131c-6.32-2.3-10.52-7.52-13.89-11.72-1.44-1.79-3.62-4.5-4.53-4.73-.66,0-2,3.7-2.59,5.27-1,2.73-2,5.56-3.9,7.69a26.92,26.92,0,0,1-5.11,4.27c-3,2.09-5.79,4.06-7.69,8.56-2.45,5.8,3.26,10.21,3.32,10.25a3.3,3.3,0,0,1-2,5.93Z" transform="translate(0.85 0.01)"/></g></g><g id="_Group_13" data-name=" Group 13"><path id="_Path_10" data-name=" Path 10" class="cls-1" d="M67.61,33.89a3.3,3.3,0,0,1-3.3-3.3h0V19.8a3.3,3.3,0,0,1,6.6,0V30.59a3.3,3.3,0,0,1-3.3,3.3Z" transform="translate(0.85 0.01)"/></g><g id="_Group_14" data-name=" Group 14"><path id="_Path_11" data-name=" Path 11" class="cls-1" d="M77,38.84a3.3,3.3,0,0,1-3.3-3.3h0V19.8a3.3,3.3,0,1,1,6.6,0V35.53A3.3,3.3,0,0,1,77,38.84Z" transform="translate(0.85 0.01)"/></g><g id="_Group_15" data-name=" Group 15"><path id="_Path_12" data-name=" Path 12" class="cls-1" d="M86.77,47.3a3.3,3.3,0,0,1-3.3-3.3h0V19.8a3.3,3.3,0,0,1,6.6,0V44a3.3,3.3,0,0,1-3.28,3.32Z" transform="translate(0.85 0.01)"/></g><g id="_Group_16" data-name=" Group 16"><path id="_Path_13" data-name=" Path 13" class="cls-1" d="M80.79,143.52H65.12a3.3,3.3,0,1,1,0-6.6H80.8a3.3,3.3,0,1,1,0,6.6Z" transform="translate(0.85 0.01)"/></g><g id="_Group_17" data-name=" Group 17"><path id="_Path_14" data-name=" Path 14" class="cls-1" d="M88.66,152.28H75.57a3.3,3.3,0,1,1,0-6.6H88.66a3.3,3.3,0,1,1,0,6.6Z" transform="translate(0.85 0.01)"/></g><g id="_Group_18" data-name=" Group 18"><path id="_Path_15" data-name=" Path 15" class="cls-1" d="M79.86,161H66.77a3.3,3.3,0,1,1,0-6.6H79.86a3.3,3.3,0,1,1,0,6.6Z" transform="translate(0.85 0.01)"/></g><g id="_Group_19" data-name=" Group 19"><g id="_Group_20" data-name=" Group 20"><path id="_Compound_Path_3" data-name=" Compound Path 3" class="cls-1" d="M114.94,30.62a9,9,0,1,1,9-9h0A9,9,0,0,1,114.94,30.62Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28h0a3.28,3.28,0,0,0-3.28-3.27Z" transform="translate(0.85 0.01)"/></g></g><g id="_Group_21" data-name=" Group 21"><g id="_Group_22" data-name=" Group 22"><path id="_Compound_Path_4" data-name=" Compound Path 4" class="cls-1" d="M153.44,67.75a9,9,0,1,1,9-9h0A9,9,0,0,1,153.44,67.75Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28h0A3.28,3.28,0,0,0,153.44,55.48Z" transform="translate(0.85 0.01)"/></g></g><g id="_Group_23" data-name=" Group 23"><g id="_Group_24" data-name=" Group 24"><path id="_Compound_Path_5" data-name=" Compound Path 5" class="cls-1" d="M157.63,108a9,9,0,1,1,9-9A9,9,0,0,1,157.63,108Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28h0A3.29,3.29,0,0,0,157.63,95.77Z" transform="translate(0.85 0.01)"/></g></g><g id="_Group_25" data-name=" Group 25"><g id="_Group_26" data-name=" Group 26"><path id="_Compound_Path_6" data-name=" Compound Path 6" class="cls-1" d="M139.57,144.71a9,9,0,1,1,9-9A9,9,0,0,1,139.57,144.71Zm0-12.27a3.28,3.28,0,1,0,3.28,3.28h0a3.28,3.28,0,0,0-3.28-3.28h0Z" transform="translate(0.85 0.01)"/></g></g></g></g></svg>
+\ No newline at end of file
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
++  <defs>
++    <linearGradient id="edgeSquareGradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
++      <stop offset="0" stop-color="#0B63F6"/>
++      <stop offset="1" stop-color="#00D1FF"/>
++    </linearGradient>
++  </defs>
++  <rect width="200" height="200" rx="36" fill="#060B17"/>
++  <g transform="translate(48,54)">
++    <polygon points="0,4 104,4 78,42 0,42" fill="url(#edgeSquareGradient)"/>
++    <polygon points="0,55 104,55 86,93 0,93" fill="url(#edgeSquareGradient)" opacity="0.85"/>
++  </g>
++</svg>
+diff --git a/frontend/src/resources/logowhite.svg b/frontend/src/resources/logowhite.svg
+index 928a029..cdc5367 100644
+--- a/frontend/src/resources/logowhite.svg
++++ b/frontend/src/resources/logowhite.svg
+@@ -1,122 +1,15 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+-	 viewBox="0 0 495.5 176" style="enable-background:new 0 0 495.5 176;" xml:space="preserve">
+-<style type="text/css">
+-	.st0{fill:#FFFFFF;}
+-	.st1{font-family:'Poppins-Regular';}
+-	.st2{font-size:44.17px;}
+-</style>
+-<title>logowhite</title>
+-<g id="OBJECTS">
+-	<g id="_Group_2">
+-		<g id="_Group_3">
+-			<path id="_Path_" class="st0" d="M83.2,172.3c-46.4,0-84-37.6-84-84s37.6-84,84-84l0.1,6.6c-42.8,0.5-77,35.5-76.5,78.3
+-				c0.5,42.1,34.5,76.1,76.5,76.5L83.2,172.3z"/>
+-		</g>
+-		<g id="_Group_4">
+-			<path id="_Path_2" class="st0" d="M114.8,71.4H75.1c-1.8,0-3.3-1.5-3.3-3.3s1.5-3.3,3.3-3.3h36.4v-35c0-1.8,1.5-3.3,3.3-3.3
+-				c1.8,0,3.3,1.5,3.3,3.3v38.4C118.1,70,116.6,71.4,114.8,71.4z"/>
+-		</g>
+-		<g id="_Group_5">
+-			<path id="_Path_3" class="st0" d="M153.3,86.8H63c-1.8,0-3.3-1.5-3.3-3.3s1.5-3.3,3.3-3.3h87V67.8c0-1.8,1.5-3.3,3.3-3.3
+-				s3.3,1.5,3.3,3.3v15.6C156.6,85.3,155.1,86.7,153.3,86.8z"/>
+-		</g>
+-		<g id="_Group_6">
+-			<path id="_Path_4" class="st0" d="M150.9,102H61.2c-1.8,0-3.3-1.5-3.3-3.3c0-1.8,1.5-3.3,3.3-3.3h89.7c1.8,0,3.3,1.5,3.3,3.3
+-				C154.2,100.6,152.7,102,150.9,102L150.9,102z"/>
+-		</g>
+-		<g id="_Group_7">
+-			<path id="_Path_5" class="st0" d="M132.7,139.5h-13.5c-1.8,0-3.3-1.5-3.3-3.3V118H74.2c-1.8,0-3.3-1.5-3.3-3.3
+-				c0-1.8,1.5-3.3,3.3-3.3h45c1.8,0,3.3,1.5,3.3,3.3v18.2h10.2c1.8,0,3.3,1.5,3.3,3.3C136,138,134.5,139.5,132.7,139.5L132.7,139.5z
+-				"/>
+-		</g>
+-		<g id="_Group_8">
+-			<circle id="_Path_6" class="st0" cx="87" cy="168.6" r="4"/>
+-			<path id="_Compound_Path_" class="st0" d="M87,176c-4.1,0-7.3-3.3-7.3-7.3s3.3-7.3,7.3-7.3s7.3,3.3,7.3,7.3l0,0
+-				C94.3,172.7,91.1,176,87,176z M87,167.9c-0.4,0-0.7,0.3-0.7,0.7c0,0.4,0.3,0.7,0.7,0.7c0.4,0,0.7-0.3,0.7-0.7l0,0
+-				C87.7,168.2,87.4,167.9,87,167.9C87,167.9,87,167.9,87,167.9L87,167.9z"/>
+-		</g>
+-		<g id="_Group_9">
+-			<circle id="_Path_7" class="st0" cx="87" cy="7.3" r="4"/>
+-			<path id="_Compound_Path_2" class="st0" d="M87,14.7c-4.1,0-7.3-3.3-7.3-7.3S82.9,0,87,0c4.1,0,7.3,3.3,7.3,7.3c0,0,0,0,0,0
+-				C94.3,11.4,91.1,14.7,87,14.7z M87,6.6c-0.4,0-0.7,0.3-0.7,0.7c0,0.4,0.3,0.7,0.7,0.7c0.4,0,0.7-0.3,0.7-0.7S87.4,6.6,87,6.6
+-				L87,6.6z"/>
+-		</g>
+-		<g id="_Group_10">
+-			<g id="_Group_11">
+-				<path id="_Path_8" class="st0" d="M41.9,107.2c-1.7,0-3.5-0.3-5.1-0.9c-10.3-3.6-20.3-16.8-21.5-23.5c-0.4-2.6-2.2-3.3-6.6-4.6
+-					c-1.6-0.4-3.1-0.9-4.6-1.6c-1.7-0.5-2.7-2.4-2.2-4.1s2.4-2.7,4.1-2.2c0.2,0.1,0.5,0.2,0.7,0.3c1.2,0.5,2.5,0.9,3.8,1.2
+-					c4.3,1.2,10.1,2.9,11.3,9.8c0.8,4.3,9.2,15.6,17.2,18.4c3.2,1.1,4.9,0.3,5.9-0.5c-0.2-1.7-3.3-6.1-5.3-8.7
+-					c-4.2-5.7-7.7-10.7-6.3-15.1c0.7-2,2.4-3.6,4.5-4.1c2.9-1,6-1.4,9-1.1c1.7,0.1,2.2,0.1,5.4-4.9c4.4-6.9,12.7-8.8,18.7-10.1
+-					c2.2-0.5,5.4-1.2,6.3-1.9c-0.1-1.9-2-4.3-4.7-6s-6.9-3.1-10.4-1.5c-7,3.2-13.1,0.9-15.3-2.9c-1.5-2.6-1.4-6.5,2.4-9.4
+-					c2.6-1.9,4.3-5,4.4-6.4c-0.6,0-1.2,0-1.8,0.2c-5.5,1.1-11.2,0.7-16.5-1.3c-1.7-0.7-2.5-2.6-1.8-4.3c0.7-1.7,2.6-2.5,4.3-1.8
+-					c4,1.5,8.4,1.9,12.7,1c6.1-1.2,8.4,1.5,9.2,3.3c2.1,4.8-2.4,11.6-6.5,14.7c-0.3,0.2-0.5,0.4-0.7,0.8c0.3,0.3,0.6,0.5,0.9,0.7
+-					c0.6,0.3,2.7,1,6-0.5c5-2.3,11.3-1.5,16.7,2c4.8,3.1,7.7,7.6,7.7,11.7c0,5.7-6.1,7-11.4,8.2s-11.6,2.6-14.6,7.3
+-					c-4.6,7.1-6.9,8.2-11.4,7.9c-2.2-0.2-4.4,0.1-6.5,0.8l-0.2,0.1c0.2,1.8,3.5,6.4,5.4,9c4.6,6.4,9.4,13,4.5,17.3
+-					C47.4,106.2,44.7,107.2,41.9,107.2z"/>
+-			</g>
+-			<g id="_Group_12">
+-				<path id="_Path_9" class="st0" d="M35.8,156.5c-0.7,0-1.4-0.2-2-0.7c-3.4-2.6-9-9.7-5.4-18.1c2.6-6.2,6.7-9.1,10-11.4
+-					c1.4-0.9,2.7-2,3.9-3.2c1-1.2,1.9-3.5,2.7-5.6c1.5-4.2,3.5-9.4,8.6-9.6c3.9-0.1,6.7,3.3,9.8,7.2c3,3.7,6.4,8,11,9.6
+-					c1.9,0.6,3.9,0.9,5.8,1c2.6,0.2,5.4,0.4,7.6,1.8c1.6,0.9,2.1,2.9,1.2,4.5c-0.9,1.6-2.9,2.1-4.5,1.2l0,0
+-					c-0.9-0.5-2.9-0.7-4.8-0.9c-2.6-0.1-5.1-0.6-7.6-1.4c-6.3-2.3-10.5-7.5-13.9-11.7c-1.4-1.8-3.6-4.5-4.5-4.7
+-					c-0.7,0-2,3.7-2.6,5.3c-1,2.7-2,5.6-3.9,7.7c-1.5,1.6-3.2,3.1-5.1,4.3c-3,2.1-5.8,4.1-7.7,8.6c-2.5,5.8,3.3,10.2,3.3,10.3
+-					c1.5,1.1,1.7,3.2,0.6,4.6C37.9,156,36.9,156.5,35.8,156.5L35.8,156.5z"/>
+-			</g>
+-		</g>
+-		<g id="_Group_13">
+-			<path id="_Path_10" class="st0" d="M67.6,33.9c-1.8,0-3.3-1.5-3.3-3.3l0,0V19.8c0-1.8,1.5-3.3,3.3-3.3c1.8,0,3.3,1.5,3.3,3.3
+-				v10.8C70.9,32.4,69.4,33.9,67.6,33.9z"/>
+-		</g>
+-		<g id="_Group_14">
+-			<path id="_Path_11" class="st0" d="M77,38.8c-1.8,0-3.3-1.5-3.3-3.3l0,0V19.8c0-1.8,1.5-3.3,3.3-3.3c1.8,0,3.3,1.5,3.3,3.3v15.7
+-				C80.3,37.4,78.8,38.8,77,38.8C77,38.8,77,38.8,77,38.8z"/>
+-		</g>
+-		<g id="_Group_15">
+-			<path id="_Path_12" class="st0" d="M86.8,47.3c-1.8,0-3.3-1.4-3.3-3.3c0,0,0,0,0-0.1V19.8c0-1.8,1.5-3.3,3.3-3.3
+-				c1.8,0,3.3,1.5,3.3,3.3V44C90.1,45.8,88.6,47.3,86.8,47.3z"/>
+-		</g>
+-		<g id="_Group_16">
+-			<path id="_Path_13" class="st0" d="M80.8,143.5H65.1c-1.8,0-3.3-1.5-3.3-3.3c0-1.8,1.5-3.3,3.3-3.3h15.7c1.8,0,3.3,1.5,3.3,3.3
+-				C84.1,142,82.6,143.5,80.8,143.5L80.8,143.5z"/>
+-		</g>
+-		<g id="_Group_17">
+-			<path id="_Path_14" class="st0" d="M88.7,152.3H75.6c-1.8,0-3.3-1.5-3.3-3.3c0-1.8,1.5-3.3,3.3-3.3h13.1c1.8,0,3.3,1.5,3.3,3.3
+-				C92,150.8,90.5,152.3,88.7,152.3z"/>
+-		</g>
+-		<g id="_Group_18">
+-			<path id="_Path_15" class="st0" d="M79.9,161H66.8c-1.8,0-3.3-1.5-3.3-3.3c0-1.8,1.5-3.3,3.3-3.3h13.1c1.8,0,3.3,1.5,3.3,3.3
+-				C83.2,159.6,81.7,161,79.9,161L79.9,161z"/>
+-		</g>
+-		<g id="_Group_19">
+-			<g id="_Group_20">
+-				<path id="_Compound_Path_3" class="st0" d="M114.9,30.6c-5,0-9-4-9-9c0-5,4-9,9-9s9,4,9,9l0,0C123.9,26.6,119.9,30.6,114.9,30.6
+-					z M114.9,18.3c-1.8,0-3.3,1.5-3.3,3.3s1.5,3.3,3.3,3.3s3.3-1.5,3.3-3.3l0,0C118.2,19.8,116.7,18.4,114.9,18.3L114.9,18.3z"/>
+-			</g>
+-		</g>
+-		<g id="_Group_21">
+-			<g id="_Group_22">
+-				<path id="_Compound_Path_4" class="st0" d="M153.4,67.8c-5,0-9-4-9-9s4-9,9-9s9,4,9,9l0,0C162.4,63.7,158.4,67.8,153.4,67.8z
+-					 M153.4,55.5c-1.8,0-3.3,1.5-3.3,3.3s1.5,3.3,3.3,3.3s3.3-1.5,3.3-3.3l0,0C156.7,56.9,155.3,55.5,153.4,55.5z"/>
+-			</g>
+-		</g>
+-		<g id="_Group_23">
+-			<g id="_Group_24">
+-				<path id="_Compound_Path_5" class="st0" d="M157.6,108c-5,0-9-4-9-9s4-9,9-9s9,4,9,9S162.6,108,157.6,108z M157.6,95.8
+-					c-1.8,0-3.3,1.5-3.3,3.3s1.5,3.3,3.3,3.3s3.3-1.5,3.3-3.3l0,0C160.9,97.2,159.4,95.8,157.6,95.8z"/>
+-			</g>
+-		</g>
+-		<g id="_Group_25">
+-			<g id="_Group_26">
+-				<path id="_Compound_Path_6" class="st0" d="M139.6,144.7c-5,0-9-4-9-9s4-9,9-9s9,4,9,9S144.5,144.7,139.6,144.7z M139.6,132.4
+-					c-1.8,0-3.3,1.5-3.3,3.3s1.5,3.3,3.3,3.3s3.3-1.5,3.3-3.3l0,0C142.8,133.9,141.4,132.4,139.6,132.4L139.6,132.4z"/>
+-			</g>
+-		</g>
+-	</g>
+-</g>
+-<g id="DESIGNED_BY_FREEPIK">
+-	<text transform="matrix(1 0 0 1 175.41 68.6)" class="st0 st1 st2">Machine Mind </text>
+-	<text transform="matrix(1 0 0 1 175.41 121.6)" class="st0 st1 st2">Innovations</text>
+-</g>
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
++  <defs>
++    <linearGradient id="edgeMarkGradientWhite" x1="0" y1="0" x2="60" y2="80" gradientUnits="userSpaceOnUse">
++      <stop offset="0" stop-color="#00D1FF"/>
++      <stop offset="1" stop-color="#FFFFFF"/>
++    </linearGradient>
++  </defs>
++  <g>
++    <polygon points="0,4 58,4 44,24 0,24" fill="url(#edgeMarkGradientWhite)"/>
++    <polygon points="0,32 58,32 48,52 0,52" fill="url(#edgeMarkGradientWhite)" opacity="0.85"/>
++    <polygon points="0,60 58,60 38,80 0,80" fill="url(#edgeMarkGradientWhite)" opacity="0.7"/>
++  </g>
++  <text x="76" y="42" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="1" fill="#FFFFFF">EDGES</text>
++  <text x="76" y="63" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="4" fill="#C9D6EE">ENTERPRISE</text>
+ </svg>
+diff --git a/frontend/tailwind.config.js b/frontend/tailwind.config.js
+index b1670c1..91af21f 100644
+--- a/frontend/tailwind.config.js
++++ b/frontend/tailwind.config.js
+@@ -11,16 +11,16 @@ module.exports = {
+     colors: {
+       transparent: 'transparent',
+       current: 'currentColor',
+-      'slate':'#94a3b8',
+-      'theme': '#4682B4',
+-      'purple': '#3f3cbb',
+       'white': '#ffffff',
+-      'midnight': '#121063',
+-      'metal': '#565584',
+-      'tahiti': '#3ab7bf',
+-      'silver': '#ecebff',
+-      'bubble-gum': '#ff77e9',
+-      'bermuda': '#78dcca',
++      'slate': '#94a3b8',
++      // Edges Enterprise brand palette — futuristic corporate (electric blue / cyan on deep navy)
++      'theme': '#0B63F6',     // primary brand blue
++      'accent': '#00D1FF',    // cyan glow accent
++      'midnight': '#060B17',  // near-black navy, hero/dark sections
++      'graphite': '#111827',  // dark neutral surface
++      'metal': '#7C8DB5',     // muted steel secondary text
++      'silver': '#E7ECF5',    // light neutral surface
++      'purple': '#6C5CE7',    // violet accent for gradients
+     },
+   },
+   plugins: [],

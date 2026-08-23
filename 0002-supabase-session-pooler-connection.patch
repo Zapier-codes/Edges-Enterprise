@@ -1,0 +1,106 @@
+From 1bcc65dc6d9d51dd0f742e820c807440ccdf723e Mon Sep 17 00:00:00 2001
+From: Claude <bot@local>
+Date: Sun, 23 Aug 2026 18:20:42 +0000
+Subject: [PATCH] Point db.js at Supabase session pooler via DATABASE_URL
+
+---
+ api/config.env.example | 18 ++++++++++++++++++
+ api/db.js              | 42 ++++++++++++++++++++++++++++++------------
+ api/package.json       |  3 +--
+ 3 files changed, 49 insertions(+), 14 deletions(-)
+ create mode 100644 api/config.env.example
+
+diff --git a/api/config.env.example b/api/config.env.example
+new file mode 100644
+index 0000000..01179a8
+--- /dev/null
++++ b/api/config.env.example
+@@ -0,0 +1,18 @@
++# Copy to config.env locally (never commit the real file — it's gitignored).
++# In Vercel: Project Settings → Environment Variables. In GitHub Actions: repo Secrets.
++
++NODE_ENV=production
++FRONTEND_URL=https://yourdomain.com
++
++# Supabase — session pooler (IPv4, port 5432; required for Vercel's serverless functions)
++DATABASE_URL=postgresql://postgres.xmtrpirnditotpyhqiwk:<db-password>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
++
++# Only needed if/when Storage or Supabase Auth get wired in — the API's day-to-day
++# queries go straight over DATABASE_URL above.
++SUPABASE_URL=https://xmtrpirnditotpyhqiwk.supabase.co
++SUPABASE_ANON_KEY=
++SUPABASE_SERVICE_ROLE_KEY=
++
++JWT_SECRET=
++JWT_EXPIRY=90d
++JWT_COOKIE_EXPIRY=90
+diff --git a/api/db.js b/api/db.js
+index 0c40f3a..5d3deff 100644
+--- a/api/db.js
++++ b/api/db.js
+@@ -1,18 +1,36 @@
+-const mongoose=require('mongoose')
+-module.exports=async function (){
+-    try {        
+-        const conn=await mongoose.connect(`${process.env.DB}`,{
+-        useNewUrlParser:true,
+-        useUnifiedTopology:true,
+-    })
+-    console.log('DataBase Connected Successfully on port '+ conn.connection.host)
+-    
++const { Pool } = require('pg')
++
++// Supabase session pooler (port 5432): IPv4-reachable from Vercel's serverless
++// functions (the direct DB host is IPv6-only), and unlike the 6543 transaction
++// pooler, session mode supports prepared statements, which the `pg` driver uses.
++// DATABASE_URL should look like:
++// postgresql://postgres.xmtrpirnditotpyhqiwk:<password>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
++const pool = new Pool({
++    connectionString: process.env.DATABASE_URL,
++    ssl: { rejectUnauthorized: false },
++    max: Number(process.env.DB_POOL_MAX) || 10,
++    idleTimeoutMillis: 30000,
++})
++
++pool.on('error', (err) => {
++    // fired on idle clients that error in the background, not from a query call site
++    console.error('Unexpected Postgres pool error:', err.message)
++})
++
++module.exports = async function connectDB() {
++    try {
++        const client = await pool.connect()
++        const { rows } = await client.query('select now()')
++        client.release()
++        console.log('Supabase (session pooler) connected at ' + rows[0].now)
+     } catch (error) {
+-        if(process.env.NODE_ENV==='development')
+-        console.log(error);
++        if (process.env.NODE_ENV === 'development')
++            console.log(error);
+         else
+-        console.log('Database connection failed. Exiting!');
++            console.log('Database connection failed. Exiting!');
+         process.exit(1)
+     }
+ }
+ 
++module.exports.pool = pool
++
+diff --git a/api/package.json b/api/package.json
+index e9b705e..78bcd1b 100644
+--- a/api/package.json
++++ b/api/package.json
+@@ -21,8 +21,7 @@
+     "helmet": "^7.0.0",
+     "hpp": "^0.2.3",
+     "jsonwebtoken": "^9.0.1",
+-    "mongodb": "^5.7.0",
+-    "mongoose": "^7.4.0",
++    "pg": "^8.12.0",
+     "morgan": "^1.10.0",
+     "multer": "^1.4.5-lts.1",
+     "node-pre-gyp": "^0.17.0",
+-- 
+2.43.0
+

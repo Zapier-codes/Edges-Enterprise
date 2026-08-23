@@ -2,25 +2,9 @@ import React from "react";
 
 const OngoingProjects = () => {
   return (
-    <div>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Project ID</th>
-            <th scope="col">Project Title</th>
-            <th scope="col">Service</th>
-            <th scope="col">Expected Date of Completion</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">edg89cd</th>
-            <td>Spark Inventory</td>
-            <td>Web Development</td>
-            <td>10-10-2023</td>
-          </tr>
-        </tbody>
-      </table>
+    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg">
+      <h3 className="text-white font-semibold text-lg mb-4">Ongoing Projects</h3>
+      <p className="text-[#a0a0a0] text-sm">No ongoing projects to display at this time.</p>
     </div>
   );
 };

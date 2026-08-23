@@ -22,6 +22,13 @@ import ResetPassword from "./components/ResetPassword";
 
 function App() {
   const setIsLoggedIn=useStore(state=>state.setIsLoggedIn)
+  const hamburger = () => {
+    var elem = document.getElementById("menu-btn");
+    var nav = document.getElementById("menu");
+    elem.classList.toggle("open");
+    nav.classList.toggle("flex");
+    nav.classList.toggle("hidden");
+  };
 
   const {getAllServices,getAllProducts,getAllReviews}=useStore()
     useEffect(()=>{
@@ -44,7 +51,7 @@ function App() {
 
   return (
     <>
-      <Navbar/>
+      <Navbar hamburger={hamburger}/>
       <Routes>
         <Route exact element={<Home />} path="/" />
         <Route exact element={<About />} path="/about" />

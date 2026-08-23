@@ -1,0 +1,1561 @@
+From 4586209ac38b91b32779120225a481fddaa825bd Mon Sep 17 00:00:00 2001
+From: Claude <bot@local>
+Date: Sun, 23 Aug 2026 18:37:29 +0000
+Subject: [PATCH] Rewrite API layer to query Supabase Postgres instead of
+ MongoDB/Mongoose
+
+- models/* now export plain pg repos (findAll/findById/create/updateById/deleteById)
+  instead of Mongoose Model classes
+- handlerFactory.js generic CRUD rewritten against the repo pattern
+- authController.js: bcrypt + JWT against the users table directly (session/password
+  logic unchanged, just no more Mongoose document methods)
+- errorController.js: added translations for Postgres error codes (23505 unique,
+  23502 not-null, 23503 foreign key, 22P02 invalid input) alongside the old Mongo ones
+- avg_rating on services is now kept in sync by the DB trigger from the earlier
+  migration, not an app-side post-save hook
+- server.js: dropped the leftover top-level mongoose require
+- removed featureModel.js (features are now a jsonb column on services)
+---
+ api/controllers/authController.js        | 127 ++++------
+ api/controllers/errorController.js       |  25 +-
+ api/controllers/handlerFactory.js        |  78 +++---
+ api/controllers/serviceController.js     |  56 ++---
+ api/controllers/testimonialController.js |  15 +-
+ api/controllers/userController.js        |  31 +--
+ api/models/featureModel.js               |  58 -----
+ api/models/jobModel.js                   | 125 ++++------
+ api/models/productModel.js               | 115 ++++-----
+ api/models/serviceModel.js               | 145 +++++------
+ api/models/testimonialModel.js           | 154 ++++--------
+ api/models/userModel.js                  | 305 +++++++++++++----------
+ api/server.js                            |   1 -
+ api/utils/validate.js                    |  29 +++
+ 14 files changed, 569 insertions(+), 695 deletions(-)
+ delete mode 100644 api/models/featureModel.js
+ create mode 100644 api/utils/validate.js
+
+diff --git a/api/controllers/authController.js b/api/controllers/authController.js
+index 92763fb..ac8f6c9 100644
+--- a/api/controllers/authController.js
++++ b/api/controllers/authController.js
+@@ -4,28 +4,24 @@ const { promisify } = require("util");
+ const catchAsync = require("./../utils/catchAsync");
+ const AppError = require("../utils/AppError");
+ const Email = require("./../utils/email");
+-const crypto=require('crypto')
++const crypto = require('crypto')
+ 
+ 
+-function signToken(id,res) {
++function signToken(id, res) {
+   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
+     expiresIn: process.env.JWT_EXPIRY,
+   });
+-  const cookieOptions={
+-    expires:new Date(Date.now()+process.env.JWT_COOKIE_EXPIRY*24*60*60*1000),
++  const cookieOptions = {
++    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
+     // httpOnly:true
+   }
+-  // if(process.env.NODE_ENV==='production')
+-  // {
+-  //   cookieOptions.secure=true
+-  // }
+-  res.cookie('jwt',token,cookieOptions)
++  res.cookie('jwt', token, cookieOptions)
+   return token;
+ }
+ 
+ exports.signUp = catchAsync(async (req, res, next) => {
+   const newUser = await Users.create(req.body);
+-  const token = signToken(newUser._id,res);
++  const token = signToken(newUser.id, res);
+ 
+   try {
+     await new Email(newUser).sendWelcome();
+@@ -38,7 +34,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
+     token: token,
+     data: {
+       name: newUser.name,
+-      id: newUser._id,
++      id: newUser.id,
+       role: newUser.role,
+     },
+   });
+@@ -48,25 +44,22 @@ exports.login = catchAsync(async (req, res, next) => {
+   if (!req.body.email || !req.body.password)
+     return next(new AppError("Please provide both email and password!", 400));
+ 
+-  const found = await Users.findOne({ email: req.body.email }).select(
+-    "+password"
+-  );
++  const found = await Users.findByEmailWithPassword(req.body.email);
+   if (!found) return next(new AppError("Please provide valid email!", 400));
+ 
+-  if (!(await found.correctPassword(req.body.password)))
++  if (!(await Users.correctPassword(req.body.password, found.password_hash)))
+     return next(new AppError("Please provide valid email and password!", 400));
+-    
+-    found.isActive=true
+-    await found.save()
+-  const token = signToken(found._id,res);
++
++  const updated = await Users.updateById(found.id, { isActive: true });
++  const token = signToken(found.id, res);
+ 
+   return res.status(200).json({
+     status: "success",
+     data: {
+-      id:found._id,
++      id: found.id,
+       name: found.name,
+       token: token,
+-      role:found.role
++      role: found.role
+     },
+   });
+ });
+@@ -76,16 +69,16 @@ exports.protect = catchAsync(async (req, res, next) => {
+   if (!token) return next(new AppError("Please provide auth token!", 401));
+ 
+   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+-  const found = await Users.findById(decoded.id);
++  const found = await Users.findByIdWithPassword(decoded.id);
+   if (!found) return next(new AppError("User not exists!", 401));
+ 
+-  if(found.checkPasswordchanged(decoded.iat))
+-  return next(new AppError("User changed the password!", 401));
+-  
+-  if(!found.isActive)
+-  return next(new AppError("User no longer exists! Login to activate your account again", 403));
++  if (Users.checkPasswordChangedAfter(found, decoded.iat))
++    return next(new AppError("User changed the password!", 401));
++
++  if (!found.is_active)
++    return next(new AppError("User no longer exists! Login to activate your account again", 403));
+ 
+-  req.user = found;
++  req.user = Users.toPublic(found);
+   next();
+ });
+ 
+@@ -102,71 +95,55 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
+   if (!req.body.email)
+     return next(new AppError("Please provide an email!", 404));
+ 
+-  const found = await Users.findOne({ email: req.body.email }).select("+email");
++  const found = await Users.findByEmail(req.body.email);
+   if (!found) return next(new AppError("Please provide a valid email!", 404));
+ 
+-  const resetToken = found.getPasswordResetToken();
++  const resetToken = await Users.createPasswordResetToken(found.id);
+   try {
+     const url = `${process.env.FRONTEND_URL}/resetPassword/${resetToken}`;
+     await new Email(found).sendResetPassword(url);
+-    await found.save({ validateBeforeSave: false });
+     res.status(200).json({
+       status: "success",
+       message: "Password reset token sent",
+     });
+   } catch (error) {
+-    found.passwordResetToken = undefined;
+-    found.passwordResetTokenExpires = undefined;
+-    await found.save({ validateBeforeSave: false });
++    await Users.clearPasswordResetToken(found.id);
+     next(
+       new AppError("Email not sent for password reset!Try again later", 500)
+-      );
+-    }
++    );
++  }
+ });
+ 
+ exports.resetPassword = catchAsync(async (req, res, next) => {
+-  
+-  //on clicking the button in frontend patch the request to this route
+-    const resetToken=  crypto.
+-         createHash("sha256")
+-        .update(req.params.resetToken)
+-        .digest("hex");
+-        const found = await Users.findOne({
+-            passwordResetToken: resetToken,
+-            passwordResetTokenExpires: { $gt: Date.now() },
+-        });
+-        if(!found)
+-        return next(new AppError("Token is invalid or expired!", 400))
+-        
+-        found.password=req.body.password
+-        found.confirmPassword=req.body.confirmPassword
+-        found.passwordResetToken=undefined
+-        found.passwordResetTokenExpires=undefined
+-        
+-        // console.log(req.body);
+-        await found.save()
+-        const token=signToken(found._id,res)
+-        res.status(200).json({
+-            status:'success',
+-            token:token
+-        })
++  const hashedToken = crypto
++    .createHash("sha256")
++    .update(req.params.resetToken)
++    .digest("hex");
++  const found = await Users.findByResetToken(hashedToken);
++  if (!found)
++    return next(new AppError("Token is invalid or expired!", 400))
++
++  await Users.setPassword(found.id, req.body.password, req.body.confirmPassword)
++  const token = signToken(found.id, res)
++  res.status(200).json({
++    status: 'success',
++    token: token
++  })
+ });
+ 
+-exports.updatePassword=catchAsync(async(req,res,next)=>{
+-  if(!req.body.oldPassword)
+-  return next(new AppError("Please provide your old password!", 400))
+-  
+-  const found=await Users.findById(req.user.id).select('+password');
+-  if(!await found.correctPassword(req.body.oldPassword))
+-  return next(new AppError("Old password is incorrect!", 400))
++exports.updatePassword = catchAsync(async (req, res, next) => {
++  if (!req.body.oldPassword)
++    return next(new AppError("Please provide your old password!", 400))
+ 
+-  found.password=req.body.password
+-  found.confirmPassword=req.body.confirmPassword
+-  await found.save();
++  const found = await Users.findByIdWithPassword(req.user.id);
++  if (!await Users.correctPassword(req.body.oldPassword, found.password_hash))
++    return next(new AppError("Old password is incorrect!", 400))
+ 
+-  const token=signToken(found._id,res)
++  await Users.setPassword(found.id, req.body.password, req.body.confirmPassword)
++
++  const token = signToken(found.id, res)
+   res.status(200).json({
+-    status:'success',
+-    token:token,
+-})
++    status: 'success',
++    token: token,
++  })
+ })
+diff --git a/api/controllers/errorController.js b/api/controllers/errorController.js
+index ed01beb..a278cde 100644
+--- a/api/controllers/errorController.js
++++ b/api/controllers/errorController.js
+@@ -25,6 +25,17 @@ const handleDuplicateFieldsError=(error)=>{
+     const message = `Duplicate field value,please try another value`
+     return new AppError(message, 400)
+ }
++// Postgres error codes (https://www.postgresql.org/docs/current/errcodes-appendix.html)
++const handlePgInvalidTextError=()=>{  // e.g. a malformed UUID passed as :id
++    return new AppError('Invalid id format', 400)
++}
++const handlePgNotNullError=(error)=>{
++    return new AppError(`${error.column} is required`, 400)
++}
++const handlePgForeignKeyError=()=>{
++    return new AppError('Referenced record does not exist', 400)
++}
++
+ const handleDevelopmentError=(err,res)=>{
+     res.status(err.statusCode).json({
+         status:err.status,
+@@ -75,7 +86,19 @@ module.exports = function (err, req, res, next) {
+ 
+     if (error.name === 'TokenExpiredError')  //expired token
+     finalError = handleJWTExpiryError();
+-    
++
++    if(error.code==='23505')  //postgres unique_violation
++    finalError = handleDuplicateFieldsError(error)
++
++    if(error.code==='22P02')  //postgres invalid_text_representation (bad uuid, etc.)
++    finalError = handlePgInvalidTextError()
++
++    if(error.code==='23502')  //postgres not_null_violation
++    finalError = handlePgNotNullError(error)
++
++    if(error.code==='23503')  //postgres foreign_key_violation
++    finalError = handlePgForeignKeyError()
++
+     handleProductionError(finalError?finalError:err,res);
+   }
+ };
+diff --git a/api/controllers/handlerFactory.js b/api/controllers/handlerFactory.js
+index 1c3fe85..476b0b1 100644
+--- a/api/controllers/handlerFactory.js
++++ b/api/controllers/handlerFactory.js
+@@ -1,72 +1,62 @@
+ const AppError = require("../utils/AppError");
+ const catchAsync = require("../utils/catchAsync");
+ 
+-exports.getAll=(Model)=>catchAsync(async(req,res,next)=>{
+-    const doc=await Model.find();
+-     
++exports.getAll = (Repo) => catchAsync(async (req, res, next) => {
++    const doc = await Repo.findAll();
++
+     return res.status(200).json({
+-        status:'success',
+-        totalResults:doc.length,
+-        data:{
++        status: 'success',
++        totalResults: doc.length,
++        data: {
+             doc
+         }
+     })
+ })
+-exports.getOne=(Model,...options)=>catchAsync(async(req,res,next)=>{
+-    let doc
+-    
+-    if(options.length>0)
+-        doc=await Model.findById(req.params.id).populate(options[0]);
+-    else
+-     doc=await Model.findById(req.params.id);
+-    if(!doc)
+-    {
+-        return next(new AppError('Doc not found matching this id!',404))
++exports.getOne = (Repo, ...options) => catchAsync(async (req, res, next) => {
++    const doc = options.length > 0
++        ? await Repo.findById(req.params.id, options[0])
++        : await Repo.findById(req.params.id);
++
++    if (!doc) {
++        return next(new AppError('Doc not found matching this id!', 404))
+     }
+     return res.status(200).json({
+-        status:'success',
+-        data:{
++        status: 'success',
++        data: {
+             doc
+         }
+     })
+ })
+-exports.createOne=Model=>catchAsync(async(req,res,next)=>{
+-    
+-    const doc=await Model.create(req.body);
++exports.createOne = Repo => catchAsync(async (req, res, next) => {
++
++    const doc = await Repo.create(req.body);
+     return res.status(201).json({
+-        status:'success',
+-        data:{
++        status: 'success',
++        data: {
+             doc
+         }
+     })
+ })
+-exports.updateOne=Model=>catchAsync(async(req,res,next)=>{
+-    const found=await Model.findByIdAndUpdate(req.params.id,req.body,{
+-        runValidators:true,
+-        new:true
+-    });
+-    if(!found)
+-    {
+-      return next(new AppError("Document not found matching this id!",404))
++exports.updateOne = Repo => catchAsync(async (req, res, next) => {
++    const found = await Repo.updateById(req.params.id, req.body);
++    if (!found) {
++        return next(new AppError("Document not found matching this id!", 404))
+     }
+ 
+     return res.status(200).json({
+-        status:'success',
+-        data:{
++        status: 'success',
++        data: {
+             found
+         }
+     })
+ })
+-exports.deleteOne=Model=>catchAsync(async(req,res,next)=>{
+-    const doc=await Model.deleteOne({_id:req.params.id});
+-    if(doc.deletedCount<1)
+-        {
+-            return next(new AppError("Document not found matching this id!",404))
+-        }
++exports.deleteOne = Repo => catchAsync(async (req, res, next) => {
++    const deletedCount = await Repo.deleteById(req.params.id);
++    if (deletedCount < 1) {
++        return next(new AppError("Document not found matching this id!", 404))
++    }
+     return res.status(204).json({
+-        status:'success',
+-        data:{
+-            doc
+-        }
++        status: 'success',
++        data: null
+     })
+-})
+\ No newline at end of file
++})
+diff --git a/api/controllers/serviceController.js b/api/controllers/serviceController.js
+index 0f5a5b3..3d6e2bf 100644
+--- a/api/controllers/serviceController.js
++++ b/api/controllers/serviceController.js
+@@ -4,44 +4,44 @@ const catchAsync = require("../utils/catchAsync");
+ const upload = require("./../utils/multerConfig");
+ const sharp = require("sharp");
+ 
+-exports.getTopRatedService=catchAsync(async(req,res,next)=>{
+-    const found= await Services.find().sort({avgRating:-1}).limit(1);
+-    if(!found)
+-    return next(new AppError('No document found!',404))
++exports.getTopRatedService = catchAsync(async (req, res, next) => {
++    const found = await Services.findTopRated();
++    if (!found)
++        return next(new AppError('No document found!', 404))
+     res.status(200).json({
+-        status:'success',
+-        result:found
++        status: 'success',
++        result: found
+     })
+ })
+ 
+ exports.uploadServiceImage = upload.single("image");
+ 
+ exports.resizeServiceImage = catchAsync(async (req, res, next) => {
+-  if (!req.file) return next();
+-  req.file.fileName = `service-${req.body.name}-${Date.now()}.jpeg`;
+-  
+-  try {
+-    
+-      await sharp(req.file.buffer)
+-      .resize(2000, 1333)
+-        .toFormat("jpeg")
+-        .jpeg({ quality: 90 })
+-        .toFile(`public/images/services/${req.file.fileName}`);
+-  } catch (error) {
+-    console.log(error);
+-  }
+-  next();
+-});
++    if (!req.file) return next();
++    req.file.fileName = `service-${req.body.name}-${Date.now()}.jpeg`;
+ 
++    try {
++        await sharp(req.file.buffer)
++            .resize(2000, 1333)
++            .toFormat("jpeg")
++            .jpeg({ quality: 90 })
++            .toFile(`public/images/services/${req.file.fileName}`);
++    } catch (error) {
++        console.log(error);
++    }
++    next();
++});
+ 
+-exports.createOne=catchAsync(async(req,res,next)=>{
+-    console.log(req.body);
+-    if(req.file)req.body.image=req.file.fileName
+-    const doc=await Services.create(req.body);
++exports.createOne = catchAsync(async (req, res, next) => {
++    if (req.file) req.body.image = req.file.fileName;
++    // features/technologies may arrive as JSON strings from multipart form-data
++    if (typeof req.body.features === 'string') req.body.features = JSON.parse(req.body.features);
++    if (typeof req.body.technologies === 'string') req.body.technologies = JSON.parse(req.body.technologies);
++    const doc = await Services.create(req.body);
+     return res.status(201).json({
+-        status:'success',
+-        data:{
++        status: 'success',
++        data: {
+             doc
+         }
+     })
+-})
+\ No newline at end of file
++})
+diff --git a/api/controllers/testimonialController.js b/api/controllers/testimonialController.js
+index c0d022b..cc6eab7 100644
+--- a/api/controllers/testimonialController.js
++++ b/api/controllers/testimonialController.js
+@@ -1,15 +1,14 @@
+ const testimonial = require("../models/testimonialModel");
+-const AppError = require("../utils/AppError");
+ const catchAsync = require("../utils/catchAsync");
+ 
+-exports.getAll=catchAsync(async(req,res,next)=>{
+-    const doc=await testimonial.find().populate('user').populate('service');
+-     
++exports.getAll = catchAsync(async (req, res, next) => {
++    const doc = await testimonial.findAll();
++
+     return res.status(200).json({
+-        status:'success',
+-        totalResults:doc.length,
+-        data:{
++        status: 'success',
++        totalResults: doc.length,
++        data: {
+             doc
+         }
+     })
+-})
+\ No newline at end of file
++})
+diff --git a/api/controllers/userController.js b/api/controllers/userController.js
+index 05238a3..a2c029d 100644
+--- a/api/controllers/userController.js
++++ b/api/controllers/userController.js
+@@ -1,7 +1,5 @@
+ const Users = require("../models/userModel");
+ const catchAsync = require("./../utils/catchAsync");
+-const AppError = require("./../utils/AppError");
+-const APIFeatures = require("../utils/apiFeatures");
+ const upload = require("./../utils/multerConfig");
+ const sharp = require("sharp");
+ 
+@@ -20,16 +18,20 @@ exports.resizeUserImage = catchAsync(async (req, res, next) => {
+   next();
+ });
+ 
++// NOTE: the old Mongo-operator-style filtering (gt/gte/lt/lte via APIFeatures) is gone —
++// this is an internal staff listing, not a public search endpoint, so it just supports
++// pagination via ?page & ?limit. Say the word if query filtering needs to come back.
+ exports.getAll = catchAsync(async (req, res, next) => {
+-  let doc = new APIFeatures(Users.find({ isActive: { $ne: false } }), req.query)
+-    .filter()
+-    .sort()
+-    .paginate()
+-    .limitFields();
+-  doc = await doc.query;
++  let doc = await Users.findAll({ activeOnly: true });
++
++  const page = Number(req.query.page) || 1;
++  const limit = Number(req.query.limit) || 100;
++  const start = (page - 1) * limit;
++  doc = doc.slice(start, start + limit);
++
+   return res.status(200).json({
+     status: "success",
+-    totalResults:doc.length,
++    totalResults: doc.length,
+     data: {
+       doc,
+     },
+@@ -37,11 +39,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
+ });
+ 
+ exports.deleteMe = catchAsync(async (req, res, next) => {
+-  const doc = await Users.findByIdAndUpdate(
+-    req.user.id,
+-    { isActive: false },
+-    { new: true }
+-  );
++  const doc = await Users.deactivate(req.user.id);
+   return res.status(204).json({
+     status: "success",
+     data: {
+@@ -52,10 +50,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
+ 
+ exports.updateMe = catchAsync(async (req, res, next) => {
+   if (req.file) req.body.image = req.file.fileName;
+-  const doc = await Users.findByIdAndUpdate(req.user.id, req.body, {
+-    new: true,
+-    runValidators: true,
+-  });
++  const doc = await Users.updateById(req.user.id, req.body);
+   return res.status(200).json({
+     status: "success",
+     data: {
+diff --git a/api/models/featureModel.js b/api/models/featureModel.js
+deleted file mode 100644
+index 95085c2..0000000
+--- a/api/models/featureModel.js
++++ /dev/null
+@@ -1,58 +0,0 @@
+-const mongoose=require('mongoose')
+-
+-const featureSchema=new mongoose.Schema({
+-    name:{
+-        type:String,
+-        required:[true,'name is required'],
+-        minLength:4,
+-        maxLength:255
+-    },
+-    description:{
+-        type:String,
+-        required:[true,'description is required'],
+-        minLength:7,
+-    },
+-})
+-
+-//To provide efficient searching of mongodb
+-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
+-
+-
+-//Document middlewares,can work before or after save or create
+-// Pre Save Hook
+-// userSchema.pre('save',function(next){
+-//     //query middleware
+-//     next()
+-// })
+-
+-// featureSchema.pre(/^find/,function(next){
+-//     this.populate({
+-//         path:'service',
+-//         select:'-__v -features -description -technologies'
+-//      })
+-//     next()
+-// })
+-
+-//Post Save Hook
+-//The save hook doenst works for findAndUpdate and insertMany etc
+-// tourSchema.post('save', function (doc, next) {
+-//   next();
+-// });
+-
+-//? Aggeregation Middleware, works before or after aggregation function
+-// tourSchema.pre('aggregate', function (next) {
+-//   this.pipeline().unshift({ $match: {  } });
+-//   next();
+-// });
+-
+-// userSchema.methods.FUNCTIONNAME=function()
+-// {
+-//     //member functions
+-// }
+-
+-//usually for child-parent referencing
+-// userSchema.virtual('',{
+-//  
+-// })
+-
+-module.exports=featureSchema
+\ No newline at end of file
+diff --git a/api/models/jobModel.js b/api/models/jobModel.js
+index 41f606d..155b8bb 100644
+--- a/api/models/jobModel.js
++++ b/api/models/jobModel.js
+@@ -1,77 +1,48 @@
+-const mongoose=require('mongoose')
+-
+-const jobSchema=new mongoose.Schema({
+-    name:{
+-        type:String,
+-        required:[true,'name is required'],
+-        minLength:4,
+-        maxLength:255
+-    },
+-    description:{
+-        type:String,
+-        required:[true,'description is required'],
+-        minLength:7,
+-    },
+-    responsibilities:{
+-        type:[String],
+-        // required:[true,'Responsibilities are required'],
+-        validate:{
+-            validator:function(val)
+-            {
+-                return val.length>0
+-            },
+-            message:"At least one responsibility is required"
+-            }
+-      },
+-      requirements:{
+-        type:[String],
+-        // required:[true,'Requirements are required'],
+-        validate:{
+-            validator:function(val)
+-            {
+-                return val.length>0
+-            },
+-            message:"At least one requirement is required"
+-            }
+-    }
+-})
+-
+-//To provide efficient searching of mongodb
+-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
+-
+-
+-//Document middlewares,can work before or after save or create
+-// Pre Save Hook
+-// userSchema.pre('save',function(next){
+-//     //query middleware
+-//     next()
+-// })
+-
+-// userSchema.pre(/^find/,function(next){
+-//     //query middleware
+-//     next()
+-// })
+-
+-//Post Save Hook
+-//The save hook doenst works for findAndUpdate and insertMany etc
+-// tourSchema.post('save', function (doc, next) {
+-//   next();
+-// });
+-
+-//? Aggeregation Middleware, works before or after aggregation function
+-// tourSchema.pre('aggregate', function (next) {
+-//   this.pipeline().unshift({ $match: {  } });
+-//   next();
+-// });
+-
+-// userSchema.methods.FUNCTIONNAME=function()
+-// {
+-//     //member functions
+-// }
+-
+-//usually for child-parent referencing
+-// userSchema.virtual('',{
+-//  
+-// })
+-
+-module.exports=mongoose.model('jobs',jobSchema)
+\ No newline at end of file
++const { pool } = require('../db')
++const { validate } = require('../utils/validate')
++
++exports.findAll = async () => {
++    const { rows } = await pool.query('select * from jobs order by created_at desc')
++    return rows
++}
++
++exports.findById = async (id) => {
++    const { rows } = await pool.query('select * from jobs where id = $1', [id])
++    return rows[0] || null
++}
++
++exports.create = async (data) => {
++    validate([
++        { name: 'name', value: data.name, required: true, minLength: 4, maxLength: 255 },
++        { name: 'description', value: data.description, required: true, minLength: 7 },
++        { name: 'responsibilities', value: data.responsibilities, isArray: true },
++        { name: 'requirements', value: data.requirements, isArray: true },
++    ])
++    const { rows } = await pool.query(
++        `insert into jobs (name, description, responsibilities, requirements)
++         values ($1, $2, $3, $4) returning *`,
++        [data.name, data.description, data.responsibilities || [], data.requirements || []]
++    )
++    return rows[0]
++}
++
++exports.updateById = async (id, data) => {
++    const existing = await exports.findById(id)
++    if (!existing) return null
++    const merged = { ...existing, ...data }
++    validate([
++        { name: 'name', value: merged.name, required: true, minLength: 4, maxLength: 255 },
++        { name: 'description', value: merged.description, required: true, minLength: 7 },
++    ])
++    const { rows } = await pool.query(
++        `update jobs set name=$1, description=$2, responsibilities=$3, requirements=$4
++         where id=$5 returning *`,
++        [merged.name, merged.description, merged.responsibilities || [], merged.requirements || [], id]
++    )
++    return rows[0]
++}
++
++exports.deleteById = async (id) => {
++    const { rowCount } = await pool.query('delete from jobs where id = $1', [id])
++    return rowCount
++}
+diff --git a/api/models/productModel.js b/api/models/productModel.js
+index 173479d..76db3e3 100644
+--- a/api/models/productModel.js
++++ b/api/models/productModel.js
+@@ -1,69 +1,46 @@
+-const mongoose = require("mongoose");
+-
+-const productSchema = new mongoose.Schema({
+-  name: {
+-    type: String,
+-    unique: true,
+-    required: [true, "name is required"],
+-    minLength: 4,
+-    maxLength: 255,
+-  },
+-  description: {
+-    type: String,
+-    unique: true,
+-    required: [true, "description is required"],
+-    minLength: 4,
+-    maxLength: 255,
+-  },
+-  url:{
+-    type:String,
+-    required:[true,'Project Url is required'],
+-    unique:true,
+-  },
+-},
+-// {
+-//     toJSON: { virtuals: true },
+-//     toObject: { virtuals: true },
+-//   }
+-  );
+-
+-//To provide efficient searching of mongodb
+-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
+-
+-//Document middlewares,can work before or after save or create
+-// Pre Save Hook
+-// userSchema.pre('save',function(next){
+-//     //query middleware
+-//     next()
+-// })
+-
+-// serviceSchema.pre(/^find/, function (next) {
+-//   this.populate("features");
+-//   next();
+-// });
+-
+-//Post Save Hook
+-//The save hook doenst works for findAndUpdate and insertMany etc
+-// tourSchema.post('save', function (doc, next) {
+-//   next();
+-// });
+-
+-//? Aggeregation Middleware, works before or after aggregation function
+-// tourSchema.pre('aggregate', function (next) {
+-//   this.pipeline().unshift({ $match: {  } });
+-//   next();
+-// });
+-
+-// userSchema.methods.FUNCTIONNAME=function()
+-// {
+-//     //member functions
+-// }
+-
+-// usually for child-parent referencing
+-// serviceSchema.virtual('features',{
+-//     ref:'features',
+-//     foreignField:'service',
+-//     localField:'_id'
+-// })
+-
+-module.exports = mongoose.model("products", productSchema);
++const { pool } = require('../db')
++const { validate } = require('../utils/validate')
++
++exports.findAll = async () => {
++    const { rows } = await pool.query('select * from products order by created_at desc')
++    return rows
++}
++
++exports.findById = async (id) => {
++    const { rows } = await pool.query('select * from products where id = $1', [id])
++    return rows[0] || null
++}
++
++exports.create = async (data) => {
++    validate([
++        { name: 'name', value: data.name, required: true, minLength: 4, maxLength: 255 },
++        { name: 'description', value: data.description, required: true, minLength: 4, maxLength: 255 },
++        { name: 'url', value: data.url, required: true },
++    ])
++    const { rows } = await pool.query(
++        `insert into products (name, description, url) values ($1, $2, $3) returning *`,
++        [data.name, data.description, data.url]
++    )
++    return rows[0]
++}
++
++exports.updateById = async (id, data) => {
++    const existing = await exports.findById(id)
++    if (!existing) return null
++    const merged = { ...existing, ...data }
++    validate([
++        { name: 'name', value: merged.name, required: true, minLength: 4, maxLength: 255 },
++        { name: 'description', value: merged.description, required: true, minLength: 4, maxLength: 255 },
++        { name: 'url', value: merged.url, required: true },
++    ])
++    const { rows } = await pool.query(
++        `update products set name=$1, description=$2, url=$3 where id=$4 returning *`,
++        [merged.name, merged.description, merged.url, id]
++    )
++    return rows[0]
++}
++
++exports.deleteById = async (id) => {
++    const { rowCount } = await pool.query('delete from products where id = $1', [id])
++    return rowCount
++}
+diff --git a/api/models/serviceModel.js b/api/models/serviceModel.js
+index 5dd9621..e41e747 100644
+--- a/api/models/serviceModel.js
++++ b/api/models/serviceModel.js
+@@ -1,85 +1,74 @@
+-const mongoose = require("mongoose");
+-const featureSchema = require("./featureModel");
++const { pool } = require('../db')
++const { validate } = require('../utils/validate')
+ 
+-const serviceSchema = new mongoose.Schema({
+-  name: {
+-    type: String,
+-    unique: true,
+-    required: [true, "name is required"],
+-    minLength: 4,
+-    maxLength: 255,
+-  },
+-  description: {
+-    type: String,
+-    required: [true, "description is required"],
+-    minLength: 7,
+-  },
+-  image: {
+-    type: String,
+-    // required:[true,'description is required'],
+-  },
+-  features: {
+-    type: [featureSchema],
+-    // required: [true, "Features are required for services"],
+-    validate: {
+-      validator: function (val) {        
+-        return val.length > 0;
+-      },
+-      message: "At least one feature is required",
+-    },
+-  },
+-  technologies: {
+-    type: [String],
+-  },
+-  avgRating:{
+-    type:Number,
+-    default:3.5,
+-    min:1,
+-    max:5
+-  }
+-},
+-{
+-    toJSON: { virtuals: true },
+-    toObject: { virtuals: true },
+-  }
+-  );
++exports.findAll = async () => {
++    const { rows } = await pool.query('select * from services order by created_at desc')
++    return rows
++}
+ 
+-//To provide efficient searching of mongodb
+-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
++// `populate` mirrors the old .populate('testimonials') call — attaches the
++// service's testimonials (with the reviewer's name) onto the returned row.
++exports.findById = async (id, populate) => {
++    const { rows } = await pool.query('select * from services where id = $1', [id])
++    const service = rows[0]
++    if (!service) return null
+ 
+-//Document middlewares,can work before or after save or create
+-// Pre Save Hook
+-// userSchema.pre('save',function(next){
+-  
+-// })
++    if (populate === 'testimonials') {
++        const { rows: testimonials } = await pool.query(
++            `select t.id, t.review, t.rating, t.created_at, u.id as user_id, u.name as user_name
++             from testimonials t join users u on u.id = t.user_id
++             where t.service_id = $1 order by t.created_at desc`,
++            [id]
++        )
++        service.testimonials = testimonials
++    }
++    return service
++}
+ 
+-// serviceSchema.pre(/^find/, function (next) {
+-//   // this.populate("testimonials");
+-//   next();
+-// });
++exports.findTopRated = async () => {
++    const { rows } = await pool.query('select * from services order by avg_rating desc limit 1')
++    return rows[0] || null
++}
+ 
+-//Post Save Hook
+-//The save hook doenst works for findAndUpdate and insertMany etc
+-// tourSchema.post('save', function (doc, next) {
+-//   next();
+-// });
++exports.create = async (data) => {
++    const features = data.features || []
++    validate([
++        { name: 'name', value: data.name, required: true, minLength: 4, maxLength: 255 },
++        { name: 'description', value: data.description, required: true, minLength: 7 },
++        { name: 'features', value: features, isArray: true },
++    ])
++    const { rows } = await pool.query(
++        `insert into services (name, description, image, features, technologies)
++         values ($1, $2, $3, $4, $5) returning *`,
++        [data.name, data.description, data.image || null, JSON.stringify(features), data.technologies || []]
++    )
++    return rows[0]
++}
+ 
+-//? Aggeregation Middleware, works before or after aggregation function
+-// tourSchema.pre('aggregate', function (next) {
+-//   this.pipeline().unshift({ $match: {  } });
+-//   next();
+-// });
++exports.updateById = async (id, data) => {
++    const existing = await exports.findById(id)
++    if (!existing) return null
++    const merged = { ...existing, ...data }
++    validate([
++        { name: 'name', value: merged.name, required: true, minLength: 4, maxLength: 255 },
++        { name: 'description', value: merged.description, required: true, minLength: 7 },
++    ])
++    const { rows } = await pool.query(
++        `update services set name=$1, description=$2, image=$3, features=$4, technologies=$5
++         where id=$6 returning *`,
++        [
++            merged.name,
++            merged.description,
++            merged.image || null,
++            JSON.stringify(merged.features || []),
++            merged.technologies || [],
++            id,
++        ]
++    )
++    return rows[0]
++}
+ 
+-// userSchema.methods.FUNCTIONNAME=function()
+-// {
+-//     //member functions
+-// }
+-
+-// usually for child-parent referencing
+-serviceSchema.virtual('testimonials',{
+-    ref:'testimonials',
+-    foreignField:'service',
+-    localField:'_id'
+-})
+-
+-module.exports = mongoose.model("services", serviceSchema);
++exports.deleteById = async (id) => {
++    const { rowCount } = await pool.query('delete from services where id = $1', [id])
++    return rowCount
++}
+diff --git a/api/models/testimonialModel.js b/api/models/testimonialModel.js
+index f594cf0..5b4ce69 100644
+--- a/api/models/testimonialModel.js
++++ b/api/models/testimonialModel.js
+@@ -1,101 +1,53 @@
+-const mongoose = require("mongoose");
+-const Services = require("./serviceModel");
+-
+-const testimonialSchema = new mongoose.Schema(
+-  {
+-    review: {
+-      type: String,
+-      required: [true, "Review is required"],
+-    },
+-    rating: {
+-      type: Number,
+-      required: [true, "Rating is required"],
+-      min:1,
+-      max:5
+-    },
+-    createdAt: {
+-      type: Date,
+-      default: Date.now(),
+-    },
+-    user: {
+-      type: mongoose.Schema.ObjectId,
+-      ref: "users",
+-      required: [true, "Testimonial must belong to user(client)"],
+-    },
+-    service: {
+-      type: mongoose.Schema.ObjectId,
+-      ref: "services",
+-      required: [true, "Testimonial must belong to services"],
+-    },
+-  },
+-  {
+-    toJSON: { virtuals: true },
+-    toObject: { virtuals: true },
+-  }
+-);
+-
+-//To provide efficient searching of mongodb
+-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
+-
+-//Document middlewares,can work before or after save or create
+-// Pre Save Hook
+-// userSchema.pre('save',function(next){
+-//     //query middleware
+-//     next()
+-// })
+-
+-// testimonialSchema.pre(/^find/, function (next) {
+-  //   this.populate({ path: "user", select: "name" })
+-  //   .populate({path:'service',select:'name'});
+-//   next();
+-// });
+-
+-
+-// testimonialSchema.pre('save', function (req,next) {
+-//   // if(req.user==='client')
+-//   // return next();
+-
+-//   console.log(req.body);
+-  
+-//   next(new AppError('Only clients are allowed to give reviews',403))
+-// });
+-
+-//? Aggeregation Middleware, works before or after aggregation function
+-// tourSchema.pre('aggregate', function (next) {
+-//   this.pipeline().unshift({ $match: {  } });
+-//   next();
+-// });
+-
+-// userSchema.methods.FUNCTIONNAME=function()
+-// {
+-//     //member functions
+-// }
+-
+-//updating the avgRating in services
+-testimonialSchema.statics.getAvgRating=async function(serviceId){
+-  const stats=await this.aggregate([
+-    {
+-      $match:{service:serviceId}
+-    },
+-         {
+-          $group:{
+-            _id:'$service',
+-            avgRating:{$avg:'$rating'}
+-          }
+-        }
+-      ])
+-      await Services.findByIdAndUpdate(serviceId,{avgRating:stats[0].avgRating})
+-    }
+-testimonialSchema.post('save',function(){     
+-   this.constructor.getAvgRating(this.service)
+-})
+-    
+-    
+-    // usually for child-parent referencing
+-    // serviceSchema.virtual('features',{
+-      //     ref:'features',
+-      //     foreignField:'service',
+-      //     localField:'_id'
+-// })
+-
+-module.exports = mongoose.model("testimonials", testimonialSchema);
++const { pool } = require('../db')
++const AppError = require('../utils/AppError')
++
++const BASE_SELECT = `
++    select t.id, t.review, t.rating, t.created_at,
++           t.user_id, u.name as user_name,
++           t.service_id, s.name as service_name
++    from testimonials t
++    join users u on u.id = t.user_id
++    join services s on s.id = t.service_id
++`
++
++exports.findAll = async () => {
++    const { rows } = await pool.query(`${BASE_SELECT} order by t.created_at desc`)
++    return rows
++}
++
++exports.findById = async (id) => {
++    const { rows } = await pool.query(`${BASE_SELECT} where t.id = $1`, [id])
++    return rows[0] || null
++}
++
++exports.create = async (data) => {
++    if (!data.review) throw new AppError('Review is required', 400)
++    if (data.rating === undefined) throw new AppError('Rating is required', 400)
++    if (data.rating < 1 || data.rating > 5) throw new AppError('Rating must be between 1 and 5', 400)
++    if (!data.user) throw new AppError('Testimonial must belong to user(client)', 400)
++    if (!data.service) throw new AppError('Testimonial must belong to services', 400)
++
++    // avg_rating on the parent service is recalculated by the DB trigger — no app-side hook needed.
++    const { rows } = await pool.query(
++        `insert into testimonials (review, rating, user_id, service_id)
++         values ($1, $2, $3, $4) returning id`,
++        [data.review, data.rating, data.user, data.service]
++    )
++    return exports.findById(rows[0].id)
++}
++
++exports.updateById = async (id, data) => {
++    const existing = await exports.findById(id)
++    if (!existing) return null
++    const rating = data.rating ?? existing.rating
++    const review = data.review ?? existing.review
++    if (rating < 1 || rating > 5) throw new AppError('Rating must be between 1 and 5', 400)
++
++    await pool.query('update testimonials set review=$1, rating=$2 where id=$3', [review, rating, id])
++    return exports.findById(id)
++}
++
++exports.deleteById = async (id) => {
++    const { rowCount } = await pool.query('delete from testimonials where id = $1', [id])
++    return rowCount
++}
+diff --git a/api/models/userModel.js b/api/models/userModel.js
+index 5b009a4..2ad2a61 100644
+--- a/api/models/userModel.js
++++ b/api/models/userModel.js
+@@ -1,138 +1,169 @@
+-const mongoose=require('mongoose')
+-const validator = require('validator');
+-const bcrypt = require('bcrypt');
+-const crypto=require('crypto')
+-const saltRounds = 12;
+-
+-const userSchema=new mongoose.Schema({
+-    name:{
+-        type:String,
+-        required:[true,'name is required'],
+-        minLength:4,
+-        maxLength:30
+-    },
+-    email:{
+-        type:String,
+-        required:[true,'email is required'],
+-        unique:true,
+-        minLength:4,
+-        maxLength:50,
+-        validate:[validator.isEmail,'Email should be valid'],
+-        select:false
+-    },
+-    password:{
+-        type:String,
+-        required:[true,'password is required'],
+-        minLength:7,
+-        select:false,
+-        validate: {
+-            validator: function (value) {
+-              // Regular expression to match at least one uppercase letter,one lowercase letter, one number, and one special character
+-              const regex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]+$/;
+-              return regex.test(value);
+-            },
+-            message:
+-              'Password must contain at least one uppercase letter,one lowercase letter, one number, and one special character.',
+-          },
+-    },
+-    confirmPassword:{
+-        type:String,
+-        required:[true,'confirm password is required'],
+-        select:false,
+-        validate: {
+-            validator: function (val) {
+-              return this.password === val;
+-            },
+-            message: "Passwords are not same",
+-          },
+-    },
+-    role:{
+-      type:String,
+-      enum:['admin','employee','client'],
+-      default:'employee'
+-    },
+-    isActive:{
+-      type:Boolean,
+-      default:true
+-    },
+-    image:{
+-      type:String,
+-      default:'default.png'
+-    },
+-    passwordResetToken:String,
+-    passwordResetTokenExpires:Date,
+-    lastChangedPassword:Date,
+-}, {
+-  toJSON: { virtuals: true },
+-  toObject: { virtuals: true },
+-}
+-)
+-
+-//To provide efficient searching of mongodb
+-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
+-
+-
+-//Document middlewares,can work before or after save or create
+-// Pre Save Hook
+-userSchema.pre('save',async function(next){
+-  if(!this.isModified('password')) return next()
+-  
+- this.password=await bcrypt.hash(this.password, saltRounds);
+- this.confirmPassword=undefined
+-    next()
+-})
+-userSchema.pre('save', function(next){
+-  if(!this.isModified('password') || this.isNew) 
+-  {
+-    return next()
+-  }  
+-  this.lastChangedPassword=Date.now()-1000
+-  
+-    next()
+-})
+-
+-// userSchema.pre(/^find/,function(next){
+-//     //query middleware
+-//     next()
+-// })
+-
+-//Post Save Hook
+-//The save hook doenst works for findAndUpdate and insertMany etc
+-// tourSchema.post('save', function (doc, next) {
+-//   next();
+-// });
+-
+-//? Aggeregation Middleware, works before or after aggregation function
+-// tourSchema.pre('aggregate', function (next) {
+-//   this.pipeline().unshift({ $match: {  } });
+-//   next();
+-// });
+-
+-userSchema.methods.correctPassword=async function(password)
+-{
+-  return await bcrypt.compare(password,this.password);
+-}
+-userSchema.methods.checkPasswordchanged=function(JWTTIMESTAMP)
+-{
+-  if(!this.lastChangedPassword)
+-  return 0;
+-  const time=this.lastChangedPassword.getTime()/1000
+-  return time>JWTTIMESTAMP
+-}
+-userSchema.methods.getPasswordResetToken=function()
+-{
+-  const resetToken=crypto.randomBytes(32).toString('hex');
+-  this.passwordResetToken=crypto.createHash('sha256').update(resetToken).digest('hex')
+-  this.passwordResetTokenExpires=Date.now()+10*60*1000  //expire after 10 minutes
+-  return resetToken
+-}
+-
+-// usually for child-parent referencing
+-userSchema.virtual('testimonials',{
+-  ref:'testimonials',
+- foreignField:'user',
+- localField:'_id'
+-})
+-
+-module.exports=mongoose.model('users',userSchema)
++const bcrypt = require('bcrypt')
++const crypto = require('crypto')
++const validator = require('validator')
++const { pool } = require('../db')
++const AppError = require('../utils/AppError')
+ 
++const SALT_ROUNDS = 12
++const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]+$/
++
++// Strips password_hash / reset-token internals before a row goes back to the client —
++// equivalent to the old schema's `select: false` fields.
++function toPublic(row) {
++    if (!row) return row
++    const { password_hash, password_reset_token, password_reset_token_expires, ...rest } = row
++    return rest
++}
++exports.toPublic = toPublic
++
++exports.findAll = async ({ activeOnly = true } = {}) => {
++    const { rows } = activeOnly
++        ? await pool.query('select * from users where is_active = true order by name')
++        : await pool.query('select * from users order by name')
++    return rows.map(toPublic)
++}
++
++// `populate` mirrors the old .populate('testimonials') virtual on users —
++// called positionally as findById(id, 'testimonials') via handlerFactory's getOne(Model, options).
++exports.findById = async (id, populate) => {
++    const { rows } = await pool.query('select * from users where id = $1', [id])
++    const row = rows[0]
++    if (!row) return null
++    const user = toPublic(row)
++
++    if (populate === 'testimonials') {
++        const { rows: testimonials } = await pool.query(
++            `select t.id, t.review, t.rating, t.created_at, t.service_id, s.name as service_name
++             from testimonials t join services s on s.id = t.service_id
++             where t.user_id = $1 order by t.created_at desc`,
++            [id]
++        )
++        user.testimonials = testimonials
++    }
++    return user
++}
++
++// Internal-only: includes password_hash / reset-token fields. Never return this
++// straight from a route — used by authController for login/protect/updatePassword.
++exports.findByIdWithPassword = async (id) => {
++    const { rows } = await pool.query('select * from users where id = $1', [id])
++    return rows[0] || null
++}
++
++exports.findByEmail = async (email) => {
++    const { rows } = await pool.query('select * from users where email = $1', [email])
++    return rows[0] ? toPublic(rows[0]) : null
++}
++
++exports.findByEmailWithPassword = async (email) => {
++    const { rows } = await pool.query('select * from users where email = $1', [email])
++    return rows[0] || null
++}
++
++exports.findByResetToken = async (hashedToken) => {
++    const { rows } = await pool.query(
++        `select * from users where password_reset_token = $1 and password_reset_token_expires > now()`,
++        [hashedToken]
++    )
++    return rows[0] || null
++}
++
++function validatePassword(password, confirmPassword) {
++    if (!password || password.length < 7)
++        throw new AppError('password must be at least 7 characters', 400)
++    if (!PASSWORD_REGEX.test(password))
++        throw new AppError(
++            'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
++            400
++        )
++    if (password !== confirmPassword) throw new AppError('Passwords are not same', 400)
++}
++
++exports.create = async (data) => {
++    if (!data.name || data.name.length < 4 || data.name.length > 30)
++        throw new AppError('name is required (4-30 characters)', 400)
++    if (!data.email || !validator.isEmail(data.email))
++        throw new AppError('Email should be valid', 400)
++    validatePassword(data.password, data.confirmPassword)
++
++    const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS)
++    const role = ['admin', 'employee', 'client'].includes(data.role) ? data.role : 'employee'
++
++    try {
++        const { rows } = await pool.query(
++            `insert into users (name, email, password_hash, role)
++             values ($1, $2, $3, $4) returning *`,
++            [data.name, data.email, passwordHash, role]
++        )
++        return toPublic(rows[0])
++    } catch (err) {
++        if (err.code === '23505') throw new AppError('Email is already registered', 400)
++        throw err
++    }
++}
++
++exports.updateById = async (id, data) => {
++    const existing = await exports.findById(id, { includePassword: true })
++    if (!existing) return null
++
++    const name = data.name ?? existing.name
++    const image = data.image ?? existing.image
++    const isActive = data.isActive ?? existing.is_active
++
++    const { rows } = await pool.query(
++        `update users set name=$1, image=$2, is_active=$3 where id=$4 returning *`,
++        [name, image, isActive, id]
++    )
++    return toPublic(rows[0])
++}
++
++exports.setPassword = async (id, password, confirmPassword) => {
++    validatePassword(password, confirmPassword)
++    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS)
++    const { rows } = await pool.query(
++        `update users
++         set password_hash=$1, last_changed_password=now(), password_reset_token=null, password_reset_token_expires=null
++         where id=$2 returning *`,
++        [passwordHash, id]
++    )
++    return toPublic(rows[0])
++}
++
++exports.deleteById = async (id) => {
++    // soft delete, same as the old deleteMe (isActive=false) — hard delete for admin removal
++    const { rowCount } = await pool.query('delete from users where id = $1', [id])
++    return rowCount
++}
++
++exports.deactivate = async (id) => {
++    const { rows } = await pool.query(
++        `update users set is_active=false where id=$1 returning *`,
++        [id]
++    )
++    return toPublic(rows[0])
++}
++
++exports.clearPasswordResetToken = async (id) => {
++    await pool.query(
++        `update users set password_reset_token=null, password_reset_token_expires=null where id=$1`,
++        [id]
++    )
++}
++
++exports.correctPassword = async (candidate, passwordHash) => bcrypt.compare(candidate, passwordHash)
++
++exports.checkPasswordChangedAfter = (user, jwtTimestamp) => {
++    if (!user.last_changed_password) return false
++    return user.last_changed_password.getTime() / 1000 > jwtTimestamp
++}
++
++exports.createPasswordResetToken = async (id) => {
++    const resetToken = crypto.randomBytes(32).toString('hex')
++    const hashed = crypto.createHash('sha256').update(resetToken).digest('hex')
++    const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
++    await pool.query(
++        `update users set password_reset_token=$1, password_reset_token_expires=$2 where id=$3`,
++        [hashed, expires, id]
++    )
++    return resetToken
++}
+diff --git a/api/server.js b/api/server.js
+index 1a9f3ab..e599a80 100644
+--- a/api/server.js
++++ b/api/server.js
+@@ -1,5 +1,4 @@
+ ////////////////////////////Packages
+-const mongoose=require('mongoose')
+ require('dotenv').config({
+     path:'./config.env'
+ })
+diff --git a/api/utils/validate.js b/api/utils/validate.js
+new file mode 100644
+index 0000000..e3a6ccd
+--- /dev/null
++++ b/api/utils/validate.js
+@@ -0,0 +1,29 @@
++const AppError = require('./AppError')
++
++// Small stand-in for the Mongoose schema validation the models used to get for free.
++// Throws a 400 AppError (same shape the error controller already handles) on the first failure.
++function validate(fields) {
++    for (const f of fields) {
++        const { value, name, required, minLength, maxLength, isArray } = f
++        const missing = value === undefined || value === null || value === ''
++        if (required && missing) {
++            throw new AppError(`${name} is required`, 400)
++        }
++        if (missing) continue
++
++        if (isArray) {
++            if (!Array.isArray(value) || value.length === 0) {
++                throw new AppError(`At least one ${name.replace(/s$/, '')} is required`, 400)
++            }
++            continue
++        }
++        if (typeof value === 'string') {
++            if (minLength && value.length < minLength)
++                throw new AppError(`${name} must be at least ${minLength} characters`, 400)
++            if (maxLength && value.length > maxLength)
++                throw new AppError(`${name} must be at most ${maxLength} characters`, 400)
++        }
++    }
++}
++
++module.exports = { validate }
+-- 
+2.43.0
+
