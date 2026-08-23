@@ -1,85 +1,74 @@
-const mongoose = require("mongoose");
-const featureSchema = require("./featureModel");
+const { pool } = require('../db')
+const { validate } = require('../utils/validate')
 
-const serviceSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    unique: true,
-    required: [true, "name is required"],
-    minLength: 4,
-    maxLength: 255,
-  },
-  description: {
-    type: String,
-    required: [true, "description is required"],
-    minLength: 7,
-  },
-  image: {
-    type: String,
-    // required:[true,'description is required'],
-  },
-  features: {
-    type: [featureSchema],
-    // required: [true, "Features are required for services"],
-    validate: {
-      validator: function (val) {        
-        return val.length > 0;
-      },
-      message: "At least one feature is required",
-    },
-  },
-  technologies: {
-    type: [String],
-  },
-  avgRating:{
-    type:Number,
-    default:3.5,
-    min:1,
-    max:5
-  }
-},
-{
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
-  );
+exports.findAll = async () => {
+    const { rows } = await pool.query('select * from services order by created_at desc')
+    return rows
+}
 
-//To provide efficient searching of mongodb
-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
+// `populate` mirrors the old .populate('testimonials') call — attaches the
+// service's testimonials (with the reviewer's name) onto the returned row.
+exports.findById = async (id, populate) => {
+    const { rows } = await pool.query('select * from services where id = $1', [id])
+    const service = rows[0]
+    if (!service) return null
 
-//Document middlewares,can work before or after save or create
-// Pre Save Hook
-// userSchema.pre('save',function(next){
-  
-// })
+    if (populate === 'testimonials') {
+        const { rows: testimonials } = await pool.query(
+            `select t.id, t.review, t.rating, t.created_at, u.id as user_id, u.name as user_name
+             from testimonials t join users u on u.id = t.user_id
+             where t.service_id = $1 order by t.created_at desc`,
+            [id]
+        )
+        service.testimonials = testimonials
+    }
+    return service
+}
 
-// serviceSchema.pre(/^find/, function (next) {
-//   // this.populate("testimonials");
-//   next();
-// });
+exports.findTopRated = async () => {
+    const { rows } = await pool.query('select * from services order by avg_rating desc limit 1')
+    return rows[0] || null
+}
 
-//Post Save Hook
-//The save hook doenst works for findAndUpdate and insertMany etc
-// tourSchema.post('save', function (doc, next) {
-//   next();
-// });
+exports.create = async (data) => {
+    const features = data.features || []
+    validate([
+        { name: 'name', value: data.name, required: true, minLength: 4, maxLength: 255 },
+        { name: 'description', value: data.description, required: true, minLength: 7 },
+        { name: 'features', value: features, isArray: true },
+    ])
+    const { rows } = await pool.query(
+        `insert into services (name, description, image, features, technologies)
+         values ($1, $2, $3, $4, $5) returning *`,
+        [data.name, data.description, data.image || null, JSON.stringify(features), data.technologies || []]
+    )
+    return rows[0]
+}
 
-//? Aggeregation Middleware, works before or after aggregation function
-// tourSchema.pre('aggregate', function (next) {
-//   this.pipeline().unshift({ $match: {  } });
-//   next();
-// });
+exports.updateById = async (id, data) => {
+    const existing = await exports.findById(id)
+    if (!existing) return null
+    const merged = { ...existing, ...data }
+    validate([
+        { name: 'name', value: merged.name, required: true, minLength: 4, maxLength: 255 },
+        { name: 'description', value: merged.description, required: true, minLength: 7 },
+    ])
+    const { rows } = await pool.query(
+        `update services set name=$1, description=$2, image=$3, features=$4, technologies=$5
+         where id=$6 returning *`,
+        [
+            merged.name,
+            merged.description,
+            merged.image || null,
+            JSON.stringify(merged.features || []),
+            merged.technologies || [],
+            id,
+        ]
+    )
+    return rows[0]
+}
 
-// userSchema.methods.FUNCTIONNAME=function()
-// {
-//     //member functions
-// }
-
-// usually for child-parent referencing
-serviceSchema.virtual('testimonials',{
-    ref:'testimonials',
-    foreignField:'service',
-    localField:'_id'
-})
-
-module.exports = mongoose.model("services", serviceSchema);
+exports.deleteById = async (id) => {
+    const { rowCount } = await pool.query('delete from services where id = $1', [id])
+    return rowCount
+}

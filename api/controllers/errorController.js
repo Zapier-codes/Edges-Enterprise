@@ -25,6 +25,17 @@ const handleDuplicateFieldsError=(error)=>{
     const message = `Duplicate field value,please try another value`
     return new AppError(message, 400)
 }
+// Postgres error codes (https://www.postgresql.org/docs/current/errcodes-appendix.html)
+const handlePgInvalidTextError=()=>{  // e.g. a malformed UUID passed as :id
+    return new AppError('Invalid id format', 400)
+}
+const handlePgNotNullError=(error)=>{
+    return new AppError(`${error.column} is required`, 400)
+}
+const handlePgForeignKeyError=()=>{
+    return new AppError('Referenced record does not exist', 400)
+}
+
 const handleDevelopmentError=(err,res)=>{
     res.status(err.statusCode).json({
         status:err.status,
@@ -75,7 +86,19 @@ module.exports = function (err, req, res, next) {
 
     if (error.name === 'TokenExpiredError')  //expired token
     finalError = handleJWTExpiryError();
-    
+
+    if(error.code==='23505')  //postgres unique_violation
+    finalError = handleDuplicateFieldsError(error)
+
+    if(error.code==='22P02')  //postgres invalid_text_representation (bad uuid, etc.)
+    finalError = handlePgInvalidTextError()
+
+    if(error.code==='23502')  //postgres not_null_violation
+    finalError = handlePgNotNullError(error)
+
+    if(error.code==='23503')  //postgres foreign_key_violation
+    finalError = handlePgForeignKeyError()
+
     handleProductionError(finalError?finalError:err,res);
   }
 };

@@ -1,69 +1,46 @@
-const mongoose = require("mongoose");
+const { pool } = require('../db')
+const { validate } = require('../utils/validate')
 
-const productSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    unique: true,
-    required: [true, "name is required"],
-    minLength: 4,
-    maxLength: 255,
-  },
-  description: {
-    type: String,
-    unique: true,
-    required: [true, "description is required"],
-    minLength: 4,
-    maxLength: 255,
-  },
-  url:{
-    type:String,
-    required:[true,'Project Url is required'],
-    unique:true,
-  },
-},
-// {
-//     toJSON: { virtuals: true },
-//     toObject: { virtuals: true },
-//   }
-  );
+exports.findAll = async () => {
+    const { rows } = await pool.query('select * from products order by created_at desc')
+    return rows
+}
 
-//To provide efficient searching of mongodb
-// userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
+exports.findById = async (id) => {
+    const { rows } = await pool.query('select * from products where id = $1', [id])
+    return rows[0] || null
+}
 
-//Document middlewares,can work before or after save or create
-// Pre Save Hook
-// userSchema.pre('save',function(next){
-//     //query middleware
-//     next()
-// })
+exports.create = async (data) => {
+    validate([
+        { name: 'name', value: data.name, required: true, minLength: 4, maxLength: 255 },
+        { name: 'description', value: data.description, required: true, minLength: 4, maxLength: 255 },
+        { name: 'url', value: data.url, required: true },
+    ])
+    const { rows } = await pool.query(
+        `insert into products (name, description, url) values ($1, $2, $3) returning *`,
+        [data.name, data.description, data.url]
+    )
+    return rows[0]
+}
 
-// serviceSchema.pre(/^find/, function (next) {
-//   this.populate("features");
-//   next();
-// });
+exports.updateById = async (id, data) => {
+    const existing = await exports.findById(id)
+    if (!existing) return null
+    const merged = { ...existing, ...data }
+    validate([
+        { name: 'name', value: merged.name, required: true, minLength: 4, maxLength: 255 },
+        { name: 'description', value: merged.description, required: true, minLength: 4, maxLength: 255 },
+        { name: 'url', value: merged.url, required: true },
+    ])
+    const { rows } = await pool.query(
+        `update products set name=$1, description=$2, url=$3 where id=$4 returning *`,
+        [merged.name, merged.description, merged.url, id]
+    )
+    return rows[0]
+}
 
-//Post Save Hook
-//The save hook doenst works for findAndUpdate and insertMany etc
-// tourSchema.post('save', function (doc, next) {
-//   next();
-// });
-
-//? Aggeregation Middleware, works before or after aggregation function
-// tourSchema.pre('aggregate', function (next) {
-//   this.pipeline().unshift({ $match: {  } });
-//   next();
-// });
-
-// userSchema.methods.FUNCTIONNAME=function()
-// {
-//     //member functions
-// }
-
-// usually for child-parent referencing
-// serviceSchema.virtual('features',{
-//     ref:'features',
-//     foreignField:'service',
-//     localField:'_id'
-// })
-
-module.exports = mongoose.model("products", productSchema);
+exports.deleteById = async (id) => {
+    const { rowCount } = await pool.query('delete from products where id = $1', [id])
+    return rowCount
+}

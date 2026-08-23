@@ -1,7 +1,5 @@
 const Users = require("../models/userModel");
 const catchAsync = require("./../utils/catchAsync");
-const AppError = require("./../utils/AppError");
-const APIFeatures = require("../utils/apiFeatures");
 const upload = require("./../utils/multerConfig");
 const sharp = require("sharp");
 
@@ -20,16 +18,20 @@ exports.resizeUserImage = catchAsync(async (req, res, next) => {
   next();
 });
 
+// NOTE: the old Mongo-operator-style filtering (gt/gte/lt/lte via APIFeatures) is gone —
+// this is an internal staff listing, not a public search endpoint, so it just supports
+// pagination via ?page & ?limit. Say the word if query filtering needs to come back.
 exports.getAll = catchAsync(async (req, res, next) => {
-  let doc = new APIFeatures(Users.find({ isActive: { $ne: false } }), req.query)
-    .filter()
-    .sort()
-    .paginate()
-    .limitFields();
-  doc = await doc.query;
+  let doc = await Users.findAll({ activeOnly: true });
+
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 100;
+  const start = (page - 1) * limit;
+  doc = doc.slice(start, start + limit);
+
   return res.status(200).json({
     status: "success",
-    totalResults:doc.length,
+    totalResults: doc.length,
     data: {
       doc,
     },
@@ -37,11 +39,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  const doc = await Users.findByIdAndUpdate(
-    req.user.id,
-    { isActive: false },
-    { new: true }
-  );
+  const doc = await Users.deactivate(req.user.id);
   return res.status(204).json({
     status: "success",
     data: {
@@ -52,10 +50,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.file) req.body.image = req.file.fileName;
-  const doc = await Users.findByIdAndUpdate(req.user.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const doc = await Users.updateById(req.user.id, req.body);
   return res.status(200).json({
     status: "success",
     data: {
