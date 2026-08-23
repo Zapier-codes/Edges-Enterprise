@@ -3,6 +3,7 @@ const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 const upload = require("./../utils/multerConfig");
 const sharp = require("sharp");
+const { uploadImage } = require("../utils/supabaseStorage");
 
 exports.getTopRatedService = catchAsync(async (req, res, next) => {
     const found = await Services.findTopRated();
@@ -18,17 +19,15 @@ exports.uploadServiceImage = upload.single("image");
 
 exports.resizeServiceImage = catchAsync(async (req, res, next) => {
     if (!req.file) return next();
-    req.file.fileName = `service-${req.body.name}-${Date.now()}.jpeg`;
+    const fileName = `service-${req.body.name}-${Date.now()}.jpeg`;
 
-    try {
-        await sharp(req.file.buffer)
-            .resize(2000, 1333)
-            .toFormat("jpeg")
-            .jpeg({ quality: 90 })
-            .toFile(`public/images/services/${req.file.fileName}`);
-    } catch (error) {
-        console.log(error);
-    }
+    const buffer = await sharp(req.file.buffer)
+        .resize(2000, 1333)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toBuffer();
+
+    req.body.image = await uploadImage('service-images', fileName, buffer);
     next();
 });
 

@@ -2,19 +2,22 @@ const Users = require("../models/userModel");
 const catchAsync = require("./../utils/catchAsync");
 const upload = require("./../utils/multerConfig");
 const sharp = require("sharp");
+const { uploadImage } = require("../utils/supabaseStorage");
 
 exports.uploadUserImage = upload.single("image");
 
 exports.resizeUserImage = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
-  req.file.fileName = `user-${req.user.id}-${Date.now()}.jpeg`;
+  const fileName = `user-${req.user.id}-${Date.now()}.jpeg`;
 
-  await sharp(req.file.buffer)
+  const buffer = await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
-    .toFile(`public/images/users/${req.file.fileName}`);
+    .toBuffer();
+
+  req.file.fileName = await uploadImage('user-images', fileName, buffer);
   next();
 });
 
