@@ -1,0 +1,7 @@
+# Supabase CLI project file — used by `supabase link` / `supabase db push` in CI.
+# The actual project ref is injected at runtime from the SUPABASE_PROJECT_ID secret
+# (via `supabase link --project-ref`), nothing sensitive lives in this file.
+project_id = "edges-enterprise"
+
+[db]
+major_version = 15
