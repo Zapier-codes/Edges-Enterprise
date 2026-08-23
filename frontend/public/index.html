@@ -11,6 +11,21 @@
     />
 
     <title>Edges Enterprise</title>
+    <script>
+      // Runs before paint so there's no flash of the wrong theme.
+      // Priority: stored user choice > OS preference (defaults to system).
+      (function () {
+        try {
+          var stored = localStorage.getItem('edges-theme');
+          var isDark = stored
+            ? stored === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', isDark);
+        } catch (e) {
+          /* localStorage unavailable — fall back to light */
+        }
+      })();
+    </script>
     <!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700,900&display=swap" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     

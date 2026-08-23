@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Link } from "react-router-dom";
 import logo from "./../resources/logo2.svg";
 import Dropdown from "./Dropdown";
+import ThemeToggle from "./ThemeToggle";
 import useStore from "../store/store";
 
 const Navbar = (props) => {
@@ -71,7 +72,7 @@ const Navbar = (props) => {
           <li className="flex relative items-center">
             <Link
               to="/about"
-              className="text-theme text-lg font-normal mr-6 hover:text-[#000000]"
+              className="text-theme dark:text-accent text-lg font-normal mr-6 hover:text-[#000000] dark:hover:text-white"
             >
               About Us
             </Link>
@@ -80,7 +81,7 @@ const Navbar = (props) => {
             <Link
               onMouseEnter={(e) => handleShowDropdown(e)}
               to="/services"
-              className="text-theme  hover:text-[#000000] text-lg font-normal"
+              className="text-theme dark:text-accent  hover:text-[#000000] dark:hover:text-white text-lg font-normal"
             >
               What we do?
               <span className="mx-3 rotate-90 inline-block">
@@ -106,7 +107,7 @@ const Navbar = (props) => {
             <Link
               onMouseEnter={(e) => handleShowDropdown(e)}
               to="/products"
-              className="text-theme text-lg font-normal hover:text-[#000000]"
+              className="text-theme dark:text-accent text-lg font-normal hover:text-[#000000] dark:hover:text-white"
             >
               Our Products
               <span className="mx-3 rotate-90 inline-block">
@@ -131,7 +132,7 @@ const Navbar = (props) => {
           <li className="flex relative items-center">
             <Link
               to={isLoggedIn ? "/dashboard" : "/login"}
-              className="text-theme ml-2 mr-4 text-lg font-normal hover:text-[#000000]"
+              className="text-theme dark:text-accent ml-2 mr-4 text-lg font-normal hover:text-[#000000] dark:hover:text-white"
             >
               {isLoggedIn ? "Dashboard" : "Our Portal"}
             </Link>
@@ -139,21 +140,24 @@ const Navbar = (props) => {
           <li className="flex relative items-center">
             <Link
               to="/careers"
-              className="text-theme text-lg font-normal hover:text-[#000000]"
+              className="text-theme dark:text-accent text-lg font-normal hover:text-[#000000] dark:hover:text-white"
             >
               Careers
             </Link>
           </li>
         </ul>
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center space-x-3">
+          <ThemeToggle />
           <Link
             to="/contact"
-            className="rounded-full bg-theme text-[#FFFFFF] lg:p-2 md::px-8 md:text-sm hover:bg-[#000000]"
+            className="rounded-full bg-theme text-[#FFFFFF] lg:p-2 md::px-8 md:text-sm hover:bg-[#000000] dark:hover:bg-accent dark:hover:text-midnight"
           >
             Get Started
           </Link>
         </div>
 
+        <div className="flex items-center space-x-2 md:hidden">
+          <ThemeToggle />
         <button
           id="menu-btn"
           className="hamburger block md:hidden focus:outline-none"
@@ -163,39 +167,40 @@ const Navbar = (props) => {
           <span className="hamburger-middle"></span>
           <span className="hamburger-bottom"></span>
         </button>
+        </div>
       </div>
       <div className="md:hidden">
         <div
-          className="absolute items-center self-end flex-col py-8 mt-10 hidden space-y-6 font-bold bg-white sm:self-center sm:w-auto left-6 right-6 drop-shadow-md"
+          className="absolute items-center self-end flex-col py-8 mt-10 hidden space-y-6 font-bold bg-white dark:bg-graphite sm:self-center sm:w-auto left-6 right-6 drop-shadow-md dark:shadow-black/40"
           id="menu"
         >
           <Link
             to="/about"
-            className="text-theme font-semibold hover:text-[#000000]"
+            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
           >
             About Us
           </Link>
           <Link
             to="/services"
-            className="text-theme font-semibold hover:text-[#000000]]"
+            className="text-theme dark:text-accent font-semibold hover:text-[#000000]] dark:hover:text-white"
           >
             What we do?
           </Link>
           <Link
             to="/products"
-            className="text-theme font-semibold hover:text-[#000000]"
+            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
           >
             Our Products
           </Link>
           <Link
             to={isLoggedIn ? "/dashboard" : "/login"}
-            className="text-theme font-semibold hover:text-[#000000]"
+            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
           >
             {isLoggedIn ? "Dashboard" : "Our Portal"}
           </Link>
           <Link
             to="/careers"
-            className="text-theme font-semibold hover:text-[#000000]"
+            className="text-theme dark:text-accent font-semibold hover:text-[#000000] dark:hover:text-white"
           >
             Careers
           </Link>
