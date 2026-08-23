@@ -42,7 +42,7 @@ const HomeSecond = () => {
           We've achieved partnerships, certifications, and customer growth
         </h1>
         <p className="">
-          Machine Minds Innovations rich experience and strong work ethic have
+          Edges Enterprise's rich experience and strong work ethic have
           forged valuable industry partnerships, leading to coveted
           certifications from industry leaders and enabling seamless acquisition
           of new businesses and customers.

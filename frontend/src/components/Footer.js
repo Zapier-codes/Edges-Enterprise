@@ -14,23 +14,23 @@ const Footer = () => {
             <div className="flex flex-col justify-start items-start space-y-4 md:space-y-3 p-2 md:w-1/2">
               {/* eslint-disable-next-line */}
               <a href="#" className="text-white">
-                123 Main Street, Anytown, USA
+                Registered Office: Kaduna, Kaduna State, Nigeria
               </a>
               {/*  eslint-disable-next-line */}
               <a href="#" className="text-white">
-                456 Elm Avenue, Somewhereville, Canada
+                Operations Office: Abuja, FCT, Nigeria
               </a>
               {/* eslint-disable-next-line */}
               <a href="#" className="text-white">
-                789 Oak Lane, Nowhere City, Australia
+                Remote-first — serving clients globally
               </a>
             </div>
             <div className="flex flex-col justify-center items-start space-y-6 md:space-y-3 p-2 md:w-1/2">
-              <a href="mailto:contact@mminnovations.com" className="text-white">
-                For business enquiries: contact@mminnovations.com
+              <a href="mailto:contact@edgesenterprise.com" className="text-white">
+                For business enquiries: contact@edgesenterprise.com
               </a>
-              <a href="mailto:hr@mminnovations.com" className="text-white">
-                For job oppurtunities: hr@mminnovations.com
+              <a href="mailto:hr@edgesenterprise.com" className="text-white">
+                For job oppurtunities: hr@edgesenterprise.com
               </a>
               <a href="/" className="text-white">
                 Privacy Policy

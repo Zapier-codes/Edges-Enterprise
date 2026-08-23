@@ -1,20 +1,18 @@
-# Machine-Mind-Innovations
-A Software Company website.
+# Edges Enterprise
 
-Machine Minds Innovations is a complete website solution for a large software development company. It has been designed with the MVC( model view controller ) architecture of software design. 
+Edges Enterprise Ltd is a Nigerian software development and technology services company. This repository contains our corporate website and client platform, covering software engineering, fintech, telecommunications, and general engineering/procurement/maintenance (GEP) services.
 
-It has a large number of features such as :
-- A standalone website for visitors
-- Admin dashboard functionality to add jobs services and products.
-- Employee dashboard functionality to monitor ongoing projects.
-- Client dashboard functionality to view the progress of ongoing projects.
-- Email functionality with complete authentication.
+The platform is built with an MVC (Model-View-Controller) architecture.
 
-The API of this website is perfectly secured, authenticated, and finely shaped according to MVC architecture. A considerable number of npm libraries are used to make the API efficient and fast. No compromises have been made on the Authentication and Security of Signed Up users. Update password, Forgot Password, Welcome Email, Password Reset Email, Role restriction, Route protection, Pre and Post data-save middlewares, Dealing with static files, Image editing and file uploading, and concepts of Aggregation pipelines have been used.
+Features include:
+- A standalone marketing website for visitors
+- Admin dashboard functionality to manage jobs, services, and products
+- Employee dashboard functionality to monitor ongoing projects
+- Client dashboard functionality to track the progress of ongoing projects
+- Email functionality with complete authentication flows
 
-Styling is the core of an eye-catching website or app. I've greatly focused on styling and the website is styled fully responsive for all types of screens that exist nowadays. Whether it is a Desktop, Laptop, or Mobile Phone (portrait and landscape) the website is perfectly styled with media queries and content shifting. The front end is designed with Tailwind CSS, Custom CSS, and Bootstrap.
+The API is secured, authenticated, and structured according to MVC architecture, using a considerable number of npm libraries to keep it efficient and fast. Authentication and security for signed-up users is a priority — password updates, forgot-password flows, welcome emails, password reset emails, role restriction, route protection, pre/post data-save middleware, static file handling, image editing and file uploads, and aggregation pipelines are all in use.
 
-Performance is a critical aspect of website development, as it directly impacts user experience, search engine rankings, and overall business success. The website is fast and used the most popular javascript frontend library React. API store has been created with the State management library Zustand which consumes less boilerplate and is efficient.
+The frontend uses a futuristic, corporate visual identity — deep navy backgrounds with electric blue and cyan accents — built fully responsive for desktop, laptop, and mobile (portrait and landscape). Styling is done with Tailwind CSS, custom CSS, and Bootstrap, and the UI is built with React. State is managed with Zustand for a lean, efficient store.
 
-Many other features can be added based on the requirements of the business. There is always room for improvement!
-
+Many more features can be added based on business requirements — there is always room to grow.

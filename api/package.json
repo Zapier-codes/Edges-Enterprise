@@ -1,13 +1,13 @@
 {
-  "name": "project",
+  "name": "edges-enterprise-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Edges Enterprise Ltd — API for the corporate website and client platform.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "",
+  "author": "Edges Enterprise Ltd",
   "license": "ISC",
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.0-alpha3",

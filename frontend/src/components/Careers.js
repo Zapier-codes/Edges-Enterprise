@@ -32,7 +32,7 @@ const Careers = () => {
               Fresh Graduate Hiring
             </h1>
             <p className="md:text-l lg:text-xl p-2">
-              Recently graduated? Thrive yourself with Machine Minds Innovations
+              Recently graduated? Thrive yourself with Edges Enterprise
               by registering to our Fresh Graduate Hiring Program 2023 before
               3rd January {new Date().getFullYear() + 1}!
             </p>

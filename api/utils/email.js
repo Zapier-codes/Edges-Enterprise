@@ -36,7 +36,7 @@ class Email{
 
     async sendWelcome()
     {
-        await this.send('Welcome','Welcome to Machine Minds Innovations') //signing up the user
+        await this.send('Welcome','Welcome to Edges Enterprise') //signing up the user
     }
 
     async sendResetPassword(url)
