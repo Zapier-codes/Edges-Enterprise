@@ -7,7 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
-
+      fontFamily: {
+        display: ['"Space Grotesk"', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+      },
     },
     colors: {
       transparent: 'transparent',

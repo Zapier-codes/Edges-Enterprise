@@ -4,10 +4,13 @@
 
 @layer base {
   html {
-    @apply bg-white text-graphite dark:bg-midnight dark:text-silver;
+    @apply bg-white text-graphite dark:bg-midnight dark:text-silver font-sans;
   }
   body {
     @apply bg-white text-graphite dark:bg-midnight dark:text-silver;
     transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
   }
 }
