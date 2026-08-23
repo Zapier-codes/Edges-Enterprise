@@ -14,3 +14,38 @@
     @apply font-display;
   }
 }
+
+@layer utilities {
+  /* Signature motif: a chamfered top-right corner, echoing "Edges" —
+     used on cards, panels, and primary buttons instead of a plain
+     rounded rect. Corner size scales via --edge-cut (default 18px). */
+  .edge-cut {
+    --edge-cut: 18px;
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--edge-cut)) 0,
+      100% var(--edge-cut),
+      100% 100%,
+      0 100%
+    );
+  }
+  .edge-cut-lg {
+    --edge-cut: 32px;
+  }
+  .edge-cut-sm {
+    --edge-cut: 10px;
+  }
+
+  /* Thin gradient rule used between sections — the "edge" line. */
+  .edge-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      theme('colors.theme'),
+      theme('colors.accent'),
+      transparent
+    );
+    opacity: 0.5;
+  }
+}
