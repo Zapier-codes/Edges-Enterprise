@@ -1,0 +1,37 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "frontend/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "build"
+            }
+        },
+        {
+            "src": "api/server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "api/server.js",
+            "headers": {
+                "Access-Control-Allow-Origin": "*"
+            }
+        },
+        {
+            "src": "/static/(.*)",
+            "dest": "frontend/static/$1"
+        },
+        {
+            "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|svg|json|txt|map|webmanifest))",
+            "dest": "frontend/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "frontend/index.html"
+        }
+    ]
+}
