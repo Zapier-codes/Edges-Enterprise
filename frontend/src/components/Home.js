@@ -24,9 +24,6 @@ const Home = () => {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white max-w-4xl leading-tight">
             A Journey of <span className="gold-gradient-text">Success</span>
           </h1>
-          <p className="mt-6 text-[#a0a0a0] text-lg md:text-xl max-w-2xl">
-            We design and build exceptional technology solutions that drive business transformation across industries.
-          </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <Link
               to="/contact"

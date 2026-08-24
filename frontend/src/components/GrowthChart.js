@@ -1,7 +1,8 @@
 import React from "react";
 import {
-  BarChart,
+  ComposedChart,
   Bar,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -9,6 +10,7 @@ import {
   CartesianGrid,
   Cell,
 } from "recharts";
+import useInView from "../hooks/useInView";
 
 // Businesses we've helped grow, by year. Update as real figures come in.
 const GROWTH_DATA = [
@@ -30,41 +32,73 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-const GrowthChart = () => (
-  <div id="growth" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-12">
-        <span className="text-[#FED500] text-xs font-semibold tracking-[0.2em] uppercase mb-4 inline-block">
-          03 — Impact
-        </span>
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-          Businesses we've helped grow
-        </h2>
-        <p className="text-[#a0a0a0] text-base md:text-lg max-w-2xl mx-auto">
-          Year over year, more founders and teams have trusted us to build the software behind their growth.
-        </p>
-      </div>
+const GrowthChart = () => {
+  const [ref, inView] = useInView(0.25);
 
-      <div className="bg-[#111111] border border-[#222222] rounded-xl p-4 md:p-8">
-        <ResponsiveContainer width="100%" height={340}>
-          <BarChart data={GROWTH_DATA} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#222222" vertical={false} />
-            <XAxis dataKey="year" stroke="#666666" tick={{ fill: "#a0a0a0", fontSize: 12 }} axisLine={{ stroke: "#222222" }} tickLine={false} />
-            <YAxis stroke="#666666" tick={{ fill: "#a0a0a0", fontSize: 12 }} axisLine={false} tickLine={false} />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(254,213,0,0.06)" }} />
-            <Bar dataKey="businesses" radius={[6, 6, 0, 0]} maxBarSize={56}>
-              {GROWTH_DATA.map((entry, index) => (
-                <Cell
-                  key={entry.year}
-                  fill={index === GROWTH_DATA.length - 1 ? "#FED500" : "#3a3210"}
+  return (
+    <div id="growth" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="text-[#FED500] text-xs font-semibold tracking-[0.2em] uppercase mb-4 inline-block">
+            03 — Impact
+          </span>
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+            Businesses we've helped grow
+          </h2>
+          <p className="text-[#a0a0a0] text-base md:text-lg max-w-2xl mx-auto">
+            Year over year, more founders and teams have trusted us to build the software behind their growth.
+          </p>
+        </div>
+
+        <div ref={ref} className="bg-[#111111] border border-[#222222] rounded-xl p-4 md:p-8">
+          <ResponsiveContainer width="100%" height={340}>
+            {/*
+              Rendering the chart only once it's in view (rather than on
+              page load) means the bar-fill and line-draw animations below
+              actually play when the visitor scrolls to them.
+            */}
+            {inView ? (
+              <ComposedChart data={GROWTH_DATA} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#222222" vertical={false} />
+                <XAxis dataKey="year" stroke="#666666" tick={{ fill: "#a0a0a0", fontSize: 12 }} axisLine={{ stroke: "#222222" }} tickLine={false} />
+                <YAxis stroke="#666666" tick={{ fill: "#a0a0a0", fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(254,213,0,0.06)" }} />
+                <Bar
+                  dataKey="businesses"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={56}
+                  isAnimationActive
+                  animationDuration={1100}
+                  animationEasing="ease-out"
+                >
+                  {GROWTH_DATA.map((entry, index) => (
+                    <Cell
+                      key={entry.year}
+                      fill={index === GROWTH_DATA.length - 1 ? "#FED500" : "#3a3210"}
+                    />
+                  ))}
+                </Bar>
+                <Line
+                  type="monotone"
+                  dataKey="businesses"
+                  stroke="#FED500"
+                  strokeWidth={2}
+                  dot={{ r: 4, fill: "#FED500", stroke: "#090909", strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                  isAnimationActive
+                  animationDuration={1400}
+                  animationBegin={500}
+                  animationEasing="ease-out"
                 />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+              </ComposedChart>
+            ) : (
+              <div />
+            )}
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default GrowthChart;

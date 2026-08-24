@@ -26,9 +26,10 @@ const ContactCard = ({ className = "" }) => {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2.5 text-sm font-semibold hover:bg-[#e5c000] transition-colors duration-200"
+        className="contact-trigger relative overflow-hidden rounded-full bg-transparent border-2 border-[#FED500] text-[#FED500] px-6 py-2.5 text-sm font-semibold hover:bg-[#FED500]/10 transition-colors duration-200"
       >
-        Contact Us
+        <span className="contact-trigger__flare" aria-hidden="true" />
+        <span className="relative z-10">Contact Us</span>
       </button>
 
       <div

@@ -4,7 +4,7 @@ import Services from "./Services";
 import Products from "./Products";
 
 const HomeSecond = () => {
-  const [page, setPage] = useState("Industries");
+  const [page, setPage] = useState("Services");
   const handleChangePage = (val) => {
     if (val === "Products") setPage("Products");
     else if (val === "Services") setPage("Services");
