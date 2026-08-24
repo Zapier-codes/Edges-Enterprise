@@ -61,44 +61,44 @@ const AddServices = () => {
   };
 
   return (
-    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5">
-      <h3 className="text-white font-semibold text-lg mb-2">Add Service</h3>
+    <div className="bg-[var(--bg-primary)] p-6 border border-[var(--border-color)] rounded-lg space-y-5">
+      <h3 className="text-[var(--text-primary)] font-semibold text-lg mb-2">Add Service</h3>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Name</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Name</label>
         <input
           type="text" name="name" value={service.name} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="Service name" required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Description</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Description</label>
         <textarea
           name="description" value={service.description} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="Service description" rows={4} required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Service Image</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Service Image</label>
         <input
           type="file" onChange={(e) => setServiceImage(e.target.files[0])}
-          className="block w-full text-sm text-[#a0a0a0] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FED500] file:text-[#090909] hover:file:bg-[#e5c000] bg-[#111111] border border-[#222222] rounded-lg p-2"
+          className="block w-full text-sm text-[var(--text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FED500] file:text-[#090909] hover:file:bg-[#e5c000] bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg p-2"
         />
       </div>
 
       <div className="space-y-3">
-        <label className="block text-sm font-medium text-[#a0a0a0]">Features</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)]">Features</label>
         {service.features.map((fea, index) => (
           <div key={index} className="grid grid-cols-2 gap-3">
             <input
               type="text" name="name" value={fea.name} onChange={(e) => handlefeatureChange(e, index)}
-              className="p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
+              className="p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none placeholder-[var(--text-dim)]"
               placeholder="Feature name"
             />
             <input
               type="text" name="description" value={fea.description} onChange={(e) => handlefeatureChange(e, index)}
-              className="p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
+              className="p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none placeholder-[var(--text-dim)]"
               placeholder="Feature description"
             />
           </div>
@@ -109,11 +109,11 @@ const AddServices = () => {
       </div>
 
       <div className="space-y-3">
-        <label className="block text-sm font-medium text-[#a0a0a0]">Technologies</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)]">Technologies</label>
         {service.technologies.map((tech, index) => (
           <input
             key={index} type="text" value={tech} onChange={(e) => handleTechnologyChange(index, e.target.value)}
-            className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none placeholder-[#444]"
+            className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none placeholder-[var(--text-dim)]"
             placeholder="Technology"
           />
         ))}

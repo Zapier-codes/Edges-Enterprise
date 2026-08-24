@@ -6,16 +6,16 @@ import useStore from "../store/store";
 const ServicesMain = () => {
   const { services } = useStore();
   return (
-    <div className="bg-[#090909]">
+    <div className="bg-[var(--bg-primary)]">
       {/* Banner */}
       <div className="relative w-full overflow-hidden">
         <img src={servicesBanner} alt="" className="w-full opacity-50" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
           <span className="text-[#FED500] text-xs font-semibold tracking-[0.2em] uppercase mb-4">
             What We Do
           </span>
-          <h1 className="text-4xl md:text-6xl font-bold text-white text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-primary)] text-center">
             Delivering Exceptional <br /> <span className="gold-gradient-text">Engineering Services</span>
           </h1>
         </div>

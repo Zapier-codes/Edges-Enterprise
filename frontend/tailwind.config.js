@@ -1,13 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        // U1CORE dark palette
-        u1: {
+        noir: {
           black:    '#090909',
           surface:  '#111111',
           elevated: '#1a1a1a',

@@ -15,13 +15,13 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col mx-auto my-0 p-0 bg-[#090909]">
+    <div className="flex flex-col mx-auto my-0 p-0 bg-[var(--bg-primary)]">
       {/* HERO */}
       <section className="relative w-full overflow-hidden">
         <img src={banner} alt="banner" className="w-full opacity-60" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white max-w-4xl leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[var(--text-primary)] max-w-4xl leading-tight">
             A Journey of <span className="gold-gradient-text">Success</span>
           </h1>
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
@@ -33,7 +33,7 @@ const Home = () => {
             </Link>
             <button
               onClick={() => navigate("/about")}
-              className="rounded-full border border-[#333] text-white px-8 py-3 text-sm font-semibold hover:border-[#FED500] hover:text-[#FED500] transition-colors"
+              className="rounded-full border border-[var(--border-color)] text-[var(--text-primary)] px-8 py-3 text-sm font-semibold hover:border-[#FED500] hover:text-[#FED500] transition-colors"
             >
               Learn More
             </button>
@@ -42,7 +42,7 @@ const Home = () => {
       </section>
 
       {/* STATS */}
-      <section id="impact" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
+      <section id="impact" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[var(--bg-primary)]">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           <StatCounter icon={userAvatar} value="800+" label="People on board" />
           <StatCounter icon={officeAvatar} value="3" label="Global Offices" />
@@ -52,7 +52,7 @@ const Home = () => {
       </section>
 
       {/* RESULTS / TRUST BAR */}
-      <section className="py-12 px-6 bg-[#111111] border-y border-[#222222]">
+      <section className="py-12 px-6 bg-[var(--bg-surface)] border-y border-[var(--border-color)]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-2">
             <div className="flex">
@@ -60,20 +60,20 @@ const Home = () => {
                 <i key={i} className="fa-solid fa-star text-[#FED500] text-sm"></i>
               ))}
             </div>
-            <span className="text-white font-semibold text-sm">5.0</span>
-            <span className="text-[#666666] text-sm ml-2">94% Job Success</span>
+            <span className="text-[var(--text-primary)] font-semibold text-sm">5.0</span>
+            <span className="text-[var(--text-dim)] text-sm ml-2">94% Job Success</span>
           </div>
-          <p className="text-[#a0a0a0] text-sm text-center md:text-right max-w-lg">
+          <p className="text-[var(--text-muted)] text-sm text-center md:text-right max-w-lg">
             We design and build platforms where two or more sides of a market meet — and transact with trust.
           </p>
         </div>
       </section>
 
       {/* ABOUT / DISCOVER */}
-      <section id="about-preview" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
+      <section id="about-preview" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           <div className="lg:w-1/2 w-full">
-            <div className="hero-video-frame border border-[#222222] aspect-video">
+            <div className="hero-video-frame border border-[var(--border-color)] aspect-video">
               {/*
                 Plays muted/looped like a gif. Swap the src below for a
                 licensed clip (skyline + handshake works well) once you've
@@ -94,10 +94,10 @@ const Home = () => {
             </div>
           </div>
           <div className="lg:w-1/2 flex flex-col space-y-6">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] leading-tight">
               Discovering your needs
             </h2>
-            <p className="text-[#a0a0a0] text-base md:text-lg leading-relaxed">
+            <p className="text-[var(--text-muted)] text-base md:text-lg leading-relaxed">
               Our team of over 100 blends the skills of engineers, developers,
               UX architects, and designers to craft impactful solutions.
               Together, we have aided businesses in their journey toward digital
@@ -114,18 +114,18 @@ const Home = () => {
       </section>
 
       {/* MILESTONE */}
-      <section className="py-16 md:py-24 px-6 bg-[#111111]">
+      <section className="py-16 md:py-24 px-6 bg-[var(--bg-surface)]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="md:w-2/3">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] leading-tight">
               Products that drive revenue, enable scale, and process real transactions.
             </h2>
-            <p className="mt-6 text-[#a0a0a0] text-base md:text-lg">
+            <p className="mt-6 text-[var(--text-muted)] text-base md:text-lg">
               See what we've built — from enterprise platforms to consumer-facing applications.
             </p>
             <button
               onClick={() => navigate("/products")}
-              className="mt-8 rounded-full border border-[#333] text-white px-6 py-3 text-sm font-semibold hover:border-[#FED500] hover:text-[#FED500] transition-colors"
+              className="mt-8 rounded-full border border-[var(--border-color)] text-[var(--text-primary)] px-6 py-3 text-sm font-semibold hover:border-[#FED500] hover:text-[#FED500] transition-colors"
             >
               Get started
             </button>
@@ -133,7 +133,7 @@ const Home = () => {
           <div className="md:w-1/3 flex justify-center">
             <div className="text-center">
               <span className="text-7xl md:text-8xl font-bold gold-gradient-text">50+</span>
-              <p className="text-[#666666] text-sm mt-2">Projects Delivered</p>
+              <p className="text-[var(--text-dim)] text-sm mt-2">Projects Delivered</p>
             </div>
           </div>
         </div>
@@ -151,12 +151,12 @@ const Home = () => {
       <Testimonial />
 
       {/* CTA SECTION */}
-      <section className="py-16 md:py-24 px-6 bg-[#111111] border-t border-[#222222]">
+      <section className="py-16 md:py-24 px-6 bg-[var(--bg-surface)] border-t border-[var(--border-color)]">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="text-3xl md:text-5xl font-bold text-white">
+          <h2 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)]">
             Create to captivate
           </h2>
-          <p className="text-[#a0a0a0] text-lg md:text-xl max-w-2xl mx-auto">
+          <p className="text-[var(--text-muted)] text-lg md:text-xl max-w-2xl mx-auto">
             Edges Enterprise is a technology partner for ambitious organizations.
             We don't sell code. We sell confidence in the outcome.
           </p>
@@ -170,20 +170,20 @@ const Home = () => {
       </section>
 
       {/* DISCUSS / BOOK CALL */}
-      <section id="contact" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
+      <section id="contact" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[var(--bg-primary)]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] leading-tight">
               Let's talk about what your platform needs to be true in 12 months.
             </h2>
-            <p className="text-[#a0a0a0] text-base">
+            <p className="text-[var(--text-muted)] text-base">
               During this call we do a quick intro and discuss your project and its specific needs.
             </p>
             <ContactCard />
           </div>
-          <div className="md:w-1/2 bg-[#111111] border border-[#222222] rounded-lg p-8">
-            <h3 className="text-white font-semibold text-lg mb-6">Tell us more about your project</h3>
-            <p className="text-[#666666] text-sm mb-6">
+          <div className="md:w-1/2 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg p-8">
+            <h3 className="text-[var(--text-primary)] font-semibold text-lg mb-6">Tell us more about your project</h3>
+            <p className="text-[var(--text-dim)] text-sm mb-6">
               Share your project details with us, and we'll respond promptly.
             </p>
             <div className="flex flex-col space-y-4">

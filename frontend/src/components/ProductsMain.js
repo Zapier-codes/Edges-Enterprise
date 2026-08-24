@@ -7,13 +7,13 @@ const ProductsMain = () => {
   const AllProducts = useStore((state) => state.products);
 
   return (
-    <div className="bg-[#090909]">
+    <div className="bg-[var(--bg-primary)]">
       {/* Banner */}
       <div className="relative w-full overflow-hidden">
         <img src={productBanner} alt="" className="w-full opacity-50" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white text-center px-6">
+          <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-primary)] text-center px-6">
             Delivering High <br /> <span className="gold-gradient-text">Class Engineering Projects</span>
           </h1>
         </div>

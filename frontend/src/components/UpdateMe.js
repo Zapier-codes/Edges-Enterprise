@@ -28,29 +28,29 @@ const UpdateMe = () => {
   };
 
   return (
-    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5 max-w-lg">
-      <h3 className="text-white font-semibold text-lg mb-2">Update Password</h3>
+    <div className="bg-[var(--bg-primary)] p-6 border border-[var(--border-color)] rounded-lg space-y-5 max-w-lg">
+      <h3 className="text-[var(--text-primary)] font-semibold text-lg mb-2">Update Password</h3>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Current Password</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Current Password</label>
         <input
           type="password" name="passwordCurrent" value={data.passwordCurrent} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="••••••••" required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">New Password</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">New Password</label>
         <input
           type="password" name="password" value={data.password} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="••••••••" required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Confirm New Password</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Confirm New Password</label>
         <input
           type="password" name="passwordConfirm" value={data.passwordConfirm} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="••••••••" required
         />
       </div>

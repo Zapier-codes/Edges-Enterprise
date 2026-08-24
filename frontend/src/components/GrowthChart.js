@@ -25,8 +25,8 @@ const GROWTH_DATA = [
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="bg-[#111111] border border-[#FED500]/40 rounded-lg px-4 py-2 shadow-lg">
-      <p className="text-white text-sm font-semibold">{label}</p>
+    <div className="bg-[var(--bg-surface)] border border-[#FED500]/40 rounded-lg px-4 py-2 shadow-lg">
+      <p className="text-[var(--text-primary)] text-sm font-semibold">{label}</p>
       <p className="text-[#FED500] text-xs mt-1">{payload[0].value} businesses grown</p>
     </div>
   );
@@ -36,21 +36,21 @@ const GrowthChart = () => {
   const [ref, inView] = useInView(0.25);
 
   return (
-    <div id="growth" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
+    <div id="growth" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[var(--bg-primary)]">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <span className="text-[#FED500] text-xs font-semibold tracking-[0.2em] uppercase mb-4 inline-block">
             03 — Impact
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
             Businesses we've helped grow
           </h2>
-          <p className="text-[#a0a0a0] text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-[var(--text-muted)] text-base md:text-lg max-w-2xl mx-auto">
             Year over year, more founders and teams have trusted us to build the software behind their growth.
           </p>
         </div>
 
-        <div ref={ref} className="bg-[#111111] border border-[#222222] rounded-xl p-4 md:p-8">
+        <div ref={ref} className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl p-4 md:p-8">
           <ResponsiveContainer width="100%" height={340}>
             {/*
               Rendering the chart only once it's in view (rather than on

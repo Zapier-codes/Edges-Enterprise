@@ -12,17 +12,17 @@ const HomeSecond = () => {
   };
 
   return (
-    <div className="flex flex-col py-16 md:py-24 px-6 bg-[#090909] slide-texture">
+    <div className="flex flex-col py-16 md:py-24 px-6 bg-[var(--bg-primary)] slide-texture">
       <div className="max-w-7xl mx-auto w-full">
         {/* Section Header */}
         <div className="text-center mb-12">
           <span className="text-[#FED500] text-xs font-semibold tracking-[0.2em] uppercase mb-4 inline-block">
             02 — Capabilities
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
             We've achieved partnerships, certifications, and customer growth
           </h2>
-          <p className="text-[#a0a0a0] text-base md:text-lg max-w-3xl mx-auto">
+          <p className="text-[var(--text-muted)] text-base md:text-lg max-w-3xl mx-auto">
             Edges Enterprise's rich experience and strong work ethic have
             forged valuable industry partnerships, leading to coveted
             certifications from industry leaders.
@@ -35,8 +35,8 @@ const HomeSecond = () => {
             onClick={() => handleChangePage("Industries")}
             className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 ${
               page === "Industries"
-                ? "border-[#FED500] text-white"
-                : "border-transparent text-[#666666] hover:text-white"
+                ? "border-[#FED500] text-[var(--text-primary)]"
+                : "border-transparent text-[var(--text-dim)] hover:text-[var(--text-primary)]"
             }`}
           >
             Industries
@@ -45,8 +45,8 @@ const HomeSecond = () => {
             onClick={() => handleChangePage("Services")}
             className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 ${
               page === "Services"
-                ? "border-[#FED500] text-white"
-                : "border-transparent text-[#666666] hover:text-white"
+                ? "border-[#FED500] text-[var(--text-primary)]"
+                : "border-transparent text-[var(--text-dim)] hover:text-[var(--text-primary)]"
             }`}
           >
             Services
@@ -55,8 +55,8 @@ const HomeSecond = () => {
             onClick={() => handleChangePage("Products")}
             className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 ${
               page === "Products"
-                ? "border-[#FED500] text-white"
-                : "border-transparent text-[#666666] hover:text-white"
+                ? "border-[#FED500] text-[var(--text-primary)]"
+                : "border-transparent text-[var(--text-dim)] hover:text-[var(--text-primary)]"
             }`}
           >
             Products

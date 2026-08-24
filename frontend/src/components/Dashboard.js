@@ -71,26 +71,26 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex flex-col p-2 sm:m-2 md:m-12 bg-[#090909] min-h-screen">
+    <div className="flex flex-col p-2 sm:m-2 md:m-12 bg-[var(--bg-primary)] min-h-screen">
       <div className="flex md:flex-row justify-between items-center mb-8">
-        <h1 className="text-3xl md:text-5xl font-bold text-white">
+        <h1 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)]">
           {role === "admin" ? "Admin " : role === "employee" ? "Employee " : "Client "}
           Dashboard
         </h1>
-        <img src={userImg || defaultImg} alt="" className="rounded-full w-16 h-16 object-cover border border-[#222222]" />
+        <img src={userImg || defaultImg} alt="" className="rounded-full w-16 h-16 object-cover border border-[var(--border-color)]" />
       </div>
 
       <div className="grid md:grid-cols-6 grid-cols-3 justify-start items-start my-3 gap-px">
         <button
           onClick={() => handleChangePage("OngoingProjects")}
-          className={`p-[2px] md:p-3 border border-[#222222] font-semibold text-base md:text-xl leading-5 transition-colors ${page === "OngoingProjects" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+          className={`p-[2px] md:p-3 border border-[var(--border-color)] font-semibold text-base md:text-xl leading-5 transition-colors ${page === "OngoingProjects" ? "bg-[#FED500] text-[#090909]" : "bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"}`}
         >
           Ongoing Projects
         </button>
         {role === "admin" && (
           <button
             onClick={() => handleChangePage("AddServices")}
-            className={`p-2 md:p-3 border border-[#222222] font-semibold text-xl h-full transition-colors ${page === "AddServices" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+            className={`p-2 md:p-3 border border-[var(--border-color)] font-semibold text-xl h-full transition-colors ${page === "AddServices" ? "bg-[#FED500] text-[#090909]" : "bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"}`}
           >
             Add Services
           </button>
@@ -98,26 +98,26 @@ const Dashboard = () => {
         {role === "admin" && (
           <button
             onClick={() => handleChangePage("AddProducts")}
-            className={`p-2 md:p-3 border border-[#222222] font-semibold text-xl h-full transition-colors ${page === "AddProducts" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+            className={`p-2 md:p-3 border border-[var(--border-color)] font-semibold text-xl h-full transition-colors ${page === "AddProducts" ? "bg-[#FED500] text-[#090909]" : "bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"}`}
           >
             Add Products
           </button>
         )}
         <button
           onClick={() => handleChangePage("UpdateMe")}
-          className={`p-1 md:p-3 border border-[#222222] font-semibold text-base md:text-xl md:h-full h-[45.5px] leading-5 transition-colors ${page === "UpdateMe" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+          className={`p-1 md:p-3 border border-[var(--border-color)] font-semibold text-base md:text-xl md:h-full h-[45.5px] leading-5 transition-colors ${page === "UpdateMe" ? "bg-[#FED500] text-[#090909]" : "bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"}`}
         >
           Update Password
         </button>
         <button
           onClick={() => handleChangePage("AddPicture")}
-          className={`p-2 md:p-3 border border-[#222222] font-semibold text-xl md:h-full transition-colors ${page === "AddPicture" ? "bg-[#FED500] text-[#090909]" : "bg-[#111111] text-[#a0a0a0] hover:bg-[#1a1a1a] hover:text-white"}`}
+          className={`p-2 md:p-3 border border-[var(--border-color)] font-semibold text-xl md:h-full transition-colors ${page === "AddPicture" ? "bg-[#FED500] text-[#090909]" : "bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"}`}
         >
           Add Picture
         </button>
         <button
           onClick={handleLogout}
-          className="p-2 md:p-3 border border-[#222222] bg-[#111111] text-[#a0a0a0] hover:bg-red-900/30 hover:text-red-400 font-semibold text-xl md:h-full transition-colors"
+          className="p-2 md:p-3 border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-red-900/30 hover:text-red-400 font-semibold text-xl md:h-full transition-colors"
         >
           Log Out
         </button>

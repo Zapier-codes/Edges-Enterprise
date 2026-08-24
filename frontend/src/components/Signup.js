@@ -36,56 +36,56 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#090909] flex items-center justify-center px-6 py-12">
-      <div className="max-w-5xl w-full flex flex-col md:flex-row bg-[#111111] border border-[#222222] rounded-2xl overflow-hidden">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center px-6 py-12">
+      <div className="max-w-5xl w-full flex flex-col md:flex-row bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl overflow-hidden">
         <div className="md:w-1/2 p-12 flex flex-col justify-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Create account</h2>
-          <p className="text-[#666666] mb-8">Join Edges Enterprise today</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-2">Create account</h2>
+          <p className="text-[var(--text-dim)] mb-8">Join Edges Enterprise today</p>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Full Name</label>
+              <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Full Name</label>
               <input
                 type="text"
                 name="name"
                 value={signupData.name}
                 onChange={handleChange}
-                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="w-full p-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="John Doe"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Email</label>
+              <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Email</label>
               <input
                 type="email"
                 name="email"
                 value={signupData.email}
                 onChange={handleChange}
-                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="w-full p-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="you@edgesenterprise.com"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Password</label>
+              <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Password</label>
               <input
                 type="password"
                 name="password"
                 value={signupData.password}
                 onChange={handleChange}
-                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="w-full p-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="••••••••"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Confirm Password</label>
+              <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Confirm Password</label>
               <input
                 type="password"
                 name="passwordConfirm"
                 value={signupData.passwordConfirm}
                 onChange={handleChange}
-                className="w-full p-3 bg-[#090909] border border-[#222222] rounded-lg text-white focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="w-full p-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="••••••••"
                 required
               />
@@ -97,11 +97,11 @@ const Signup = () => {
               Sign Up
             </button>
           </form>
-          <p className="mt-6 text-center text-[#666666] text-sm">
+          <p className="mt-6 text-center text-[var(--text-dim)] text-sm">
             Already have an account? <Link to="/login" className="text-[#FED500] hover:underline">Sign in</Link>
           </p>
         </div>
-        <div className="md:w-1/2 bg-[#0a0a0a] flex items-center justify-center p-12">
+        <div className="md:w-1/2 bg-[var(--bg-primary)] flex items-center justify-center p-12">
           <img src={signupImg} alt="Signup" className="w-full max-w-sm opacity-80" />
         </div>
       </div>

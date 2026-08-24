@@ -21,12 +21,12 @@ const AddPicture = () => {
   };
 
   return (
-    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg">
-      <h3 className="text-white font-semibold text-lg mb-4">Update Profile Picture</h3>
+    <div className="bg-[var(--bg-primary)] p-6 border border-[var(--border-color)] rounded-lg">
+      <h3 className="text-[var(--text-primary)] font-semibold text-lg mb-4">Update Profile Picture</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block text-sm font-medium text-[#a0a0a0]">Add Image</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)]">Add Image</label>
         <input
-          className="block w-full text-sm text-[#a0a0a0] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FED500] file:text-[#090909] hover:file:bg-[#e5c000] bg-[#111111] border border-[#222222] rounded-lg p-2"
+          className="block w-full text-sm text-[var(--text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FED500] file:text-[#090909] hover:file:bg-[#e5c000] bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg p-2"
           type="file"
           onChange={(e) => setUserImage(e.target.files[0])}
         />

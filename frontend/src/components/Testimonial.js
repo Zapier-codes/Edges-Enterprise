@@ -39,13 +39,13 @@ const Testimonial = () => {
   };
 
   return (
-    <div id="testimonials" className="scroll-mt-24 bg-[#111111] border-y border-[#222222] py-16 md:py-24 px-6">
+    <div id="testimonials" className="scroll-mt-24 bg-[var(--bg-surface)] border-y border-[var(--border-color)] py-16 md:py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
             What our clients say
           </h2>
-          <p className="text-[#a0a0a0] text-base">
+          <p className="text-[var(--text-muted)] text-base">
             Real feedback from real partners — not after the pitch, after launch.
           </p>
         </div>
@@ -53,20 +53,20 @@ const Testimonial = () => {
           <Slider {...settings}>
             {reviews.map((item) => (
               <div className="px-3" key={item._id}>
-                <div className="testimonial-card relative flex flex-col items-start p-8 bg-[#090909] border border-[#222222] rounded-lg min-h-[320px] overflow-hidden">
+                <div className="testimonial-card relative flex flex-col items-start p-8 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg min-h-[320px] overflow-hidden">
                   <span className="testimonial-card__glow" aria-hidden="true" />
                   <span className="testimonial-card__quote" aria-hidden="true">&ldquo;</span>
                   <div className="relative z-10 flex items-center space-x-4 mb-6">
                     <Avatar name={item.user.name} />
                     <div>
-                      <h4 className="text-white font-semibold text-base">{item.user.name}</h4>
-                      <p className="text-[#666666] text-xs">{item.createdAt.split('T')[0]}</p>
+                      <h4 className="text-[var(--text-primary)] font-semibold text-base">{item.user.name}</h4>
+                      <p className="text-[var(--text-dim)] text-xs">{item.createdAt.split('T')[0]}</p>
                     </div>
                   </div>
-                  <p className="relative z-10 text-[#a0a0a0] text-sm leading-relaxed flex-grow">
+                  <p className="relative z-10 text-[var(--text-muted)] text-sm leading-relaxed flex-grow">
                     "{item.review}"
                   </p>
-                  <div className="relative z-10 mt-6 pt-4 border-t border-[#222222] w-full">
+                  <div className="relative z-10 mt-6 pt-4 border-t border-[var(--border-color)] w-full">
                     <span className="text-[#FED500] text-xs font-medium">{item.service.name}</span>
                   </div>
                 </div>

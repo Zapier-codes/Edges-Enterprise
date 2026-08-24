@@ -23,29 +23,29 @@ const AddProducts = () => {
   };
 
   return (
-    <div className="bg-[#090909] p-6 border border-[#222222] rounded-lg space-y-5">
-      <h3 className="text-white font-semibold text-lg mb-2">Add Product</h3>
+    <div className="bg-[var(--bg-primary)] p-6 border border-[var(--border-color)] rounded-lg space-y-5">
+      <h3 className="text-[var(--text-primary)] font-semibold text-lg mb-2">Add Product</h3>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Name</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Name</label>
         <input
           type="text" name="name" value={product.name} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="Product name" required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">URL</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">URL</label>
         <input
           type="text" name="url" value={product.url} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="https://..." required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[#a0a0a0] mb-2">Description</label>
+        <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Description</label>
         <input
           type="text" name="description" value={product.description} onChange={handleChange}
-          className="w-full p-3 bg-[#111111] border border-[#222222] rounded-lg text-white focus:border-[#FED500] outline-none transition-colors placeholder-[#444]"
+          className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:border-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
           placeholder="Short description" required
         />
       </div>

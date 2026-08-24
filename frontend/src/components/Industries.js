@@ -13,7 +13,7 @@ const Industries = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#222222] border border-[#222222]">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[var(--border-color)] border border-[var(--border-color)]">
       {industries.map((ind, idx) => (
         <div
           key={idx}
@@ -23,10 +23,10 @@ const Industries = () => {
             className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
             style={{ backgroundImage: `url(${ind.img})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-[#090909]/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/70 to-transparent" />
           <div className="relative z-10">
-            <h3 className="font-bold text-2xl md:text-3xl text-white mb-3">{ind.name}</h3>
-            <p className="text-[#a0a0a0] text-sm leading-relaxed">{ind.desc}</p>
+            <h3 className="font-bold text-2xl md:text-3xl text-[var(--text-primary)] mb-3">{ind.name}</h3>
+            <p className="text-[var(--text-muted)] text-sm leading-relaxed">{ind.desc}</p>
           </div>
         </div>
       ))}

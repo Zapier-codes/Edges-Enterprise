@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 
 const Contact = () => {
   return (
-    <div className="bg-[#090909] min-h-screen">
+    <div className="bg-[var(--bg-primary)] min-h-screen">
       <section className="py-16 md:py-24 px-6">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
               Contact Us
             </h2>
-            <p className="text-[#a0a0a0] text-base">
+            <p className="text-[var(--text-muted)] text-base">
               From groundbreaking projects to ongoing ventures, we're here to
               assist and innovate with you. We'll reach back to you within 3
               working days.
@@ -19,36 +19,36 @@ const Contact = () => {
 
           <form action="#" className="space-y-6">
             <div>
-              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+              <label className="block mb-2 text-sm font-medium text-[var(--text-muted)]">
                 Name
               </label>
               <input
                 type="text"
-                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="block p-3 w-full text-sm text-[var(--text-primary)] bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="Your Name"
                 required
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+              <label className="block mb-2 text-sm font-medium text-[var(--text-muted)]">
                 Email
               </label>
               <input
                 type="email"
-                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="block p-3 w-full text-sm text-[var(--text-primary)] bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="name@edgesenterprise.com"
                 required
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+              <label className="block mb-2 text-sm font-medium text-[var(--text-muted)]">
                 Select Service
               </label>
               <select
-                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors"
+                className="block p-3 w-full text-sm text-[var(--text-primary)] bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors"
                 required
               >
-                <option value="" disabled selected className="text-[#444]">
+                <option value="" disabled selected className="text-[var(--text-dim)]">
                   Select the services you need
                 </option>
                 <option value="software">Custom Software Development</option>
@@ -60,32 +60,32 @@ const Contact = () => {
               </select>
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+              <label className="block mb-2 text-sm font-medium text-[var(--text-muted)]">
                 Your Organization
               </label>
               <input
                 type="text"
-                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="block p-3 w-full text-sm text-[var(--text-primary)] bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="Your organization"
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+              <label className="block mb-2 text-sm font-medium text-[var(--text-muted)]">
                 Your message
               </label>
               <textarea
                 rows="6"
-                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="block p-3 w-full text-sm text-[var(--text-primary)] bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="Tell us about your project..."
               ></textarea>
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-[#a0a0a0]">
+              <label className="block mb-2 text-sm font-medium text-[var(--text-muted)]">
                 Your Budget
               </label>
               <input
                 type="text"
-                className="block p-3 w-full text-sm text-white bg-[#111111] rounded-lg border border-[#222222] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[#444]"
+                className="block p-3 w-full text-sm text-[var(--text-primary)] bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)] focus:border-[#FED500] focus:ring-1 focus:ring-[#FED500] outline-none transition-colors placeholder-[var(--text-dim)]"
                 placeholder="in USD$"
                 required
               />
@@ -101,12 +101,12 @@ const Contact = () => {
       </section>
 
       {/* Job CTA */}
-      <section className="py-16 px-6 bg-[#111111] border-t border-[#222222]">
+      <section className="py-16 px-6 bg-[var(--bg-surface)] border-t border-[var(--border-color)]">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <h3 className="text-2xl md:text-3xl font-bold text-white">
+          <h3 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
             Looking to join our team?
           </h3>
-          <p className="text-[#a0a0a0] text-base">
+          <p className="text-[var(--text-muted)] text-base">
             We're always looking for exceptional talent to help us build the future.
           </p>
           <Link

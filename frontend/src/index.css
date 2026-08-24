@@ -5,6 +5,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
+  --bg-primary: #ffffff;
+  --bg-surface: #f5f5f7;
+  --bg-elevated: #ececef;
+  --border-color: #e2e2e6;
+  --text-primary: #0a0a0a;
+  --text-muted: #52525b;
+  --text-dim: #71717a;
+  --accent-gold: #FED500;
+  --accent-gold-hover: #e5c000;
+}
+
+.dark {
   --bg-primary: #090909;
   --bg-surface: #111111;
   --bg-elevated: #1a1a1a;
@@ -26,6 +38,7 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 ::selection {
