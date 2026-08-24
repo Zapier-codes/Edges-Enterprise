@@ -12,10 +12,13 @@ const HomeSecond = () => {
   };
 
   return (
-    <div className="flex flex-col py-16 md:py-24 px-6 bg-[#090909]">
+    <div className="flex flex-col py-16 md:py-24 px-6 bg-[#090909] slide-texture">
       <div className="max-w-7xl mx-auto w-full">
         {/* Section Header */}
         <div className="text-center mb-12">
+          <span className="text-[#FED500] text-xs font-semibold tracking-[0.2em] uppercase mb-4 inline-block">
+            02 — Capabilities
+          </span>
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
             We've achieved partnerships, certifications, and customer growth
           </h2>

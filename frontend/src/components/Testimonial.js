@@ -3,15 +3,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import useStore from "./../store/store";
-import fourth from './../resources/1.jpg'
-import second from './../resources/2.jpg'
-import third from './../resources/3.jpg'
-import first from './../resources/4.png'
+import Avatar from "./Avatar";
 
 const Testimonial = () => {
   const [slidesToShow, setSlidesToShow] = useState(2);
   const reviews = useStore((state) => state.reviews);
-  const images = [first, second, third, fourth];
 
   useEffect(() => {
     const handleResize = () => {
@@ -51,25 +47,22 @@ const Testimonial = () => {
         </div>
         <div className="h-auto pb-8">
           <Slider {...settings}>
-            {reviews.map((item, index) => (
+            {reviews.map((item) => (
               <div className="px-3" key={item._id}>
-                <div className="flex flex-col items-start p-8 bg-[#090909] border border-[#222222] rounded-lg min-h-[320px]">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <img
-                      src={images[index]}
-                      alt=""
-                      className="rounded-full w-14 h-14 object-cover border border-[#222222]"
-                      loading="lazy"
-                    />
+                <div className="testimonial-card relative flex flex-col items-start p-8 bg-[#090909] border border-[#222222] rounded-lg min-h-[320px] overflow-hidden">
+                  <span className="testimonial-card__glow" aria-hidden="true" />
+                  <span className="testimonial-card__quote" aria-hidden="true">&ldquo;</span>
+                  <div className="relative z-10 flex items-center space-x-4 mb-6">
+                    <Avatar name={item.user.name} />
                     <div>
                       <h4 className="text-white font-semibold text-base">{item.user.name}</h4>
                       <p className="text-[#666666] text-xs">{item.createdAt.split('T')[0]}</p>
                     </div>
                   </div>
-                  <p className="text-[#a0a0a0] text-sm leading-relaxed flex-grow">
+                  <p className="relative z-10 text-[#a0a0a0] text-sm leading-relaxed flex-grow">
                     "{item.review}"
                   </p>
-                  <div className="mt-6 pt-4 border-t border-[#222222] w-full">
+                  <div className="relative z-10 mt-6 pt-4 border-t border-[#222222] w-full">
                     <span className="text-[#FED500] text-xs font-medium">{item.service.name}</span>
                   </div>
                 </div>

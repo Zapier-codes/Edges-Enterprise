@@ -1,23 +1,20 @@
 import React from "react";
 import useStore from "../store/store";
+import ServiceCard from "./ServiceCard";
 
 const Services = () => {
   const AllServices = useStore((state) => state.services);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#222222] border border-[#222222]">
-      {AllServices.slice(0, 4).map((item, index) => (
-        <div
-          key={item._id || index}
-          className="flex flex-col p-10 md:p-12 space-y-6 justify-center bg-[#111111] min-h-[280px] card-hover"
-        >
-          <h3 className="font-bold text-2xl md:text-3xl text-white">
-            {item.name}
-          </h3>
-          <p className="text-[#a0a0a0] text-sm leading-relaxed">
-            {item.description}
-          </p>
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {AllServices.slice(0, 6).map((item, index) => (
+        <ServiceCard
+          key={item._id || item.id || index}
+          id={item.id ?? index}
+          icon={item.icon}
+          name={item.name}
+          description={item.description}
+        />
       ))}
     </div>
   );

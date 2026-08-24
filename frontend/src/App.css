@@ -76,3 +76,111 @@ select option:first-child {
   border-color: #FED500;
   transform: translateY(-4px);
 }
+
+/* ---- Service cards: pop-out + custom background + typewriter ---- */
+.service-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.service-card:hover,
+.service-card:focus,
+.service-card:focus-within {
+  transform: translateY(-8px) scale(1.015);
+  border-color: #FED500;
+  box-shadow: 0 20px 40px -12px rgba(254, 213, 0, 0.18), 0 0 0 1px rgba(254, 213, 0, 0.15);
+  outline: none;
+}
+
+.service-card__grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(254, 213, 0, 0.14) 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.service-card:hover .service-card__grid,
+.service-card:focus .service-card__grid,
+.service-card:focus-within .service-card__grid {
+  opacity: 1;
+}
+
+.service-card__glow {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(254, 213, 0, 0.25) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.service-card:hover .service-card__glow,
+.service-card:focus .service-card__glow,
+.service-card:focus-within .service-card__glow {
+  opacity: 1;
+}
+
+.service-icon-wrap {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+.service-card:hover .service-icon-wrap,
+.service-card:focus .service-icon-wrap,
+.service-card:focus-within .service-icon-wrap {
+  transform: rotate(-8deg) scale(1.08);
+  border-color: #FED500;
+}
+
+.service-card__arrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+.service-card:hover .service-card__arrow {
+  transform: translateX(4px);
+}
+
+.typewriter-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  background: #FED500;
+  vertical-align: text-bottom;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ---- Testimonials: glow + quote glyph + avatar ring ---- */
+.testimonial-card__glow {
+  position: absolute;
+  bottom: -80px;
+  left: -40px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(254, 213, 0, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.testimonial-card__quote {
+  position: absolute;
+  top: 8px;
+  right: 20px;
+  font-size: 5rem;
+  line-height: 1;
+  color: rgba(254, 213, 0, 0.08);
+  font-family: Georgia, serif;
+  pointer-events: none;
+}
+.avatar-ring {
+  filter: drop-shadow(0 0 6px rgba(254, 213, 0, 0.25));
+  flex-shrink: 0;
+}
+
+/* ---- Slide-deck texture: faint dot grid across dark sections ---- */
+.slide-texture {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}

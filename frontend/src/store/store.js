@@ -6,18 +6,18 @@ import axios from "axios";
 // (or if a call fails / returns empty), so the Services page always
 // reflects the full range of software development work we do.
 export const DEFAULT_SERVICES = [
-  { id: 1, name: "Web Development", description: "Fast, scalable websites and web apps built on modern frameworks, from marketing sites to complex internal tools." },
-  { id: 2, name: "Web Design & UI/UX", description: "Interfaces designed around how people actually use them — wireframes, prototypes, and design systems that hold up at scale." },
-  { id: 3, name: "Mobile App Development", description: "Native iOS and Android apps, and cross-platform builds with React Native, shipped to the App Store and Google Play." },
-  { id: 4, name: "Custom Software Development", description: "Bespoke systems built around your workflow instead of the other way around, from internal tools to full products." },
-  { id: 5, name: "E-Commerce Development", description: "Storefronts, checkout flows, and platform integrations (Shopify, custom carts) built to convert and scale." },
-  { id: 6, name: "Cloud & DevOps", description: "Cloud architecture, CI/CD pipelines, and infrastructure-as-code on AWS, GCP, and Azure that scale with demand." },
-  { id: 7, name: "API Development & Integration", description: "REST and GraphQL APIs, third-party integrations, and the plumbing that lets your systems talk to each other." },
-  { id: 8, name: "QA & Software Testing", description: "Manual and automated testing — unit, integration, end-to-end — so releases ship with confidence, not crossed fingers." },
-  { id: 9, name: "Enterprise Software Solutions", description: "ERP, CRM, and workflow platforms built to handle real organizational complexity and integrate with legacy systems." },
-  { id: 10, name: "Product Strategy & Consulting", description: "Technical discovery, architecture reviews, and roadmapping to de-risk a build before a line of code is written." },
-  { id: 11, name: "Data Engineering & Analytics", description: "Pipelines, warehousing, and dashboards that turn raw data into something a team can actually act on." },
-  { id: 12, name: "Maintenance & Support", description: "Ongoing monitoring, patching, and feature work after launch, so the product keeps pace with the business." },
+  { id: 1, icon: "webDev", name: "Web Development", description: "Fast, scalable websites and web apps built on modern frameworks, from marketing sites to complex internal tools." },
+  { id: 2, icon: "design", name: "Web Design & UI/UX", description: "Interfaces designed around how people actually use them — wireframes, prototypes, and design systems that hold up at scale." },
+  { id: 3, icon: "mobile", name: "Mobile App Development", description: "Native iOS and Android apps, and cross-platform builds with React Native, shipped to the App Store and Google Play." },
+  { id: 4, icon: "custom", name: "Custom Software Development", description: "Bespoke systems built around your workflow instead of the other way around, from internal tools to full products." },
+  { id: 5, icon: "cart", name: "E-Commerce Development", description: "Storefronts, checkout flows, and platform integrations (Shopify, custom carts) built to convert and scale." },
+  { id: 6, icon: "cloud", name: "Cloud & DevOps", description: "Cloud architecture, CI/CD pipelines, and infrastructure-as-code on AWS, GCP, and Azure that scale with demand." },
+  { id: 7, icon: "api", name: "API Development & Integration", description: "REST and GraphQL APIs, third-party integrations, and the plumbing that lets your systems talk to each other." },
+  { id: 8, icon: "qa", name: "QA & Software Testing", description: "Manual and automated testing — unit, integration, end-to-end — so releases ship with confidence, not crossed fingers." },
+  { id: 9, icon: "enterprise", name: "Enterprise Software Solutions", description: "ERP, CRM, and workflow platforms built to handle real organizational complexity and integrate with legacy systems." },
+  { id: 10, icon: "strategy", name: "Product Strategy & Consulting", description: "Technical discovery, architecture reviews, and roadmapping to de-risk a build before a line of code is written." },
+  { id: 11, icon: "data", name: "Data Engineering & Analytics", description: "Pipelines, warehousing, and dashboards that turn raw data into something a team can actually act on." },
+  { id: 12, icon: "support", name: "Maintenance & Support", description: "Ongoing monitoring, patching, and feature work after launch, so the product keeps pace with the business." },
 ];
 
 // Default testimonials shown until real client reviews load from the backend.
