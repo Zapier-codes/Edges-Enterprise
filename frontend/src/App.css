@@ -184,3 +184,81 @@ select option:first-child {
   background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 24px 24px;
 }
+
+/* ---- Testimonials: continuous glaring shimmer sweep ---- */
+.testimonial-card {
+  position: relative;
+}
+.testimonial-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(254, 213, 0, 0.09) 45%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(254, 213, 0, 0.09) 55%,
+    transparent 80%
+  );
+  background-size: 250% 250%;
+  background-position: -100% -100%;
+  animation: shimmer-sweep 5.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+@keyframes shimmer-sweep {
+  0% { background-position: -120% -120%; }
+  50% { background-position: 120% 120%; }
+  100% { background-position: -120% -120%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-card::after { animation: none; }
+}
+
+/* ---- Contact business card ---- */
+.contact-card {
+  overflow: hidden;
+}
+.contact-card--open {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+.contact-card__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(254, 213, 0, 0.12) 50%, transparent 70%);
+  background-size: 220% 220%;
+  animation: shine-drift 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes shine-drift {
+  0% { background-position: -100% -100%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: -100% -100%; }
+}
+
+/* ---- Hero video: plays muted/looped like a gif, dark gradient over it ---- */
+.hero-video-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+.hero-video-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hero-video-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(9, 9, 9, 0) 40%, rgba(9, 9, 9, 0.55) 100%);
+  pointer-events: none;
+}
+
+/* ---- Anchor targets: offset for the sticky navbar ---- */
+.scroll-mt-24 {
+  scroll-margin-top: 6rem;
+}

@@ -4,10 +4,12 @@ import userAvatar from "./../resources/userAvatar.svg";
 import officeAvatar from "./../resources/officeAvatar.svg";
 import documentAvatar from "./../resources/documentAvatar.svg";
 import starAvatar from "./../resources/starAvatar.svg";
-import office from "./../resources/office.jpg";
 import { useNavigate, Link } from "react-router-dom";
 import HomeSecond from "./HomeSecond";
 import Testimonial from "./Testimonial";
+import StatCounter from "./StatCounter";
+import GrowthChart from "./GrowthChart";
+import ContactCard from "./ContactCard";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -43,28 +45,12 @@ const Home = () => {
       </section>
 
       {/* STATS */}
-      <section className="py-16 md:py-24 px-6 bg-[#090909]">
+      <section id="impact" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-          <div className="flex flex-col items-center text-center space-y-3">
-            <img src={userAvatar} className="w-12 h-12 opacity-80" alt="" />
-            <h2 className="text-4xl md:text-5xl font-bold text-white">800+</h2>
-            <p className="text-[#666666] text-sm">People on board</p>
-          </div>
-          <div className="flex flex-col items-center text-center space-y-3">
-            <img src={officeAvatar} className="w-12 h-12 opacity-80" alt="" />
-            <h2 className="text-4xl md:text-5xl font-bold text-white">3</h2>
-            <p className="text-[#666666] text-sm">Global Offices</p>
-          </div>
-          <div className="flex flex-col items-center text-center space-y-3">
-            <img src={documentAvatar} className="w-12 h-12 opacity-80" alt="" />
-            <h2 className="text-4xl md:text-5xl font-bold text-white">50+</h2>
-            <p className="text-[#666666] text-sm">Projects completed</p>
-          </div>
-          <div className="flex flex-col items-center text-center space-y-3">
-            <img src={starAvatar} className="w-12 h-12 opacity-80" alt="" />
-            <h2 className="text-4xl md:text-5xl font-bold text-white">4.7</h2>
-            <p className="text-[#666666] text-sm">Overall Rating</p>
-          </div>
+          <StatCounter icon={userAvatar} value="800+" label="People on board" />
+          <StatCounter icon={officeAvatar} value="3" label="Global Offices" />
+          <StatCounter icon={documentAvatar} value="50+" label="Projects completed" />
+          <StatCounter icon={starAvatar} value="4.7" label="Overall Rating" />
         </div>
       </section>
 
@@ -87,15 +73,28 @@ const Home = () => {
       </section>
 
       {/* ABOUT / DISCOVER */}
-      <section className="py-16 md:py-24 px-6 bg-[#090909]">
+      <section id="about-preview" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          <div className="lg:w-1/2">
-            <img
-              src={office}
-              className="w-full rounded-lg border border-[#222222]"
-              alt="Our office"
-              loading="lazy"
-            />
+          <div className="lg:w-1/2 w-full">
+            <div className="hero-video-frame border border-[#222222] aspect-video">
+              {/*
+                Plays muted/looped like a gif. Swap the src below for a
+                licensed clip (skyline + handshake works well) once you've
+                added one to src/resources — Claude's sandbox has no network
+                access to fetch stock footage, so this ships with a poster
+                fallback (the previous office photo) until a real file is
+                dropped in at /resources/hero-skyline.mp4.
+              */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                poster={require("./../resources/office.jpg")}
+              >
+                <source src="/resources/hero-skyline.mp4" type="video/mp4" />
+              </video>
+            </div>
           </div>
           <div className="lg:w-1/2 flex flex-col space-y-6">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
@@ -144,7 +143,12 @@ const Home = () => {
       </section>
 
       {/* TABBED SECTIONS */}
-      <HomeSecond />
+      <div id="services" className="scroll-mt-24">
+        <HomeSecond />
+      </div>
+
+      {/* GROWTH CHART */}
+      <GrowthChart />
 
       {/* TESTIMONIALS */}
       <Testimonial />
@@ -169,7 +173,7 @@ const Home = () => {
       </section>
 
       {/* DISCUSS / BOOK CALL */}
-      <section className="py-16 md:py-24 px-6 bg-[#090909]">
+      <section id="contact" className="scroll-mt-24 py-16 md:py-24 px-6 bg-[#090909]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
@@ -178,12 +182,7 @@ const Home = () => {
             <p className="text-[#a0a0a0] text-base">
               During this call we do a quick intro and discuss your project and its specific needs.
             </p>
-            <Link
-              to="/contact"
-              className="inline-block rounded-full bg-[#FED500] text-[#090909] px-8 py-3 text-sm font-semibold hover:bg-[#e5c000] transition-colors"
-            >
-              Book a call
-            </Link>
+            <ContactCard />
           </div>
           <div className="md:w-1/2 bg-[#111111] border border-[#222222] rounded-lg p-8">
             <h3 className="text-white font-semibold text-lg mb-6">Tell us more about your project</h3>

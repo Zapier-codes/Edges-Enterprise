@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import logo from "./../resources/logo2.svg";
 import Dropdown from "./Dropdown";
+import ContactCard from "./ContactCard";
 import useStore from "../store/store";
 
 const Navbar = (props) => {
@@ -126,12 +127,7 @@ const Navbar = (props) => {
           </li>
         </ul>
         <div className="hidden md:block">
-          <Link
-            to="/contact"
-            className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2.5 text-sm font-semibold hover:bg-[#e5c000] transition-colors duration-200"
-          >
-            Book a call
-          </Link>
+          <ContactCard />
         </div>
 
         <button
@@ -165,7 +161,7 @@ const Navbar = (props) => {
             Careers
           </Link>
           <Link to="/contact" className="rounded-full bg-[#FED500] text-[#090909] px-6 py-2.5 text-sm font-semibold">
-            Book a call
+            Contact Us
           </Link>
         </div>
       </div>

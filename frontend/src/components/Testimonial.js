@@ -31,11 +31,15 @@ const Testimonial = () => {
     slidesToShow: slidesToShow,
     slidesToScroll: 1,
     arrows: false,
+    autoplay: true,
+    autoplaySpeed: 3500,
+    pauseOnHover: true,
+    pauseOnFocus: true,
     dotsClass: "slick-dots custom-dots",
   };
 
   return (
-    <div className="bg-[#111111] border-y border-[#222222] py-16 md:py-24 px-6">
+    <div id="testimonials" className="scroll-mt-24 bg-[#111111] border-y border-[#222222] py-16 md:py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">

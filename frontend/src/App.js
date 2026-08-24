@@ -19,9 +19,11 @@ import ErrorPage from "./components/ErrorPage";
 import Cookies from "js-cookie";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import useScrollToHash from "./hooks/useScrollToHash";
 
 function App() {
   const setIsLoggedIn=useStore(state=>state.setIsLoggedIn)
+  useScrollToHash();
   const hamburger = () => {
     var elem = document.getElementById("menu-btn");
     var nav = document.getElementById("menu");
