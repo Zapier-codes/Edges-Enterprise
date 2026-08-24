@@ -16,6 +16,7 @@ import useStore from './store/store'
 import { useEffect } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorPage from "./components/ErrorPage";
+import ContactBubble from "./components/ContactBubble";
 import Cookies from "js-cookie";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
@@ -76,6 +77,7 @@ function App() {
         <Route path="*" element={<ErrorPage />} />
       </Routes>
       <Footer />
+      <ContactBubble />
     </>
   );
 }
