@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, memo } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import logo from "./../resources/logo2.svg";
 import Dropdown from "./Dropdown";
@@ -11,7 +11,7 @@ const Navbar = (props) => {
   const containerRef = useRef(null);
 
   const handleShowDropdown = (e) => {
-    if (e.target.innerText === "Our Products") {
+    if (e.target.innerText === "Portfolio") {
       setDropPage(true);
     } else {
       setDropPage(false);
@@ -93,7 +93,7 @@ const Navbar = (props) => {
               to="/products"
               className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200 flex items-center"
             >
-              Our Products
+              Portfolio
               <span className="ml-2 rotate-90 inline-block">
                 <svg viewBox="0 0 10 19" fill="none" xmlns="http://www.w3.org/2000/svg" width="6">
                   <path
@@ -113,7 +113,7 @@ const Navbar = (props) => {
               to={isLoggedIn ? "/dashboard" : "/login"}
               className="text-[#a0a0a0] text-sm font-medium tracking-wide hover:text-white transition-colors duration-200"
             >
-              {isLoggedIn ? "Dashboard" : "Our Portal"}
+              {isLoggedIn ? "Dashboard" : "Client Portal"}
             </Link>
           </li>
           <li className="flex relative items-center">
@@ -156,10 +156,10 @@ const Navbar = (props) => {
             What we do?
           </Link>
           <Link to="/products" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
-            Our Products
+            Portfolio
           </Link>
           <Link to={isLoggedIn ? "/dashboard" : "/login"} className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
-            {isLoggedIn ? "Dashboard" : "Our Portal"}
+            {isLoggedIn ? "Dashboard" : "Client Portal"}
           </Link>
           <Link to="/careers" className="text-[#a0a0a0] font-semibold hover:text-white transition-colors">
             Careers
